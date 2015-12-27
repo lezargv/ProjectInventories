@@ -35,18 +35,21 @@ public class CMDHelp implements CommandExecutor {
 		switch(command.toLowerCase()){
 			case "create":
 				description = " Allows you to create new inventory table.";
-				syntax = " /inv create <inventory>";
-				example = " /inv create NewInventory";
+				syntax = " /inventory create <inventory>\n"
+						+ " /inv c <inventory>";
+				example = " /inventory create NewInventory";
 				break;
 			case "delete":
 				description = " Allows you to delete existing inventory table.";
-				syntax = " /inv delete <inventory>";
-				example = " /inv delete OldInventory";
+				syntax = " /inventory delete <inventory>\n"
+						+ " /inv d <inventory>";
+				example = " /inventory delete OldInventory";
 				break;
 			case "set":
 				description = " Allows you to set a an inventory for a world.";
-				syntax = " /inv set <world> <inventory>";
-				example = " /inv set world NewInventory";
+				syntax = " /inventory set <world> <inventory>\n"
+						+ " /inv s <world> <inventory>";
+				example = " /inventory set world NewInventory";
 				break;
 			default:
 				src.sendMessage(Texts.of(TextColors.DARK_RED, "Not a valid command"));

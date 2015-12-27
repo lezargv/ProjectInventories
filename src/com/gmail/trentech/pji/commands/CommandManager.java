@@ -39,10 +39,10 @@ public class CommandManager {
 	public CommandSpec cmdInventory = CommandSpec.builder()
 			.description(Texts.of("Base command"))
 			.permission("MultiInv.cmd.inventory")
-			.child(cmdCreate, "create", "cr")
-			.child(cmdDelete, "delete", "del")
-			.child(cmdSet, "properties", "prop")
-			.child(cmdHelp, "help", "hp")
+			.child(cmdCreate, "create", "c")
+			.child(cmdDelete, "delete", "d")
+			.child(cmdSet, "properties", "p")
+			.child(cmdHelp, "help")
 			.executor(new CMDInventory())
 			.build();
 }
