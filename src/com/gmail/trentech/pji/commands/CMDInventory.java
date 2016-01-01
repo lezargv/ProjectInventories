@@ -11,7 +11,6 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.service.pagination.PaginationBuilder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.Texts;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -23,21 +22,21 @@ public class CMDInventory implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		PaginationBuilder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
 		
-		pages.title(Texts.builder().color(TextColors.DARK_GREEN).append(Texts.of(TextColors.AQUA, "Command List")).build());
+		pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.AQUA, "Command List")).build());
 		
 		List<Text> list = new ArrayList<>();
 		
 		if(src.hasPermission("MultiInv.cmd.inv.create")) {
-			list.add(Texts.builder().color(TextColors.GREEN).onHover(TextActions.showText(Texts.of("Click command for more information ")))
-					.onClick(TextActions.runCommand("/inv help Create")).append(Texts.of(" /inv create")).build());
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information ")))
+					.onClick(TextActions.runCommand("/inv help Create")).append(Text.of(" /inv create")).build());
 		}
 		if(src.hasPermission("MultiInv.cmd.inv.delete")) {
-			list.add(Texts.builder().color(TextColors.GREEN).onHover(TextActions.showText(Texts.of("Click command for more information ")))
-					.onClick(TextActions.runCommand("/inv help Delete")).append(Texts.of(" /inv delete")).build());
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information ")))
+					.onClick(TextActions.runCommand("/inv help Delete")).append(Text.of(" /inv delete")).build());
 		}
 		if(src.hasPermission("MultiInv.cmd.inv.set")) {
-			list.add(Texts.builder().color(TextColors.GREEN).onHover(TextActions.showText(Texts.of("Click command for more information ")))
-					.onClick(TextActions.runCommand("/inv help Set")).append(Texts.of(" /inv set")).build());
+			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information ")))
+					.onClick(TextActions.runCommand("/inv help Set")).append(Text.of(" /inv set")).build());
 		}
 		
 		pages.contents(list);
