@@ -20,8 +20,10 @@ import ninja.leaping.configurate.ConfigurationNode;
 public class CMDCreate implements CommandExecutor {
 
 	public CMDCreate(){
+		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
+		
 		Help help = new Help("create", "create", " Create a new inventory");
-		help.setSyntax(" /inventory create <name>\n /inv c <name>");
+		help.setSyntax(" /inventory create <name>\n /" + alias + " c <name>");
 		help.setExample(" /inventory create nether");
 		help.save();
 	}
@@ -37,7 +39,7 @@ public class CMDCreate implements CommandExecutor {
 		ConfigManager configManager = new ConfigManager();
 		ConfigurationNode config = configManager.getConfig();
 		
-		List<String> inventories = config.getNode("Inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
+		List<String> inventories = config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
 		
         if(inventories.contains(invName)) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, invName, " already exists"));
@@ -46,7 +48,7 @@ public class CMDCreate implements CommandExecutor {
         
     	inventories.add(invName);
     	
-    	config.getNode("Inventories").setValue(inventories);
+    	config.getNode("inventories").setValue(inventories);
     	configManager.save();
 
     	SQLUtils.createInventory(invName);

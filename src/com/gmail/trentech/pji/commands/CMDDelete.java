@@ -23,8 +23,10 @@ import ninja.leaping.configurate.ConfigurationNode;
 public class CMDDelete implements CommandExecutor {
 
 	public CMDDelete(){
+		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
+		
 		Help help = new Help("delete", "delete", " Delete an existing inventory. WARNING: This cannot be undone.");
-		help.setSyntax(" /inventory delete <name>\n /inv d <name>");
+		help.setSyntax(" /inventory delete <name>\n /" + alias + " d <name>");
 		help.setExample(" /inventory delete nether");
 		help.save();
 	}
@@ -40,7 +42,7 @@ public class CMDDelete implements CommandExecutor {
 		ConfigManager configManager = new ConfigManager();
 		ConfigurationNode config = configManager.getConfig();
 		
-		List<String> inventories = config.getNode("Inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
+		List<String> inventories = config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
 		
         if(!inventories.contains(invName)) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, invName, " does not exist"));
@@ -54,7 +56,7 @@ public class CMDDelete implements CommandExecutor {
         
         inventories.remove(invName);
         
-        config.getNode("Inventories").setValue(inventories);
+        config.getNode("inventories").setValue(inventories);
         configManager.save();
 
 		for(World world : Main.getGame().getServer().getWorlds()){

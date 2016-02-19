@@ -26,8 +26,10 @@ import ninja.leaping.configurate.ConfigurationNode;
 public class CMDSet implements CommandExecutor {
 
 	public CMDSet(){
+		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
+		
 		Help help = new Help("set", "set", " Set an inventory for the specified world");
-		help.setSyntax(" /inventory set <world> <inventory>\n /inv s <world> <inventory>");
+		help.setSyntax(" /inventory set <world> <inventory>\n /" + alias + " s <world> <inventory>");
 		help.setExample(" /inventory set DIM-1 nether");
 		help.save();
 	}
@@ -71,7 +73,7 @@ public class CMDSet implements CommandExecutor {
 
 		ConfigurationNode config =  new ConfigManager().getConfig();
 		
-		List<String> inventories = config.getNode("Inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
+		List<String> inventories = config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
 		
         if(!inventories.contains(invName) && !invName.equalsIgnoreCase("default")) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, invName, " does not exist"));

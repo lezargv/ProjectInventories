@@ -1,10 +1,6 @@
 package com.gmail.trentech.pji.data;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,28 +9,26 @@ import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import org.spongepowered.api.data.DataManager;
-import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.translator.ConfigurateTranslator;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 
-import com.gmail.trentech.pji.Main;
+import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.SQLUtils;
 
 import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class InventoryData extends SQLUtils {
 
 	private final Player player;
 	private final String invName;
+	
 	private LinkedHashMap<Integer, String> hotbar = new LinkedHashMap<>();
 	private LinkedHashMap<Integer, String> inventory = new LinkedHashMap<>();
 	private LinkedHashMap<Integer, String> armor = new LinkedHashMap<>();
+	
 	private double health = 20;
 	private int food = 10;
 	private double saturation = 20;
@@ -59,77 +53,32 @@ public class InventoryData extends SQLUtils {
 	}
 	
 	public void save(){
-		GridInventory gridInventory = this.player.getInventory().query(GridInventory.class);
+		this.hotbar = InventoryTranslator.serializeHotbar(player);
+		this.inventory = InventoryTranslator.serializeGrid(player);
+		this.armor = InventoryTranslator.serializeArmor(player);
+		this.health = player.health().get();
+		this.food = player.foodLevel().get();
+		this.saturation = player.saturation().get();
 
-		Hotbar hotBar = this.player.getInventory().query(Hotbar.class);
-		
-		int i = 1;
-		for(Inventory slotInv : hotBar.slots()){
-			Optional<ItemStack> peek = slotInv.peek();
-			
-			if(peek.isPresent()){
-				ItemStack itemStack = peek.get();
-				String stackString = serialize(itemStack);				
-				this.hotbar.put(i, stackString);
-			}else{
-				this.hotbar.remove(i);
-			}
-			i++;
-		}
-
-		i = 1;
-		for(Inventory slotInv : gridInventory.slots()){
-			Optional<ItemStack> peek = slotInv.peek();
-			
-			if(peek.isPresent()){
-				ItemStack itemStack = peek.get();				
-				String stackString = serialize(itemStack);				
-				this.inventory.put(i, stackString);
-			}else{
-				this.inventory.remove(i);
-			}
-			i++;
-		}
-		
-		if(player.getHelmet().isPresent()){
-			ItemStack itemStack = player.getHelmet().get();
-			String stackString = serialize(itemStack);			
-			this.armor.put(1, stackString);
-		}
-		
-		if(player.getChestplate().isPresent()){
-			ItemStack itemStack = player.getChestplate().get();
-			String stackString = serialize(itemStack);		
-			this.armor.put(2, stackString);
-		}
-		
-		if(player.getLeggings().isPresent()){
-			ItemStack itemStack = player.getLeggings().get();
-			String stackString = serialize(itemStack);			
-			this.armor.put(3, stackString);
-		}
-		
-		if(player.getBoots().isPresent()){
-			ItemStack itemStack = player.getBoots().get();
-			String stackString = serialize(itemStack);			
-			this.armor.put(4, stackString);
-		}
-
-		double health = player.health().get();
-		this.health = health;
-
-		int food = player.foodLevel().get();
-		this.food = food;
-
-		double saturation = player.saturation().get();
-		this.saturation = saturation;
-		
 		updateHotbar();
 		updateInventory();
 		updateArmor();
-		updateHealth();
-		updateFood();
-		updateSaturation();
+		
+		ConfigurationNode config = new ConfigManager().getConfig();
+		
+		if(config.getNode("health").getBoolean()){
+			updateHealth();
+		}
+		
+		if(config.getNode("hunger").getBoolean()){
+			updateFood();
+			updateSaturation();
+		}
+		
+		if(config.getNode("experience").getBoolean()){
+			updateFood();
+			updateSaturation();
+		}
 	}
 	
 	public void set() throws IOException{
@@ -148,7 +97,7 @@ public class InventoryData extends SQLUtils {
 				continue;
 			}
 
-			ItemStack itemStack = deserialize(this.hotbar.get(slot));
+			ItemStack itemStack = InventoryTranslator.deserializeItemStack(this.hotbar.get(slot));
 
 			slotInv.offer(itemStack);
 		}
@@ -164,38 +113,49 @@ public class InventoryData extends SQLUtils {
 				continue;
 			}
 
-			ItemStack itemStack = deserialize(this.inventory.get(slot));
+			ItemStack itemStack = InventoryTranslator.deserializeItemStack(this.inventory.get(slot));
 			
 			slotInv.offer(itemStack);
 		}
 
 		this.player.setHelmet(null);
 		if(this.armor.containsKey(1)){
-			ItemStack itemStack = deserialize(this.armor.get(1));
+			ItemStack itemStack = InventoryTranslator.deserializeItemStack(this.armor.get(1));
 			this.player.setHelmet(itemStack);
 		}
 		
 		this.player.setChestplate(null);
 		if(this.armor.containsKey(2)){
-			ItemStack itemStack = deserialize(this.armor.get(2));
+			ItemStack itemStack = InventoryTranslator.deserializeItemStack(this.armor.get(2));
 			this.player.setChestplate(itemStack);
 		}
 		
 		this.player.setLeggings(null);
 		if(this.armor.containsKey(3)){
-			ItemStack itemStack = deserialize(this.armor.get(3));	
+			ItemStack itemStack = InventoryTranslator.deserializeItemStack(this.armor.get(3));
 			this.player.setLeggings(itemStack);
 		}
 		
 		this.player.setBoots(null);
 		if(this.armor.containsKey(4)){
-			ItemStack itemStack = deserialize(this.armor.get(4));
+			ItemStack itemStack = InventoryTranslator.deserializeItemStack(this.armor.get(4));
 			this.player.setBoots(itemStack);
 		}
 		
-		player.health().set(this.health);
-		player.foodLevel().set(this.food);
-		player.saturation().set(this.saturation);
+		ConfigurationNode config = new ConfigManager().getConfig();
+		
+		if(config.getNode("health").getBoolean()){
+			player.health().set(this.health);
+		}
+
+		if(config.getNode("health").getBoolean()){
+			player.foodLevel().set(this.food);
+			player.saturation().set(this.saturation);
+		}
+		
+		if(config.getNode("experience").getBoolean()){
+
+		}
 	}
 	
 	private void updateHotbar() {
@@ -376,41 +336,6 @@ public class InventoryData extends SQLUtils {
 		}
 	}
 
-	private String serialize(ItemStack itemStack){
-		ConfigurationNode node = ConfigurateTranslator.instance().translateData(itemStack.toContainer());
-		
-		StringWriter stringWriter = new StringWriter();
-		try {
-		    HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
-		} catch (IOException e) {
-		    e.printStackTrace();
-		}
-
-		return stringWriter.toString();
-	}
-	
-	private ItemStack deserialize(String item) {
-		ConfigurationNode node = null;
-		try {
-			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-	    ConfigurateTranslator translator = ConfigurateTranslator.instance();
-	    DataManager manager = Main.getGame().getDataManager();
-
-		DataView dataView = translator.translateFrom(node);
-
-	    Optional<ItemStack> deserializedOptional = manager.deserialize(ItemStack.class, dataView);
-
-	    if(deserializedOptional.isPresent()) {
-	        return deserializedOptional.get();
-	    }
-	    
-	    return null;
-	}
-	
 	public static InventoryData get(Player player, String invName){
 		Optional<InventoryData> optionalInventoryData = Optional.empty();
 		

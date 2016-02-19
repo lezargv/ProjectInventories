@@ -10,10 +10,15 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.pji.commands.CommandManager;
+import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
 import com.gmail.trentech.pji.utils.SQLUtils;
 
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION)
+import me.flibio.updatifier.Updatifier;
+import ninja.leaping.configurate.ConfigurationNode;
+
+@Updatifier(repoName = "ProjectInventories", repoOwner = "TrenTech", version = Resource.VERSION)
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, dependencies = "after: Updatifier")
 public class Main {
 
 	private static Game game;
@@ -29,9 +34,12 @@ public class Main {
 
     @Listener
     public void onInitialization(GameInitializationEvent event) {
+    	ConfigurationNode config = new ConfigManager().getConfig();
+    	ConfigurationNode commands = config.getNode("settings", "commands");
+    	
     	getGame().getEventManager().registerListeners(this, new EventManager());
     	
-    	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
+    	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", commands.getNode("inventory").getString());
     	
     	SQLUtils.createSettings();
     	

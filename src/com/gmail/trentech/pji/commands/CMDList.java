@@ -23,8 +23,10 @@ import ninja.leaping.configurate.ConfigurationNode;
 public class CMDList implements CommandExecutor {
 
 	public CMDList(){
+		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
+		
 		Help help = new Help("list", "list", " List all inventories");
-		help.setSyntax(" /inventory list\n /inv l");
+		help.setSyntax(" /inventory list\n /" + alias + " l");
 		help.save();
 	}
 	
@@ -40,7 +42,7 @@ public class CMDList implements CommandExecutor {
 
 		list.add(Text.of(TextColors.GREEN, " - default"));
 		
-		for(String inv : config.getNode("Inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList())){
+		for(String inv : config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList())){
 			list.add(Text.of(TextColors.GREEN, " -", inv));
 		}
 
