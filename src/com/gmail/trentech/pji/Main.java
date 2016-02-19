@@ -5,16 +5,13 @@ import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePostInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppingServerEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.pji.commands.CommandManager;
 import com.gmail.trentech.pji.utils.Resource;
+import com.gmail.trentech.pji.utils.SQLUtils;
 
 @Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION)
 public class Main {
@@ -35,26 +32,10 @@ public class Main {
     	getGame().getEventManager().registerListeners(this, new EventManager());
     	
     	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
-    }
-
-    @Listener
-    public void onPostInitialization(GamePostInitializationEvent event) {
     	
-    }
-
-    @Listener
-    public void onStartedServer(GameStartedServerEvent event) {
-
-    }
-
-    @Listener
-	public void onStoppingServer(GameStoppingServerEvent event) {
+    	SQLUtils.createSettings();
     	
-	}
-    
-    @Listener
-    public void onStoppedServer(GameStoppedServerEvent event) {
-
+    	SQLUtils.createInventory("default");
     }
 
     public static Logger getLog() {

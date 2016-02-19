@@ -2,8 +2,6 @@ package com.gmail.trentech.pji.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.gmail.trentech.pji.Main;
 
@@ -18,11 +16,11 @@ public class ConfigManager {
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 	
 	public ConfigManager(String folder, String configName) {
-		folder = "config/" + Resource.NAME + "/" + folder + "/";
+		folder = "config" + File.separator + "projectinventories" + File.separator + "inventories" + File.separator + folder;
         if (!new File(folder).isDirectory()) {
         	new File(folder).mkdirs();
         }
-		file = new File(folder + configName);
+		file = new File(folder, configName);
 		
 		create();
 		load();
@@ -30,11 +28,11 @@ public class ConfigManager {
 	}
 	
 	public ConfigManager(String configName) {
-		String folder = "config/" + Resource.NAME + "/";
+		String folder = "config" + File.separator + "projectinventories";
         if (!new File(folder).isDirectory()) {
         	new File(folder).mkdirs();
         }
-		file = new File(folder + configName);
+		file = new File(folder, configName);
 		
 		create();
 		load();
@@ -42,7 +40,7 @@ public class ConfigManager {
 	}
 	
 	public ConfigManager() {
-		String folder = "config/" + Resource.NAME + "/";
+		String folder = "config" + File.separator + "projectinventories";
         if (!new File(folder).isDirectory()) {
         	new File(folder).mkdirs();
         }
@@ -71,13 +69,6 @@ public class ConfigManager {
 	}
 	
 	private void init() {
-		if(file.getName().equalsIgnoreCase("config.conf")){
-			if(config.getNode("Inventoris").getString() == null) {
-				List<String> list = new ArrayList<>();
-				list.add("default");
-				config.getNode("Inventoris").setValue(list);
-			}
-		}
 		save();
 	}
 

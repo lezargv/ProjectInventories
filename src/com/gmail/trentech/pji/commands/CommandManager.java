@@ -7,40 +7,34 @@ import org.spongepowered.api.text.Text;
 public class CommandManager {
 
 	public CommandSpec cmdCreate = CommandSpec.builder()
-		    .description(Text.of("Create new inventory table"))
-		    .permission("MultiInv.cmd.inv.create")    
+		    .permission("pji.cmd.inventory.create")    
 		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
 		    .executor(new CMDCreate())
 		    .build();
 	
 	public CommandSpec cmdDelete = CommandSpec.builder()
-		    .description(Text.of("Delete inventory table"))
-		    .permission("MultiInv.cmd.inv.delete")
+		    .permission("pji.cmd.inventory.delete")
 		    .arguments(GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("inv"))))
 		    .executor(new CMDDelete())
 		    .build();
 
 	public CommandSpec cmdSet = CommandSpec.builder()
-		    .description(Text.of("Set inventory for world"))
-		    .permission("MultiInv.cmd.inv.delete")
+		    .permission("pji.cmd.inventory.set")
 		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("world"))), GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
 		    .executor(new CMDSet())
 		    .build();
-	
-	public CommandSpec cmdHelp = CommandSpec.builder()
-		    .description(Text.of("I need help"))
-		    .permission("MultiInv.cmd.inv.help")
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("command"))))
-		    .executor(new CMDHelp())
-		    .build();
 
+	public CommandSpec cmdList = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.list")
+		    .executor(new CMDList())
+		    .build();
+	
 	public CommandSpec cmdInventory = CommandSpec.builder()
-			.description(Text.of("Base command"))
-			.permission("MultiInv.cmd.inventory")
+			.permission("pji.cmd.inventory")
 			.child(cmdCreate, "create", "c")
 			.child(cmdDelete, "delete", "d")
-			.child(cmdSet, "properties", "p")
-			.child(cmdHelp, "help")
+			.child(cmdSet, "set", "s")
+			.child(cmdList, "list", "l")
 			.executor(new CMDInventory())
 			.build();
 }
