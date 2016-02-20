@@ -13,8 +13,7 @@ import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.data.IPlayer;
-import com.gmail.trentech.pji.data.WorldData;
-import com.gmail.trentech.pji.data.sql.SQLUtils;
+import com.gmail.trentech.pji.data.sql.SQLSettings;
 
 public class EventManager {
 
@@ -23,10 +22,10 @@ public class EventManager {
 	    Player player = event.getTargetEntity();
 	    World world = player.getWorld();
 
-		String name = WorldData.get(world).get().getInventory();
+		String name = SQLSettings.getWorld(world).get();
 
-		if(!SQLUtils.getPlayer(player)){
-			SQLUtils.save(player);
+		if(!SQLSettings.getPlayer(player)){
+			SQLSettings.savePlayer(player);
 			return;
 		}
 		
@@ -38,7 +37,7 @@ public class EventManager {
 	    Player player = event.getTargetEntity();
 	    World world = player.getWorld();
 
-		String name = WorldData.get(world).get().getInventory();
+		String name = SQLSettings.getWorld(world).get();
 		
 		IPlayer iPlayer = IPlayer.get(player);
 		iPlayer.saveInventory(name);
@@ -51,7 +50,7 @@ public class EventManager {
 				Player player = (Player) entity;
 			    World world = player.getWorld();
 
-				String name = WorldData.get(world).get().getInventory();
+				String name = SQLSettings.getWorld(world).get();
 				
 				IPlayer iPlayer = IPlayer.get(player);
 				iPlayer.saveInventory(name);
@@ -73,8 +72,8 @@ public class EventManager {
 			return;
 		}
 
-		String srcName = WorldData.get(worldSrc).get().getInventory();
-		String destName = WorldData.get(worldDest).get().getInventory();
+		String srcName = SQLSettings.getWorld(worldSrc).get();
+		String destName = SQLSettings.getWorld(worldDest).get();
 
 		if(srcName.equalsIgnoreCase(destName)){
 			return;
@@ -84,8 +83,7 @@ public class EventManager {
 			return;
 		}
 		list.add(player.getUniqueId().toString());
-		
-		System.out.println(srcName + " " + destName);
+
 		IPlayer iPlayer = IPlayer.get(player);
 		
 		iPlayer.saveInventory(srcName);
@@ -100,8 +98,8 @@ public class EventManager {
 	public void onLoadWorldEvent(LoadWorldEvent event){
 		World world = event.getTargetWorld();
 		
-		if(!WorldData.get(world).isPresent()){
-			SQLUtils.saveWorld(world);
+		if(!SQLSettings.getWorld(world).isPresent()){
+			SQLSettings.saveWorld(world);
 		}
 	}
 }

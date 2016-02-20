@@ -14,12 +14,28 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.data.InventoryTranslator;
 
-public class InventorySQL extends SQLUtils {
+public class SQLInventory extends SQLUtils {
 
+	public static boolean createInventory(String name) {
+		try {
+			Connection connection = getDataSource().getConnection();
+
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix(name) + " (Player TEXT, Hotbar TEXT, Inventory TEXT, Armor TEXT, Health DOUBLE, Food INTEGER, Saturation DOUBLE, ExpLevel INTEGER, Experience INTEGER)");
+			
+			statement.executeUpdate();
+			
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
 	public static void updateHotbar(Player player, String name, LinkedHashMap<Integer, ItemStack> hotbar) {
 		try {
 		    Connection connection = getDataSource().getConnection();
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Hotbar = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Hotbar = ? WHERE Player = ?");
 
 		    if(!hotbar.isEmpty()){  
 		    	StringBuilder stringBuilder = new StringBuilder();
@@ -43,7 +59,7 @@ public class InventorySQL extends SQLUtils {
 	public static void updateGrid(Player player, String name, LinkedHashMap<Integer, ItemStack> grid) {
 		try {
 		    Connection connection = getDataSource().getConnection();
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Inventory = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Inventory = ? WHERE Player = ?");
 
 		    if(!grid.isEmpty()){
 		    	StringBuilder stringBuilder = new StringBuilder();
@@ -69,7 +85,7 @@ public class InventorySQL extends SQLUtils {
 	public static void updateArmor(Player player, String name, LinkedHashMap<Integer, ItemStack> armor) {
 		try {
 		    Connection connection = getDataSource().getConnection();
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Armor = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Armor = ? WHERE Player = ?");
 
 		    if(!armor.isEmpty()){   
 		    	StringBuilder stringBuilder = new StringBuilder();
@@ -96,7 +112,7 @@ public class InventorySQL extends SQLUtils {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Health = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Health = ? WHERE Player = ?");
 
 		    statement.setDouble(1, health);
 			statement.setString(2, player.getUniqueId().toString());
@@ -113,7 +129,7 @@ public class InventorySQL extends SQLUtils {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Food = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Food = ? WHERE Player = ?");
 
 		    statement.setInt(1, foodLevel);
 			statement.setString(2, player.getUniqueId().toString());
@@ -130,7 +146,7 @@ public class InventorySQL extends SQLUtils {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Saturation = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Saturation = ? WHERE Player = ?");
 
 		    statement.setDouble(1, saturation);
 			statement.setString(2, player.getUniqueId().toString());
@@ -147,7 +163,7 @@ public class InventorySQL extends SQLUtils {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET ExpLevel = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET ExpLevel = ? WHERE Player = ?");
 
 		    statement.setInt(1, expLevel);
 			statement.setString(2, player.getUniqueId().toString());
@@ -164,7 +180,7 @@ public class InventorySQL extends SQLUtils {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Experience = ? WHERE Player = ?");
+		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix(name) + " SET Experience = ? WHERE Player = ?");
 
 		    statement.setInt(1, experience);
 			statement.setString(2, player.getUniqueId().toString());
@@ -177,11 +193,11 @@ public class InventorySQL extends SQLUtils {
 		}
 	}
 	
-	public static void create(InventoryData inventoryData){	
+	private static void create(InventoryData inventoryData){	
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("INSERT into " + inventoryData.getName() + " (Player, Hotbar, Inventory, Armor, Health, Food, Saturation, ExpLevel, Experience) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");	
+		    PreparedStatement statement = connection.prepareStatement("INSERT into " + prefix(inventoryData.getName()) + " (Player, Hotbar, Inventory, Armor, Health, Food, Saturation, ExpLevel, Experience) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");	
 			
 		    statement.setString(1, inventoryData.getPlayer().getUniqueId().toString());
 		    
@@ -242,7 +258,7 @@ public class InventorySQL extends SQLUtils {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
-		    PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + name);
+		    PreparedStatement statement = connection.prepareStatement("SELECT * FROM " +  prefix(name));
 		    
 			ResultSet result = statement.executeQuery();
 			
@@ -294,7 +310,7 @@ public class InventorySQL extends SQLUtils {
 		
 		if(!optionalInventoryData.isPresent()){
 			InventoryData inventoryData = new InventoryData(player, name);
-			InventorySQL.create(inventoryData);
+			create(inventoryData);
 			return inventoryData;
 		}else{
 			return optionalInventoryData.get();

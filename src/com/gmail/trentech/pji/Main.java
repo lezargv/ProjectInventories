@@ -10,6 +10,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.pji.commands.CommandManager;
+import com.gmail.trentech.pji.data.sql.SQLInventory;
 import com.gmail.trentech.pji.data.sql.SQLUtils;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
@@ -43,7 +44,7 @@ public class Main {
     	
     	SQLUtils.createSettings();
     	
-    	SQLUtils.createInventory("default");
+    	SQLInventory.createInventory("default");
     }
 
     public static Logger getLog() {

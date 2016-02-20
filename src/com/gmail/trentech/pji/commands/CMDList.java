@@ -2,7 +2,6 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -15,10 +14,9 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.Main;
+import com.gmail.trentech.pji.data.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
-
-import ninja.leaping.configurate.ConfigurationNode;
 
 public class CMDList implements CommandExecutor {
 
@@ -36,14 +34,12 @@ public class CMDList implements CommandExecutor {
 		
 		pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.AQUA, "Inventories")).build());
 
-		ConfigurationNode config =  new ConfigManager().getConfig();
-		
 		List<Text> list = new ArrayList<>();
 
 		list.add(Text.of(TextColors.GREEN, " - default"));
 		
-		for(String inv : config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList())){
-			list.add(Text.of(TextColors.GREEN, " -", inv));
+		for(String name : SQLSettings.getInventoryList()){
+			list.add(Text.of(TextColors.GREEN, " - ", name));
 		}
 
 		pages.contents(list);

@@ -2,7 +2,6 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -17,11 +16,9 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.data.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
-
-import ninja.leaping.configurate.ConfigurationNode;
 
 public class CMDSet implements CommandExecutor {
 
@@ -60,7 +57,7 @@ public class CMDSet implements CommandExecutor {
 			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Inventory")).build());
 			
 			List<Text> list = new ArrayList<>();
-			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, WorldData.get(world).get().getInventory()));
+			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, SQLSettings.getWorld(world)));
 			list.add(Text.of(TextColors.GREEN, "Command: ", TextColors.YELLOW, "/inventory set <world> <inventory>"));
 			
 			pages.contents(list);
@@ -69,20 +66,16 @@ public class CMDSet implements CommandExecutor {
 			
 			return CommandResult.empty();
 		}
-		String invName = args.<String>getOne("inv").get();
+		String name = args.<String>getOne("inv").get();
 
-		ConfigurationNode config =  new ConfigManager().getConfig();
-		
-		List<String> inventories = config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
-		
-        if(!inventories.contains(invName) && !invName.equalsIgnoreCase("default")) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, invName, " does not exist"));
+		if(!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")){
+			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
 			return CommandResult.empty();
         }
 		
-        WorldData.get(world).get().setInventory(invName);
+		SQLSettings.updateWorld(world, name);
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", worldName, " to ", invName));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", worldName, " to ", name));
 		
 		return CommandResult.success();	
 	}

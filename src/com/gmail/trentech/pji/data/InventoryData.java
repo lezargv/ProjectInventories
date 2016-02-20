@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import com.gmail.trentech.pji.data.sql.InventorySQL;
+import com.gmail.trentech.pji.data.sql.SQLInventory;
 import com.gmail.trentech.pji.data.sql.SQLUtils;
 
 public class InventoryData extends SQLUtils {
@@ -84,42 +84,42 @@ public class InventoryData extends SQLUtils {
 	
 	public void setHotbar(LinkedHashMap<Integer, ItemStack> hotbar) {
 		this.hotbar = hotbar;
-		InventorySQL.updateHotbar(this.player, this.name, this.hotbar);
+		SQLInventory.updateHotbar(this.player, this.name, this.hotbar);
 	}
 
 	public void setGrid(LinkedHashMap<Integer, ItemStack> grid) {
 		this.grid = grid;
-		InventorySQL.updateGrid(this.player, this.name, this.grid);
+		SQLInventory.updateGrid(this.player, this.name, this.grid);
 	}
 
 	public void setArmor(LinkedHashMap<Integer, ItemStack> armor) {
 		this.armor = armor;
-		InventorySQL.updateArmor(this.player, this.name, this.armor);
+		SQLInventory.updateArmor(this.player, this.name, this.armor);
 	}
 
 	public void setHealth(double health) {
 		this.health = health;
-		InventorySQL.updateHealth(this.player, this.name, this.health);
+		SQLInventory.updateHealth(this.player, this.name, this.health);
 	}
 
 	public void setFood(int food) {
 		this.food = food;
-		InventorySQL.updateFoodLevel(this.player, this.name, this.food);
+		SQLInventory.updateFoodLevel(this.player, this.name, this.food);
 	}
 
 	public void setSaturation(double saturation) {
 		this.saturation = saturation;
-		InventorySQL.updateSaturation(this.player, this.name, this.saturation);
+		SQLInventory.updateSaturation(this.player, this.name, this.saturation);
 	}
 
 	public void setExpLevel(int expLevel) {
 		this.expLevel = expLevel;
-		InventorySQL.updateExperienceLevel(this.player, this.name, this.expLevel);
+		SQLInventory.updateExperienceLevel(this.player, this.name, this.expLevel);
 	}
 
 	public void setExperience(int experience) {
 		this.experience = experience;
-		InventorySQL.updateExperience(this.player, this.name, this.experience);
+		SQLInventory.updateExperience(this.player, this.name, this.experience);
 	}
 
 

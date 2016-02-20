@@ -1,8 +1,5 @@
 package com.gmail.trentech.pji.commands;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -11,11 +8,10 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.data.sql.SQLUtils;
+import com.gmail.trentech.pji.data.sql.SQLInventory;
+import com.gmail.trentech.pji.data.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
-
-import ninja.leaping.configurate.ConfigurationNode;
 
 public class CMDCreate implements CommandExecutor {
 
@@ -34,26 +30,17 @@ public class CMDCreate implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory create <inventory>"));
 			return CommandResult.empty();
 		}
-		String invName = args.<String>getOne("inv").get();
+		String name = args.<String>getOne("inv").get();
 
-		ConfigManager configManager = new ConfigManager();
-		ConfigurationNode config = configManager.getConfig();
-		
-		List<String> inventories = config.getNode("inventories").getChildrenList().stream().map(ConfigurationNode::getString).collect(Collectors.toList());
-		
-        if(inventories.contains(invName)) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, invName, " already exists"));
+		if(SQLSettings.getInventory(name)){
+			src.sendMessage(Text.of(TextColors.DARK_RED, name, " already exists"));
 			return CommandResult.empty();
         }
         
-    	inventories.add(invName);
-    	
-    	config.getNode("inventories").setValue(inventories);
-    	configManager.save();
-
-    	SQLUtils.createInventory(invName);
-    	
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Created inventory ", invName));
+		SQLSettings.saveInventory(name);
+		SQLInventory.createInventory(name);
+		
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Created inventory ", name));
 		
 		return CommandResult.success();
 	}

@@ -10,7 +10,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 
-import com.gmail.trentech.pji.data.sql.InventorySQL;
+import com.gmail.trentech.pji.data.sql.SQLInventory;
 import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.ConfigurationNode;
@@ -28,7 +28,7 @@ public class IPlayer {
 	}
 	
 	public void setInventory(String name){
-		InventoryData inventoryData = InventorySQL.get(player, name);
+		InventoryData inventoryData = SQLInventory.get(player, name);
 
 		LinkedHashMap<Integer, ItemStack> hotbar = inventoryData.getHotbar();
 		LinkedHashMap<Integer, ItemStack> grid = inventoryData.getGrid();
@@ -88,23 +88,23 @@ public class IPlayer {
 		
 		ConfigurationNode config = new ConfigManager().getConfig();
 		
-		if(config.getNode("health").getBoolean()){
+		if(config.getNode("options", "health").getBoolean()){
 			player.offer(Keys.HEALTH, inventoryData.getHealth());
 		}
 
-		if(config.getNode("health").getBoolean()){
+		if(config.getNode("options", "health").getBoolean()){
 			player.offer(Keys.FOOD_LEVEL, inventoryData.getFood());
 			player.offer(Keys.SATURATION, inventoryData.getSaturation());
 		}
 		
-		if(config.getNode("experience").getBoolean()){
+		if(config.getNode("options", "experience").getBoolean()){
 			player.offer(Keys.EXPERIENCE_LEVEL, inventoryData.getExpLevel());
-			player.offer(Keys.HELD_EXPERIENCE, inventoryData.getExperience());
+			player.offer(Keys.TOTAL_EXPERIENCE, inventoryData.getExperience());
 		}
 	}
 	
 	public void saveInventory(String name){
-		InventoryData inventoryData = InventorySQL.get(player, name);
+		InventoryData inventoryData = SQLInventory.get(player, name);
 		
 		LinkedHashMap<Integer, ItemStack> hotbar = new LinkedHashMap<>();
 		LinkedHashMap<Integer, ItemStack> grid = new LinkedHashMap<>();
@@ -156,22 +156,12 @@ public class IPlayer {
 			armor.put(4, itemStack);
 		}
 		inventoryData.setArmor(armor);
-
-		ConfigurationNode config = new ConfigManager().getConfig();
 		
-		if(config.getNode("health").getBoolean()){
-			inventoryData.setHealth(player.get(Keys.HEALTH).get());			
-		}
-		
-		if(config.getNode("hunger").getBoolean()){
-			inventoryData.setFood(player.get(Keys.FOOD_LEVEL).get());
-			inventoryData.setSaturation(player.get(Keys.SATURATION).get());
-		}
-		
-		if(config.getNode("experience").getBoolean()){
-			inventoryData.setExperience(player.get(Keys.HELD_EXPERIENCE).get());
-			inventoryData.setExpLevel(player.get(Keys.EXPERIENCE_LEVEL).get());
-		}
+		inventoryData.setHealth(player.get(Keys.HEALTH).get());
+		inventoryData.setFood(player.get(Keys.FOOD_LEVEL).get());
+		inventoryData.setSaturation(player.get(Keys.SATURATION).get());
+		inventoryData.setExperience(player.get(Keys.TOTAL_EXPERIENCE).get());
+		inventoryData.setExpLevel(player.get(Keys.EXPERIENCE_LEVEL).get());
 	}
 
 }
