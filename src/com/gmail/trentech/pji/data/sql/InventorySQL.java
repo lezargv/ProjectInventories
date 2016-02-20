@@ -17,7 +17,6 @@ import com.gmail.trentech.pji.data.InventoryTranslator;
 public class InventorySQL extends SQLUtils {
 
 	public static void updateHotbar(Player player, String name, LinkedHashMap<Integer, ItemStack> hotbar) {
-		System.out.println("update: " + name);
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    PreparedStatement statement = connection.prepareStatement("UPDATE " + name + " SET Hotbar = ? WHERE Player = ?");
@@ -294,7 +293,6 @@ public class InventorySQL extends SQLUtils {
 		}
 		
 		if(!optionalInventoryData.isPresent()){
-			System.out.println("NOT PRESENT");
 			InventoryData inventoryData = new InventoryData(player, name);
 			InventorySQL.create(inventoryData);
 			return inventoryData;

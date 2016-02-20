@@ -25,6 +25,11 @@ public class EventManager {
 
 		String name = WorldData.get(world).get().getInventory();
 
+		if(!SQLUtils.getPlayer(player)){
+			SQLUtils.save(player);
+			return;
+		}
+		
 		IPlayer.get(player).setInventory(name);
 	}
 	

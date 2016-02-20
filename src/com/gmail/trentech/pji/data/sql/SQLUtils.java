@@ -2,10 +2,12 @@ package com.gmail.trentech.pji.data.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.sql.SqlService;
 import org.spongepowered.api.world.World;
 
@@ -59,6 +61,10 @@ public abstract class SQLUtils {
 			
 			statement.executeUpdate();
 			
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Players (Player TEXT)");
+			
+			statement.executeUpdate();
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -80,5 +86,43 @@ public abstract class SQLUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static void save(Player player){
+		try {
+		    Connection connection = getDataSource().getConnection();
+
+		    PreparedStatement statement = connection.prepareStatement("INSERT into Players (Player) VALUES (?)");	
+			
+		    statement.setString(1, player.getUniqueId().toString());
+
+			statement.executeUpdate();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static boolean getPlayer(Player player){
+		boolean exist = false;
+
+		try {
+		    Connection connection = getDataSource().getConnection();
+		    
+		    PreparedStatement statement = connection.prepareStatement("SELECT * FROM Players");
+		    
+			ResultSet result = statement.executeQuery();
+			
+			while (result.next()) {
+				if (result.getString("Player").equalsIgnoreCase(player.getUniqueId().toString())) {
+					exist = false;
+					break;
+				}
+			}
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		return exist;
 	}
 }

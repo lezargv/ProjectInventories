@@ -173,4 +173,5 @@ public class IPlayer {
 			inventoryData.setExpLevel(player.get(Keys.EXPERIENCE_LEVEL).get());
 		}
 	}
+
 }
