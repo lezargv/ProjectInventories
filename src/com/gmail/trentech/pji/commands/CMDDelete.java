@@ -14,9 +14,9 @@ import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.data.sql.SQLUtils;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
-import com.gmail.trentech.pji.utils.SQLUtils;
 
 import ninja.leaping.configurate.ConfigurationNode;
 

@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.pji.utils.SQLUtils;
+import com.gmail.trentech.pji.data.sql.SQLUtils;
 
 public class WorldData extends SQLUtils {
 

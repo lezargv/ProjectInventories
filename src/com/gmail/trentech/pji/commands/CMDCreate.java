@@ -11,9 +11,9 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.gmail.trentech.pji.data.sql.SQLUtils;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
-import com.gmail.trentech.pji.utils.SQLUtils;
 
 import ninja.leaping.configurate.ConfigurationNode;
 

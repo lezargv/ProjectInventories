@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.utils;
+package com.gmail.trentech.pji.data.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +27,7 @@ public abstract class SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + invName + " (Player TEXT, Hotbar TEXT, Inventory TEXT, Armor TEXT, Health DOUBLE, Food INTEGER, Saturation DOUBLE)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + invName + " (Player TEXT, Hotbar TEXT, Inventory TEXT, Armor TEXT, Health DOUBLE, Food INTEGER, Saturation DOUBLE, ExpLevel INTEGER, Experience INTEGER)");
 			
 			statement.executeUpdate();
 			
