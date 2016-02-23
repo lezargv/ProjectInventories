@@ -71,13 +71,13 @@ public class ConfigManager {
 	private void init() {
 		if(file.getName().equalsIgnoreCase("config.conf")){
 			if(config.getNode("options", "health").isVirtual()) {
-				config.getNode("options", "health").setValue(false).setComment("Enable inventory specific health");
+				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");
 			}
 			if(config.getNode("options", "hunger").isVirtual()) {
-				config.getNode("options", "hunger").setValue(false).setComment("Enable inventory specific hunger");
+				config.getNode("options", "hunger").setValue(true).setComment("Enable inventory specific hunger");
 			}
 			if(config.getNode("options", "experience").isVirtual()) {
-				config.getNode("options", "experience").setValue(false).setComment("Enable inventory specific experience");
+				config.getNode("options", "experience").setValue(true).setComment("Enable inventory specific experience");
 			}
 			if(config.getNode("settings", "commands").isVirtual()){
 				config.getNode("settings", "commands").setComment("Allow to set custom command aliases");

@@ -16,7 +16,7 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.data.IPlayer;
+import com.gmail.trentech.pji.data.InventoryPlayer;
 import com.gmail.trentech.pji.data.sql.SQLInventory;
 import com.gmail.trentech.pji.data.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
@@ -53,8 +53,8 @@ public class CMDDelete implements CommandExecutor {
 						for(Entity entity : world.getEntities()){
 							if(entity instanceof Player){
 								Player player = (Player) entity;
-								IPlayer iPlayer = IPlayer.get(player);
-								iPlayer.setInventory("default");
+								InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
+								inventoryPlayer.setInventory("default");
 								player.sendMessage(Text.of(TextColors.RED, "[PJP] ", TextColors.YELLOW, "Admin deleted your inventory for this world"));
 							}
 						}

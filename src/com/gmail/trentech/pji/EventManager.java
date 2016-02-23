@@ -12,7 +12,7 @@ import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.pji.data.IPlayer;
+import com.gmail.trentech.pji.data.InventoryPlayer;
 import com.gmail.trentech.pji.data.sql.SQLSettings;
 
 public class EventManager {
@@ -29,7 +29,7 @@ public class EventManager {
 			return;
 		}
 		
-		IPlayer.get(player).setInventory(name);
+		InventoryPlayer.get(player).setInventory(name);
 	}
 	
 	@Listener
@@ -39,8 +39,8 @@ public class EventManager {
 
 		String name = SQLSettings.getWorld(world).get();
 		
-		IPlayer iPlayer = IPlayer.get(player);
-		iPlayer.saveInventory(name);
+		InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
+		inventoryPlayer.saveInventory(name);
 	}
 
 	@Listener
@@ -52,8 +52,8 @@ public class EventManager {
 
 				String name = SQLSettings.getWorld(world).get();
 				
-				IPlayer iPlayer = IPlayer.get(player);
-				iPlayer.saveInventory(name);
+				InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
+				inventoryPlayer.saveInventory(name);
 			}
 		}
 	}
@@ -84,10 +84,10 @@ public class EventManager {
 		}
 		list.add(player.getUniqueId().toString());
 
-		IPlayer iPlayer = IPlayer.get(player);
+		InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
 		
-		iPlayer.saveInventory(srcName);
-		iPlayer.setInventory(destName);
+		inventoryPlayer.saveInventory(srcName);
+		inventoryPlayer.setInventory(destName);
 		
 		Main.getGame().getScheduler().createTaskBuilder().delayTicks(20).execute(t -> {
 			list.remove(uuid);

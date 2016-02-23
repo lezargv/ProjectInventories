@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.data;
+package com.gmail.trentech.pji.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,7 +17,7 @@ import com.gmail.trentech.pji.Main;
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-public class InventoryTranslator {
+public class ItemSerializer {
 
 	public static String serializeItemStack(ItemStack itemStack){
 		ConfigurationNode node = ConfigurateTranslator.instance().translateData(itemStack.toContainer());

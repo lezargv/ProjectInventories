@@ -15,16 +15,16 @@ import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class IPlayer {
+public class InventoryPlayer {
 
 	private Player player;
 	
-	private IPlayer(Player player){
+	private InventoryPlayer(Player player){
 		this.player = player;
 	}
 	
-	public static IPlayer get(Player player){
-		return new IPlayer(player);
+	public static InventoryPlayer get(Player player){
+		return new InventoryPlayer(player);
 	}
 	
 	public void setInventory(String name){

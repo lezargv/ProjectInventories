@@ -12,7 +12,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.gmail.trentech.pji.data.InventoryData;
-import com.gmail.trentech.pji.data.InventoryTranslator;
+import com.gmail.trentech.pji.utils.ItemSerializer;
 
 public class SQLInventory extends SQLUtils {
 
@@ -41,7 +41,7 @@ public class SQLInventory extends SQLUtils {
 		    	StringBuilder stringBuilder = new StringBuilder();
 		    	
 			    for (Entry<Integer, ItemStack> entry : hotbar.entrySet()){
-			    	stringBuilder.append(entry.getKey() + "^" + InventoryTranslator.serializeItemStack(entry.getValue()) + ";");
+			    	stringBuilder.append(entry.getKey() + "^" + ItemSerializer.serializeItemStack(entry.getValue()) + ";");
 			    }
 			    statement.setString(1, stringBuilder.toString().substring(0, stringBuilder.length() - 1));
 		    }else{
@@ -65,7 +65,7 @@ public class SQLInventory extends SQLUtils {
 		    	StringBuilder stringBuilder = new StringBuilder();
 		    	
 			    for (Entry<Integer, ItemStack> entry : grid.entrySet()){
-			    	stringBuilder.append(entry.getKey() + "^" + InventoryTranslator.serializeItemStack(entry.getValue()) + ";");
+			    	stringBuilder.append(entry.getKey() + "^" + ItemSerializer.serializeItemStack(entry.getValue()) + ";");
 			    }
 			    statement.setString(1, stringBuilder.toString().substring(0, stringBuilder.length() - 1));
 		    }else{
@@ -91,7 +91,7 @@ public class SQLInventory extends SQLUtils {
 		    	StringBuilder stringBuilder = new StringBuilder();
 		    	
 			    for (Entry<Integer, ItemStack> entry : armor.entrySet()){
-			    	stringBuilder.append(entry.getKey() + "^" + InventoryTranslator.serializeItemStack(entry.getValue()) + ";");
+			    	stringBuilder.append(entry.getKey() + "^" + ItemSerializer.serializeItemStack(entry.getValue()) + ";");
 			    }
 			    statement.setString(1, stringBuilder.toString().substring(0, stringBuilder.length() - 1));
 		    }else{
@@ -209,7 +209,7 @@ public class SQLInventory extends SQLUtils {
 		    
 		    if(!hotbar.isEmpty()){   
 			    for (Entry<Integer, ItemStack> entry : hotbar.entrySet()){
-			    	stringBuilder.append(entry.getKey() + "^" + InventoryTranslator.serializeItemStack(entry.getValue()) + ";");
+			    	stringBuilder.append(entry.getKey() + "^" + ItemSerializer.serializeItemStack(entry.getValue()) + ";");
 			    }
 			    statement.setString(2, stringBuilder.toString().substring(0, stringBuilder.length() - 1));
 		    }else{
@@ -219,7 +219,7 @@ public class SQLInventory extends SQLUtils {
 		    if(!grid.isEmpty()){ 
 			    stringBuilder = new StringBuilder();
 			    for (Entry<Integer, ItemStack> entry : grid.entrySet()){
-			    	stringBuilder.append(entry.getKey() + "^" + InventoryTranslator.serializeItemStack(entry.getValue()) + ";");
+			    	stringBuilder.append(entry.getKey() + "^" + ItemSerializer.serializeItemStack(entry.getValue()) + ";");
 			    }
 			    statement.setString(3, stringBuilder.toString().substring(0, stringBuilder.length() - 1));
 		    }else{
@@ -229,7 +229,7 @@ public class SQLInventory extends SQLUtils {
 		    if(!armor.isEmpty()){
 		    	stringBuilder = new StringBuilder();
 			    for (Entry<Integer, ItemStack> entry : armor.entrySet()){
-			    	stringBuilder.append(entry.getKey() + "^" + InventoryTranslator.serializeItemStack(entry.getValue()) + ";");
+			    	stringBuilder.append(entry.getKey() + "^" + ItemSerializer.serializeItemStack(entry.getValue()) + ";");
 			    }
 			    statement.setString(4, stringBuilder.toString().substring(0, stringBuilder.length() - 1));
 		    }else{
@@ -272,7 +272,7 @@ public class SQLInventory extends SQLUtils {
 						String[] hotbarArray = result.getString("Hotbar").split(";");
 						for(String slot : hotbarArray){
 							String[] split = slot.split("\\^");
-							hotbar.put(Integer.parseInt(split[0]), InventoryTranslator.deserializeItemStack(split[1]));
+							hotbar.put(Integer.parseInt(split[0]), ItemSerializer.deserializeItemStack(split[1]));
 						}
 					}
 
@@ -280,7 +280,7 @@ public class SQLInventory extends SQLUtils {
 						String[] gridArray = result.getString("Inventory").split(";");
 						for(String slot : gridArray){
 							String[] split = slot.split("\\^");
-							grid.put(Integer.parseInt(split[0]), InventoryTranslator.deserializeItemStack(split[1]));
+							grid.put(Integer.parseInt(split[0]), ItemSerializer.deserializeItemStack(split[1]));
 						}
 					}
 
@@ -288,7 +288,7 @@ public class SQLInventory extends SQLUtils {
 						String[] armorArray = result.getString("Armor").split(";");
 						for(String slot : armorArray){
 							String[] split = slot.split("\\^");
-							armor.put(Integer.parseInt(split[0]), InventoryTranslator.deserializeItemStack(split[1]));
+							armor.put(Integer.parseInt(split[0]), ItemSerializer.deserializeItemStack(split[1]));
 						}
 					}
 
