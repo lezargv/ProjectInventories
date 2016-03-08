@@ -61,6 +61,11 @@ public class EventManager {
 	private static List<String> list = new ArrayList<>();
 	
 	@Listener
+	public void onDisplaceEntityEvent(DisplaceEntityEvent.Teleport event){
+		System.out.println("DisplaceEntityEvent.Teleport");
+	}
+	
+	@Listener
 	public void onDisplaceEntityEvent(DisplaceEntityEvent.TargetPlayer event) {
 		Player player = event.getTargetEntity();
 		String uuid = player.getUniqueId().toString();

@@ -9,7 +9,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.pagination.PaginationBuilder;
+import org.spongepowered.api.service.pagination.PaginationList.Builder;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -52,12 +52,12 @@ public class CMDSet implements CommandExecutor {
 		World world = Main.getGame().getServer().getWorld(worldName).get();
 		
 		if(!args.hasAny("inv")) {
-			PaginationBuilder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
+			Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
 			
 			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Inventory")).build());
 			
 			List<Text> list = new ArrayList<>();
-			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, SQLSettings.getWorld(world)));
+			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, SQLSettings.getWorld(world).get()));
 			list.add(Text.of(TextColors.GREEN, "Command: ", TextColors.YELLOW, "/inventory set <world> <inventory>"));
 			
 			pages.contents(list);

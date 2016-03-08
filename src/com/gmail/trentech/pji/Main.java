@@ -6,6 +6,7 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -19,7 +20,7 @@ import me.flibio.updatifier.Updatifier;
 import ninja.leaping.configurate.ConfigurationNode;
 
 @Updatifier(repoName = "ProjectInventories", repoOwner = "TrenTech", version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, dependencies = "after: Updatifier")
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, dependencies = {@Dependency(id = "Updatifier", optional = true)})
 public class Main {
 
 	private static Game game;
@@ -30,7 +31,7 @@ public class Main {
     public void onPreInitialization(GamePreInitializationEvent event) {
 		game = Sponge.getGame();
 		plugin = getGame().getPluginManager().getPlugin(Resource.ID).get();
-		log = getGame().getPluginManager().getLogger(plugin);
+		log = getPlugin().getLogger();
     }
 
     @Listener
