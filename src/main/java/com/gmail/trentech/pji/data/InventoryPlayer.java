@@ -1,6 +1,7 @@
 package com.gmail.trentech.pji.data;
 
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.spongepowered.api.data.key.Keys;
@@ -8,6 +9,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.Hotbar;
+import org.spongepowered.api.item.inventory.property.SlotIndex;
 import org.spongepowered.api.item.inventory.type.GridInventory;
 
 import com.gmail.trentech.pji.data.sql.SQLInventory;
@@ -30,37 +32,23 @@ public class InventoryPlayer {
 	public void setInventory(String name){
 		InventoryData inventoryData = SQLInventory.get(player, name);
 
-		LinkedHashMap<Integer, ItemStack> hotbar = inventoryData.getHotbar();
-		LinkedHashMap<Integer, ItemStack> grid = inventoryData.getGrid();
-		LinkedHashMap<Integer, ItemStack> armor = inventoryData.getArmor();
-
-		int i = 1;
-		for(Inventory slotInv : this.player.getInventory().query(Hotbar.class).slots()){
-			slotInv.clear();
-
-			if(!hotbar.containsKey(i)){
-				i++;
-				continue;
-			}
-
-			slotInv.offer(hotbar.get(i));
-			
-			i++;
+		this.player.getInventory().clear();
+		
+		LinkedHashMap<Integer, ItemStack> hotbarMap = inventoryData.getHotbar();
+		Hotbar hotbar = this.player.getInventory().query(Hotbar.class);
+		
+		for(Entry<Integer, ItemStack> entry : hotbarMap.entrySet()){
+			hotbar.set(new SlotIndex(entry.getKey()), entry.getValue());
 		}
 		
-		i = 1;
-		for(Inventory slotInv : this.player.getInventory().query(GridInventory.class).slots()){
-			slotInv.clear();
-
-			if(!grid.containsKey(i)){
-				i++;
-				continue;
-			}
-
-			slotInv.offer(grid.get(i));
-			
-			i++;
+		LinkedHashMap<Integer, ItemStack> inventoryMap = inventoryData.getGrid();
+		GridInventory inventory = this.player.getInventory().query(GridInventory.class);		
+		
+		for(Entry<Integer, ItemStack> entry : inventoryMap.entrySet()){
+			inventory.set(new SlotIndex(entry.getKey()), entry.getValue());
 		}
+
+		LinkedHashMap<Integer, ItemStack> armor = inventoryData.getArmor();
 
 		if(armor.containsKey(1)){
 			this.player.setHelmet(armor.get(1));
@@ -113,11 +101,9 @@ public class InventoryPlayer {
 		int i = 1;
 		for(Inventory slotInv : this.player.getInventory().query(Hotbar.class).slots()){
 			Optional<ItemStack> peek = slotInv.peek();
-			
+
 			if(peek.isPresent()){
 				hotbar.put(i, peek.get());
-			}else{
-				hotbar.remove(i);
 			}
 			i++;
 		}
@@ -129,8 +115,6 @@ public class InventoryPlayer {
 			
 			if(peek.isPresent()){		
 				grid.put(i, peek.get());
-			}else{
-				grid.remove(i);
 			}
 			i++;
 		}

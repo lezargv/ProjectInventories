@@ -14,8 +14,8 @@ public class InventoryData extends SQLUtils {
 	private final String name;
 	
 	private LinkedHashMap<Integer, ItemStack> hotbar = new  LinkedHashMap<>();
-	private  LinkedHashMap<Integer, ItemStack> grid = new  LinkedHashMap<>();
-	private  LinkedHashMap<Integer, ItemStack> armor = new  LinkedHashMap<>();
+	private LinkedHashMap<Integer, ItemStack> grid = new  LinkedHashMap<>();
+	private LinkedHashMap<Integer, ItemStack> armor = new  LinkedHashMap<>();
 	
 	private double health;
 	private int food;
