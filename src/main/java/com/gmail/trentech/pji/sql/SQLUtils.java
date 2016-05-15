@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.data.sql;
+package com.gmail.trentech.pji.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

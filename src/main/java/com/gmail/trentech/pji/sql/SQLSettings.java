@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.data.sql;
+package com.gmail.trentech.pji.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,9 +13,7 @@ import org.spongepowered.api.world.World;
 
 public class SQLSettings extends SQLUtils{
 
-
-	
-	public static Optional<String> getWorld(World world){
+	public static Optional<String> getWorld(World world) {
 		Optional<String> optionalInv = Optional.empty();
 
 		try {
@@ -28,9 +26,11 @@ public class SQLSettings extends SQLUtils{
 			while (result.next()) {
 				if (result.getString("World").equalsIgnoreCase(world.getName())) {
 					optionalInv = Optional.of(result.getString("Inventory"));
+					
 					break;
 				}
 			}
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -39,7 +39,7 @@ public class SQLSettings extends SQLUtils{
 		return optionalInv;
 	}
 	
-	public static void saveWorld(World world){
+	public static void saveWorld(World world) {
 		try {
 		    Connection connection = getDataSource().getConnection();
 		    
@@ -56,20 +56,24 @@ public class SQLSettings extends SQLUtils{
 		}
 	}
 	
-	public static void updateWorld(World world, String name){
+	public static void updateWorld(World world, String name) {
 		try {
 		    Connection connection = getDataSource().getConnection();
+		    
 		    PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix("Settings") + " SET Inventory = ? WHERE World = ?");
+		    
 			statement.setString(1, name);
 			statement.setString(2, world.getName());
+			
 			statement.executeUpdate();
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static void savePlayer(Player player){
+	public static void savePlayer(Player player) {
 		try {
 		    Connection connection = getDataSource().getConnection();
 
@@ -78,13 +82,14 @@ public class SQLSettings extends SQLUtils{
 		    statement.setString(1, player.getUniqueId().toString());
 
 			statement.executeUpdate();
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static boolean getPlayer(Player player){
+	public static boolean getPlayer(Player player) {
 		boolean exist = false;
 
 		try {
@@ -97,17 +102,20 @@ public class SQLSettings extends SQLUtils{
 			while (result.next()) {
 				if (result.getString("Player").equalsIgnoreCase(player.getUniqueId().toString())) {
 					exist = true;
+					
 					break;
 				}
 			}
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
+		
 		return exist;
 	}
 	
-	public static void saveInventory(String name){
+	public static void saveInventory(String name) {
 		try {
 		    Connection connection = getDataSource().getConnection();
 
@@ -116,13 +124,14 @@ public class SQLSettings extends SQLUtils{
 		    statement.setString(1, name);
 
 			statement.executeUpdate();
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public static boolean getInventory(String name){
+	public static boolean getInventory(String name) {
 		boolean exist = false;
 
 		try {
@@ -135,9 +144,11 @@ public class SQLSettings extends SQLUtils{
 			while (result.next()) {
 				if (result.getString("Name").equalsIgnoreCase(name)) {
 					exist = true;
+					
 					break;
 				}
 			}
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -145,7 +156,7 @@ public class SQLSettings extends SQLUtils{
 		return exist;
 	}
 	
-	public static List<String> getInventoryList(){
+	public static List<String> getInventoryList() {
 		List<String> list = new ArrayList<>();
 
 		try {
@@ -158,6 +169,7 @@ public class SQLSettings extends SQLUtils{
 			while (result.next()) {
 				list.add(result.getString("Name"));
 			}
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -168,9 +180,13 @@ public class SQLSettings extends SQLUtils{
 	public static void deleteInventory(String name) {
 		try {
 		    Connection connection = getDataSource().getConnection();
+		    
 		    PreparedStatement statement = connection.prepareStatement("DELETE from " + prefix("Inventories") + " WHERE Name = ?");
+		    
 			statement.setString(1, name);
+			
 			statement.executeUpdate();
+			
 			connection.close();
 		}catch (SQLException e) {
 			e.printStackTrace();

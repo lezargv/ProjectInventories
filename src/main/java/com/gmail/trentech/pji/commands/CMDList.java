@@ -14,13 +14,13 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.data.sql.SQLSettings;
+import com.gmail.trentech.pji.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDList implements CommandExecutor {
 
-	public CMDList(){
+	public CMDList() {
 		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
 		
 		Help help = new Help("list", "list", " List all inventories");
@@ -38,7 +38,7 @@ public class CMDList implements CommandExecutor {
 
 		list.add(Text.of(TextColors.GREEN, " - default"));
 		
-		for(String name : SQLSettings.getInventoryList()){
+		for(String name : SQLSettings.getInventoryList()) {
 			list.add(Text.of(TextColors.GREEN, " - ", name));
 		}
 

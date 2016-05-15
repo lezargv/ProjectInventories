@@ -16,9 +16,9 @@ import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.data.InventoryPlayer;
-import com.gmail.trentech.pji.data.sql.SQLInventory;
-import com.gmail.trentech.pji.data.sql.SQLSettings;
+import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
+import com.gmail.trentech.pji.sql.SQLInventory;
+import com.gmail.trentech.pji.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
@@ -26,7 +26,7 @@ public class CMDDelete implements CommandExecutor {
 
 	private static HashMap<CommandSource, String> confirm = new HashMap<>();
 	
-	public CMDDelete(){
+	public CMDDelete() {
 		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
 		
 		Help help = new Help("delete", "delete", " Delete an existing inventory. WARNING: This cannot be undone.");
@@ -43,18 +43,17 @@ public class CMDDelete implements CommandExecutor {
 		}
 		String name = args.<String>getOne("inv").get();
 
-		if(name.equalsIgnoreCase("yes")){
-			if(confirm.containsKey(src)){
+		if(name.equalsIgnoreCase("yes")) {
+			if(confirm.containsKey(src)) {
 				String inv = confirm.get(src);
-				for(World world : Main.getGame().getServer().getWorlds()){
-					if(SQLSettings.getWorld(world).get().equalsIgnoreCase(inv)){
+				for(World world : Main.getGame().getServer().getWorlds()) {
+					if(SQLSettings.getWorld(world).get().equalsIgnoreCase(inv)) {
 						SQLSettings.updateWorld(world, "default");
 						
-						for(Entity entity : world.getEntities()){
-							if(entity instanceof Player){
+						for(Entity entity : world.getEntities()) {
+							if(entity instanceof Player) {
 								Player player = (Player) entity;
-								InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
-								inventoryPlayer.setInventory("default");
+								InventoryHelper.setInventory(player, "default");
 								player.sendMessage(Text.of(TextColors.RED, "[PJP] ", TextColors.YELLOW, "Admin deleted your inventory for this world"));
 							}
 						}
@@ -76,7 +75,7 @@ public class CMDDelete implements CommandExecutor {
 			return CommandResult.empty();
         }
         
-        if(name.equalsIgnoreCase("default")){
+        if(name.equalsIgnoreCase("default")) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " inventory cannot be deleted"));
 			return CommandResult.empty();		
         }

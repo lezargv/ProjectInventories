@@ -12,14 +12,15 @@ import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.World;
 
-import com.gmail.trentech.pji.data.InventoryPlayer;
-import com.gmail.trentech.pji.data.sql.SQLSettings;
+import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
+import com.gmail.trentech.pji.sql.SQLSettings;
 
 public class EventManager {
 
 	@Listener
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event) {
 	    Player player = event.getTargetEntity();
+	    
 	    World world = player.getWorld();
 
 		String name = SQLSettings.getWorld(world).get();
@@ -28,19 +29,18 @@ public class EventManager {
 			SQLSettings.savePlayer(player);
 			return;
 		}
-		
-		InventoryPlayer.get(player).setInventory(name);
+		InventoryHelper.setInventory(player, name);
 	}
 	
 	@Listener
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event) {
 	    Player player = event.getTargetEntity();
+	    
 	    World world = player.getWorld();
 
 		String name = SQLSettings.getWorld(world).get();
-		
-		InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
-		inventoryPlayer.saveInventory(name);
+
+		InventoryHelper.saveInventory(player, name);
 	}
 
 	@Listener
@@ -48,12 +48,12 @@ public class EventManager {
 		for(Entity entity : event.getTargetWorld().getEntities()){
 			if(entity instanceof Player){
 				Player player = (Player) entity;
+				
 			    World world = player.getWorld();
 
 				String name = SQLSettings.getWorld(world).get();
-				
-				InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
-				inventoryPlayer.saveInventory(name);
+
+				InventoryHelper.saveInventory(player, name);
 			}
 		}
 	}
@@ -89,10 +89,8 @@ public class EventManager {
 		}
 		list.add(player.getUniqueId().toString());
 
-		InventoryPlayer inventoryPlayer = InventoryPlayer.get(player);
-		
-		inventoryPlayer.saveInventory(srcName);
-		inventoryPlayer.setInventory(destName);
+		InventoryHelper.saveInventory(player, srcName);
+		InventoryHelper.setInventory(player, destName);
 		
 		Main.getGame().getScheduler().createTaskBuilder().delayTicks(20).execute(t -> {
 			list.remove(uuid);

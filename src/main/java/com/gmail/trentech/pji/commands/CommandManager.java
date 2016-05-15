@@ -6,6 +6,12 @@ import org.spongepowered.api.text.Text;
 
 public class CommandManager {
 
+	public CommandSpec cmdTest = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.test")    
+		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
+		    .executor(new CMDTest())
+		    .build();
+	
 	public CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
 		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
@@ -31,6 +37,7 @@ public class CommandManager {
 	
 	public CommandSpec cmdInventory = CommandSpec.builder()
 			.permission("pji.cmd.inventory")
+			//.child(cmdTest, "test", "t")
 			.child(cmdCreate, "create", "c")
 			.child(cmdDelete, "delete", "d")
 			.child(cmdSet, "set", "s")

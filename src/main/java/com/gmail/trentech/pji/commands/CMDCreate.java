@@ -8,14 +8,14 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.data.sql.SQLInventory;
-import com.gmail.trentech.pji.data.sql.SQLSettings;
+import com.gmail.trentech.pji.sql.SQLInventory;
+import com.gmail.trentech.pji.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDCreate implements CommandExecutor {
 
-	public CMDCreate(){
+	public CMDCreate() {
 		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
 		
 		Help help = new Help("create", "create", " Create a new inventory");
@@ -32,7 +32,7 @@ public class CMDCreate implements CommandExecutor {
 		}
 		String name = args.<String>getOne("inv").get();
 
-		if(SQLSettings.getInventory(name)){
+		if(SQLSettings.getInventory(name)) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " already exists"));
 			return CommandResult.empty();
         }

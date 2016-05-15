@@ -16,13 +16,13 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.data.sql.SQLSettings;
+import com.gmail.trentech.pji.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDSet implements CommandExecutor {
 
-	public CMDSet(){
+	public CMDSet() {
 		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
 		
 		Help help = new Help("set", "set", " Set an inventory for the specified world");
@@ -39,13 +39,13 @@ public class CMDSet implements CommandExecutor {
 		}
 		String worldName = args.<String>getOne("world").get();
 		
-		if(worldName.equalsIgnoreCase("@w")){
-			if(src instanceof Player){
+		if(worldName.equalsIgnoreCase("@w")) {
+			if(src instanceof Player) {
 				worldName = ((Player) src).getWorld().getName();
 			}
 		}
 		
-		if(!Main.getGame().getServer().getWorld(worldName).isPresent()){
+		if(!Main.getGame().getServer().getWorld(worldName).isPresent()) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, worldName, " does not exist"));
 			return CommandResult.empty();
 		}
@@ -68,7 +68,7 @@ public class CMDSet implements CommandExecutor {
 		}
 		String name = args.<String>getOne("inv").get();
 
-		if(!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")){
+		if(!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
 			return CommandResult.empty();
         }

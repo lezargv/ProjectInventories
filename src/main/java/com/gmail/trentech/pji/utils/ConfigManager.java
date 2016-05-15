@@ -59,7 +59,7 @@ public class ConfigManager {
 		return config;
 	}
 
-	public void save(){
+	public void save() {
 		try {
 			loader.save(config);
 		} catch (IOException e) {
@@ -69,7 +69,7 @@ public class ConfigManager {
 	}
 	
 	private void init() {
-		if(file.getName().equalsIgnoreCase("config.conf")){
+		if(file.getName().equalsIgnoreCase("config.conf")) {
 			if(config.getNode("options", "health").isVirtual()) {
 				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");
 			}
@@ -79,7 +79,7 @@ public class ConfigManager {
 			if(config.getNode("options", "experience").isVirtual()) {
 				config.getNode("options", "experience").setValue(true).setComment("Enable inventory specific experience");
 			}
-			if(config.getNode("settings", "commands").isVirtual()){
+			if(config.getNode("settings", "commands").isVirtual()) {
 				config.getNode("settings", "commands").setComment("Allow to set custom command aliases");
 			}
 			if(config.getNode("settings", "commands", "inventory").isVirtual()) {
@@ -96,7 +96,7 @@ public class ConfigManager {
 		}
 	}
 
-	private void create(){
+	private void create() {
 		if(!file.exists()) {
 			try {
 				Main.getLog().info("Creating new " + file.getName() + " file...");
@@ -108,7 +108,7 @@ public class ConfigManager {
 		}
 	}
 	
-	private void load(){
+	private void load() {
 		loader = HoconConfigurationLoader.builder().setFile(file).build();
 		try {
 			config = loader.load();
