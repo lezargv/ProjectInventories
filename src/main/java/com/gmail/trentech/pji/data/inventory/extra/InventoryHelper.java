@@ -80,7 +80,7 @@ public class InventoryHelper {
 			player.offer(Keys.HEALTH, inventory.getHealth());
 		}
 
-		if(config.getNode("options", "health").getBoolean()) {
+		if(config.getNode("options", "hunger").getBoolean()) {
 			player.offer(Keys.FOOD_LEVEL, inventory.getFood());
 			player.offer(Keys.SATURATION, inventory.getSaturation());
 		}
