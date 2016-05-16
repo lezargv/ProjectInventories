@@ -15,11 +15,9 @@ import com.gmail.trentech.pji.data.inventory.Inventory;
 import com.gmail.trentech.pji.data.inventory.InventoryBuilder;
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLUtils;
-import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
 
 import me.flibio.updatifier.Updatifier;
-import ninja.leaping.configurate.ConfigurationNode;
 
 @Updatifier(repoName = "ProjectInventories", repoOwner = "TrenTech", version = Resource.VERSION)
 @Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, authors = Resource.AUTHOR, url = Resource.URL, description = Resource.DESCRIPTION, dependencies = {@Dependency(id = "Updatifier", optional = true)})
@@ -38,12 +36,9 @@ public class Main {
 
     @Listener
     public void onInitialization(GameInitializationEvent event) {
-    	ConfigurationNode config = new ConfigManager().getConfig();
-    	ConfigurationNode commands = config.getNode("settings", "commands");
-    	
     	getGame().getEventManager().registerListeners(this, new EventManager());
     	
-    	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", commands.getNode("inventory").getString());
+    	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
     	
     	getGame().getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
     	

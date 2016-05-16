@@ -19,7 +19,6 @@ import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDDelete implements CommandExecutor {
@@ -27,10 +26,8 @@ public class CMDDelete implements CommandExecutor {
 	private static HashMap<CommandSource, String> confirm = new HashMap<>();
 	
 	public CMDDelete() {
-		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
-		
 		Help help = new Help("delete", "delete", " Delete an existing inventory. WARNING: This cannot be undone.");
-		help.setSyntax(" /inventory delete <name>\n /" + alias + " d <name>");
+		help.setSyntax(" /inventory delete <name>\n /inv d <name>");
 		help.setExample(" /inventory delete nether");
 		help.save();
 	}

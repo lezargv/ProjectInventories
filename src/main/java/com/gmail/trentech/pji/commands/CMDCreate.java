@@ -10,16 +10,13 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDCreate implements CommandExecutor {
 
 	public CMDCreate() {
-		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
-		
 		Help help = new Help("create", "create", " Create a new inventory");
-		help.setSyntax(" /inventory create <name>\n /" + alias + " c <name>");
+		help.setSyntax(" /inventory create <name>\n /inv c <name>");
 		help.setExample(" /inventory create nether");
 		help.save();
 	}

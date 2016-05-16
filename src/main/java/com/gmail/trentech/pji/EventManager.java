@@ -27,7 +27,7 @@ public class EventManager {
 
 		String name = SQLSettings.getWorld(world).get();
 
-		if(!SQLSettings.getPlayer(player)){
+		if(!SQLSettings.getPlayer(player)) {
 			SQLSettings.savePlayer(player);
 			return;
 		}
@@ -46,9 +46,9 @@ public class EventManager {
 	}
 
 	@Listener
-	public void onSaveWorldEvent(SaveWorldEvent event){
-		for(Entity entity : event.getTargetWorld().getEntities()){
-			if(entity instanceof Player){
+	public void onSaveWorldEvent(SaveWorldEvent event) {
+		for(Entity entity : event.getTargetWorld().getEntities()) {
+			if(entity instanceof Player) {
 				Player player = (Player) entity;
 				
 			    World world = player.getWorld();
@@ -65,21 +65,21 @@ public class EventManager {
 		Player player = event.getTargetEntity();
 		String uuid = player.getUniqueId().toString();
 		
-		if(list.contains(uuid)){
+		if(list.contains(uuid)) {
 			return;
 		}
 		
 		World worldSrc = event.getFromTransform().getExtent();
 		World worldDest = event.getToTransform().getExtent();
 
-		if(worldSrc.equals(worldDest)){
+		if(worldSrc.equals(worldDest)) {
 			return;
 		}
 
 		String srcName = SQLSettings.getWorld(worldSrc).get();
 		String destName = SQLSettings.getWorld(worldDest).get();
 
-		if(srcName.equalsIgnoreCase(destName)){
+		if(srcName.equalsIgnoreCase(destName)) {
 			return;
 		}
 		
@@ -94,10 +94,10 @@ public class EventManager {
 	}
 
 	@Listener
-	public void onLoadWorldEvent(LoadWorldEvent event){
+	public void onLoadWorldEvent(LoadWorldEvent event) {
 		World world = event.getTargetWorld();
 		
-		if(!SQLSettings.getWorld(world).isPresent()){
+		if(!SQLSettings.getWorld(world).isPresent()) {
 			SQLSettings.saveWorld(world);
 		}
 	}

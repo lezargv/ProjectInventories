@@ -17,16 +17,13 @@ import org.spongepowered.api.world.World;
 
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDSet implements CommandExecutor {
 
 	public CMDSet() {
-		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
-		
 		Help help = new Help("set", "set", " Set an inventory for the specified world");
-		help.setSyntax(" /inventory set <world> <inventory>\n /" + alias + " s <world> <inventory>");
+		help.setSyntax(" /inventory set <world> <inventory>\n /inv s <world> <inventory>");
 		help.setExample(" /inventory set DIM-1 nether");
 		help.save();
 	}

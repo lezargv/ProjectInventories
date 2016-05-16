@@ -79,12 +79,11 @@ public class ConfigManager {
 			if(config.getNode("options", "experience").isVirtual()) {
 				config.getNode("options", "experience").setValue(true).setComment("Enable inventory specific experience");
 			}
-			if(config.getNode("settings", "commands").isVirtual()) {
-				config.getNode("settings", "commands").setComment("Allow to set custom command aliases");
+			// UPDATE CONFIG
+			if(!config.getNode("settings", "commands").isVirtual()) {
+				config.getNode("settings").removeChild("commands");
 			}
-			if(config.getNode("settings", "commands", "inventory").isVirtual()) {
-				config.getNode("settings", "commands", "inventory").setValue("inv");
-			}
+
 			if(config.getNode("settings", "sql").isVirtual()) {
 				config.getNode("settings", "sql", "enable").setValue(false);
 				config.getNode("settings", "sql", "prefix").setValue("NONE");

@@ -15,16 +15,13 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Help;
 
 public class CMDList implements CommandExecutor {
 
 	public CMDList() {
-		String alias = new ConfigManager().getConfig().getNode("settings", "commands", "inventory").getString();
-		
 		Help help = new Help("list", "list", " List all inventories");
-		help.setSyntax(" /inventory list\n /" + alias + " l");
+		help.setSyntax(" /inventory list\n /inv l");
 		help.save();
 	}
 	
