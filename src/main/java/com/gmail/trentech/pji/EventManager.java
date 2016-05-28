@@ -61,32 +61,38 @@ public class EventManager {
 	}	
 	
 	@Listener
-	public void onDisplaceEntityEvent(DisplaceEntityEvent.TargetPlayer event) {
-		Player player = event.getTargetEntity();
+	public void onDisplaceEntityEvent(DisplaceEntityEvent.Teleport event) {
+		Entity entity = event.getTargetEntity();
+		
+		if(!(entity instanceof Player)) {
+			return;
+		}
+		Player player = (Player) entity;
+
 		String uuid = player.getUniqueId().toString();
 		
 		if(list.contains(uuid)) {
 			return;
 		}
 		
-		World worldSrc = event.getFromTransform().getExtent();
-		World worldDest = event.getToTransform().getExtent();
-
-		if(worldSrc.equals(worldDest)) {
+		World from = event.getFromTransform().getExtent();
+		World to = event.getToTransform().getExtent();
+		
+		if(from.equals(to)) {
 			return;
 		}
 
-		String srcName = SQLSettings.getWorld(worldSrc).get();
-		String destName = SQLSettings.getWorld(worldDest).get();
+		String fromName = SQLSettings.getWorld(from).get();
+		String toName = SQLSettings.getWorld(to).get();
 
-		if(srcName.equalsIgnoreCase(destName)) {
+		if(fromName.equalsIgnoreCase(toName)) {
 			return;
 		}
 		
 		list.add(uuid);
 
-		InventoryHelper.saveInventory(player, srcName);
-		InventoryHelper.setInventory(player, destName);
+		InventoryHelper.saveInventory(player, fromName);
+		InventoryHelper.setInventory(player, toName);
 		
 		Main.getGame().getScheduler().createTaskBuilder().delayTicks(20).execute(t -> {
 			list.remove(uuid);
