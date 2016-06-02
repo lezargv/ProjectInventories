@@ -24,7 +24,6 @@ public class ConfigManager {
 		
 		create();
 		load();
-		init();
 	}
 	
 	public ConfigManager(String configName) {
@@ -36,7 +35,6 @@ public class ConfigManager {
 		
 		create();
 		load();
-		init();
 	}
 	
 	public ConfigManager() {
@@ -48,7 +46,6 @@ public class ConfigManager {
 		
 		create();
 		load();
-		init();
 	}
 	
 	public ConfigurationLoader<CommentedConfigurationNode> getLoader() {
@@ -68,7 +65,7 @@ public class ConfigManager {
 		}
 	}
 	
-	private void init() {
+	public void init() {
 		if(file.getName().equalsIgnoreCase("config.conf")) {
 			if(config.getNode("options", "health").isVirtual()) {
 				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");

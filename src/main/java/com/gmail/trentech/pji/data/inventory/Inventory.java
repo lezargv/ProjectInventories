@@ -19,8 +19,8 @@ public class Inventory implements DataSerializable {
 	private Map<Integer, ItemStack> armor = new HashMap<>();
 	
 	private double health = 20;
-	private int food = 20;
-	private double saturation = 20;
+	private int food = 30;
+	private double saturation = 30;
 	private int expLevel = 0;
 	private int experience = 0;
 	
@@ -119,19 +119,17 @@ public class Inventory implements DataSerializable {
 		Map<String, String> grid = new HashMap<>();
 		
 		for(Entry<Integer, ItemStack> entry : this.grid.entrySet()) {
-			hotbar.put(entry.getKey().toString(), InventorySerializer.serializeItemStack(entry.getValue()));
+			grid.put(entry.getKey().toString(), InventorySerializer.serializeItemStack(entry.getValue()));
 		}
 		
 		Map<String, String> armor = new HashMap<>();
 		
 		for(Entry<Integer, ItemStack> entry : this.armor.entrySet()) {
-			hotbar.put(entry.getKey().toString(), InventorySerializer.serializeItemStack(entry.getValue()));
+			armor.put(entry.getKey().toString(), InventorySerializer.serializeItemStack(entry.getValue()));
 		}
 		
 		return new MemoryDataContainer().set(DataQueries.HOTBAR, hotbar).set(DataQueries.INVENTORY, grid).set(DataQueries.ARMOR, armor)
 				.set(DataQueries.HEALTH, health).set(DataQueries.FOOD, food).set(DataQueries.SATURATION, saturation)
 				.set(DataQueries.EXP_LEVEL, expLevel).set(DataQueries.EXPERIENCE, experience);
 	}
-
-
 }

@@ -15,6 +15,7 @@ import com.gmail.trentech.pji.data.inventory.Inventory;
 import com.gmail.trentech.pji.data.inventory.InventoryBuilder;
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLUtils;
+import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
 
 import me.flibio.updatifier.Updatifier;
@@ -36,6 +37,8 @@ public class Main {
 
     @Listener
     public void onInitialization(GameInitializationEvent event) {
+    	new ConfigManager().init();
+    	
     	getGame().getEventManager().registerListeners(this, new EventManager());
     	
     	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");

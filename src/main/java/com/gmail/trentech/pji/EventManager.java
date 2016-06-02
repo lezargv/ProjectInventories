@@ -1,8 +1,5 @@
 package com.gmail.trentech.pji;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -17,7 +14,7 @@ import com.gmail.trentech.pji.sql.SQLSettings;
 
 public class EventManager {
 
-	private static List<String> list = new ArrayList<>();
+	//private static List<String> list = new ArrayList<>();
 
 	@Listener
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event) {
@@ -69,11 +66,11 @@ public class EventManager {
 		}
 		Player player = (Player) entity;
 
-		String uuid = player.getUniqueId().toString();
+//		String uuid = player.getUniqueId().toString();
 		
-		if(list.contains(uuid)) {
-			return;
-		}
+//		if(list.contains(uuid)) {
+//			return;
+//		}
 		
 		World from = event.getFromTransform().getExtent();
 		World to = event.getToTransform().getExtent();
@@ -89,14 +86,14 @@ public class EventManager {
 			return;
 		}
 		
-		list.add(uuid);
+		//list.add(uuid);
 
 		InventoryHelper.saveInventory(player, fromName);
 		InventoryHelper.setInventory(player, toName);
 		
-		Main.getGame().getScheduler().createTaskBuilder().delayTicks(20).execute(t -> {
-			list.remove(uuid);
-		}).submit(Main.getPlugin());	
+//		Main.getGame().getScheduler().createTaskBuilder().delayTicks(20).execute(t -> {
+//			list.remove(uuid);
+//		}).submit(Main.getPlugin());	
 	}
 
 	@Listener

@@ -30,11 +30,13 @@ public class InventoryHelper {
 			inventory = new Inventory();
 		}
 		
+		org.spongepowered.api.item.inventory.Inventory inv = player.getInventory();
+		
 		Map<Integer, ItemStack> hotbar = inventory.getHotbar();
 		
 		if(!hotbar.isEmpty()) {
 			int i = 0;			
-			for(org.spongepowered.api.item.inventory.Inventory slot : player.getInventory().query(Hotbar.class).slots()) {
+			for(org.spongepowered.api.item.inventory.Inventory slot : inv.query(Hotbar.class).slots()) {
 				if(hotbar.containsKey(i)) {
 					slot.set(hotbar.get(i));
 				}				
@@ -46,7 +48,7 @@ public class InventoryHelper {
 
 		if(!grid.isEmpty()) {
 			int i = 0;			
-			for(org.spongepowered.api.item.inventory.Inventory slot : player.getInventory().query(GridInventory.class).slots()) {
+			for(org.spongepowered.api.item.inventory.Inventory slot : inv.query(GridInventory.class).slots()) {
 				if(grid.containsKey(i)) {
 					slot.set(grid.get(i));
 				}				
@@ -93,9 +95,11 @@ public class InventoryHelper {
 	
 	public static void saveInventory(Player player, String name) {
 		Inventory inventory = new Inventory();
-
+		  
+		org.spongepowered.api.item.inventory.Inventory inv = player.getInventory(); 
+		
 		int i = 0;		
-		for(org.spongepowered.api.item.inventory.Inventory item : player.getInventory().query(Hotbar.class)) {
+		for(org.spongepowered.api.item.inventory.Inventory item : inv.query(Hotbar.class).slots()) {
 			Slot slot = (Slot) item;
 
 			Optional<ItemStack> peek = slot.peek();
@@ -107,8 +111,8 @@ public class InventoryHelper {
 		}
 
 		i = 0;		
-		for(org.spongepowered.api.item.inventory.Inventory inv : player.getInventory().query(GridInventory.class).slots()) {
-			Slot slot = (Slot) inv;
+		for(org.spongepowered.api.item.inventory.Inventory item : inv.query(GridInventory.class).slots()) {
+			Slot slot = (Slot) item;
 			
 			Optional<ItemStack> peek = slot.peek();
 			
@@ -120,22 +124,22 @@ public class InventoryHelper {
 
 		Optional<ItemStack> optionalItemStack = player.getHelmet();
 		if(optionalItemStack.isPresent()) {
-			inventory.addArmor(i, optionalItemStack.get());
+			inventory.addArmor(1, optionalItemStack.get());
 		}
 		
 		optionalItemStack = player.getChestplate();
 		if(optionalItemStack.isPresent()) {
-			inventory.addArmor(i, optionalItemStack.get());
+			inventory.addArmor(2, optionalItemStack.get());
 		}
 		
 		optionalItemStack = player.getLeggings();
 		if(optionalItemStack.isPresent()) {
-			inventory.addArmor(i, optionalItemStack.get());
+			inventory.addArmor(3, optionalItemStack.get());
 		}
 		
 		optionalItemStack = player.getBoots();
 		if(optionalItemStack.isPresent()) {
-			inventory.addArmor(i, optionalItemStack.get());
+			inventory.addArmor(4, optionalItemStack.get());
 		}
 
 		inventory.setHealth(player.get(Keys.HEALTH).get());
