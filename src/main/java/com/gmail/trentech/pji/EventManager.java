@@ -14,8 +14,6 @@ import com.gmail.trentech.pji.sql.SQLSettings;
 
 public class EventManager {
 
-	//private static List<String> list = new ArrayList<>();
-
 	@Listener
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event) {
 	    Player player = event.getTargetEntity();
@@ -66,12 +64,6 @@ public class EventManager {
 		}
 		Player player = (Player) entity;
 
-//		String uuid = player.getUniqueId().toString();
-		
-//		if(list.contains(uuid)) {
-//			return;
-//		}
-		
 		World from = event.getFromTransform().getExtent();
 		World to = event.getToTransform().getExtent();
 		
@@ -85,15 +77,9 @@ public class EventManager {
 		if(fromName.equalsIgnoreCase(toName)) {
 			return;
 		}
-		
-		//list.add(uuid);
 
 		InventoryHelper.saveInventory(player, fromName);
-		InventoryHelper.setInventory(player, toName);
-		
-//		Main.getGame().getScheduler().createTaskBuilder().delayTicks(20).execute(t -> {
-//			list.remove(uuid);
-//		}).submit(Main.getPlugin());	
+		InventoryHelper.setInventory(player, toName);	
 	}
 
 	@Listener
