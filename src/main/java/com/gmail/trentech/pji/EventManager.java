@@ -3,6 +3,7 @@ package com.gmail.trentech.pji;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.DisplaceEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
@@ -55,7 +56,7 @@ public class EventManager {
 		}
 	}	
 	
-	@Listener
+	@Listener(order = Order.POST)
 	public void onDisplaceEntityEvent(DisplaceEntityEvent.Teleport event) {
 		Entity entity = event.getTargetEntity();
 		
