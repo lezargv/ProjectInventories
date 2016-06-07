@@ -4,7 +4,7 @@ import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
-import org.spongepowered.api.event.entity.DisplaceEntityEvent;
+import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
@@ -57,7 +57,7 @@ public class EventManager {
 	}	
 	
 	@Listener(order = Order.POST)
-	public void onDisplaceEntityEvent(DisplaceEntityEvent.Teleport event) {
+	public void onMoveEntityEvent(MoveEntityEvent.Teleport event) {
 		Entity entity = event.getTargetEntity();
 		
 		if(!(entity instanceof Player)) {
