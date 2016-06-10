@@ -5,6 +5,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
+import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
@@ -55,6 +56,17 @@ public class EventManager {
 			}
 		}
 	}	
+	
+	@Listener
+	public void onRespawnPlayerEvent(RespawnPlayerEvent event) {
+		Player player = event.getTargetEntity();
+		
+	    World world = player.getWorld();
+
+		String name = SQLSettings.getWorld(world).get();
+
+		InventoryHelper.saveInventory(player, name);
+	}
 	
 	@Listener(order = Order.POST)
 	public void onMoveEntityEvent(MoveEntityEvent.Teleport event) {
