@@ -22,17 +22,17 @@ public class InventorySerializer {
 
 	public static String serializeItemStack(ItemStack itemStack) {
 		ConfigurationNode node = ConfigurateTranslator.instance().translateData(itemStack.toContainer());
-		
+
 		StringWriter stringWriter = new StringWriter();
 		try {
-		    HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
 		} catch (IOException e) {
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		return stringWriter.toString();
 	}
-	
+
 	public static ItemStack deserializeItemStack(String item) {
 		ConfigurationNode node = null;
 		try {
@@ -40,34 +40,34 @@ public class InventorySerializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-	    ConfigurateTranslator translator = ConfigurateTranslator.instance();
-	    DataManager manager = Main.getGame().getDataManager();
+
+		ConfigurateTranslator translator = ConfigurateTranslator.instance();
+		DataManager manager = Main.getGame().getDataManager();
 
 		DataView dataView = translator.translateFrom(node);
 
-	    Optional<ItemStack> deserializedOptional = manager.deserialize(ItemStack.class, dataView);
+		Optional<ItemStack> deserializedOptional = manager.deserialize(ItemStack.class, dataView);
 
-	    if(deserializedOptional.isPresent()) {
-	        return deserializedOptional.get();
-	    }
-	    
-	    return null;
+		if (deserializedOptional.isPresent()) {
+			return deserializedOptional.get();
+		}
+
+		return null;
 	}
-	
+
 	public static String serializeInventory(Inventory inventory) {
 		ConfigurationNode node = ConfigurateTranslator.instance().translateData(inventory.toContainer());
-		
+
 		StringWriter stringWriter = new StringWriter();
 		try {
-		    HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
 		} catch (IOException e) {
-		    e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		return stringWriter.toString();
 	}
-	
+
 	public static Inventory deserializeInventory(String item) {
 		ConfigurationNode node = null;
 		try {
@@ -75,18 +75,18 @@ public class InventorySerializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-	    ConfigurateTranslator translator = ConfigurateTranslator.instance();
-	    DataManager manager = Main.getGame().getDataManager();
+
+		ConfigurateTranslator translator = ConfigurateTranslator.instance();
+		DataManager manager = Main.getGame().getDataManager();
 
 		DataView dataView = translator.translateFrom(node);
-		
-	    Optional<Inventory> deserializedOptional = manager.deserialize(Inventory.class, dataView);
 
-	    if(deserializedOptional.isPresent()) {
-	        return deserializedOptional.get();
-	    }
-	    
-	    return null;
+		Optional<Inventory> deserializedOptional = manager.deserialize(Inventory.class, dataView);
+
+		if (deserializedOptional.isPresent()) {
+			return deserializedOptional.get();
+		}
+
+		return null;
 	}
 }

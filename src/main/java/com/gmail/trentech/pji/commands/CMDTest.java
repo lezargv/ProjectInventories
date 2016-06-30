@@ -16,28 +16,28 @@ public class CMDTest implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if(!(src instanceof Player)) {
+		if (!(src instanceof Player)) {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory test <inventory>"));
 			return CommandResult.empty();
 		}
 		Player player = (Player) src;
-		
-		if(!args.hasAny("inv")) {
+
+		if (!args.hasAny("inv")) {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory test <inventory>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String>getOne("inv").get();
+		String name = args.<String> getOne("inv").get();
 
-		if(!SQLSettings.getInventory(name)) {
+		if (!SQLSettings.getInventory(name)) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
 			return CommandResult.empty();
-        }
-		
-        InventoryHelper.saveInventory(player, name);
-        InventoryHelper.setInventory(player, name);
-        
+		}
+
+		InventoryHelper.saveInventory(player, name);
+		InventoryHelper.setInventory(player, name);
+
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory ", name));
-		
+
 		return CommandResult.success();
 	}
 

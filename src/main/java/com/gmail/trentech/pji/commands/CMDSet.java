@@ -9,7 +9,7 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.service.pagination.PaginationList.Builder;
+import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
@@ -27,53 +27,60 @@ public class CMDSet implements CommandExecutor {
 		help.setExample(" /inventory set DIM-1 nether");
 		help.save();
 	}
-	
+
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if(!args.hasAny("world")) {
+		if (!args.hasAny("world")) {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory set <world> <inventory>"));
 			return CommandResult.empty();
 		}
-		String worldName = args.<String>getOne("world").get();
-		
-		if(worldName.equalsIgnoreCase("@w")) {
-			if(src instanceof Player) {
+		String worldName = args.<String> getOne("world").get();
+
+		if (worldName.equalsIgnoreCase("@w")) {
+			if (src instanceof Player) {
 				worldName = ((Player) src).getWorld().getName();
 			}
 		}
-		
-		if(!Main.getGame().getServer().getWorld(worldName).isPresent()) {
+
+		if (!Main.getGame().getServer().getWorld(worldName).isPresent()) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, worldName, " does not exist"));
 			return CommandResult.empty();
 		}
 		World world = Main.getGame().getServer().getWorld(worldName).get();
-		
-		if(!args.hasAny("inv")) {
-			Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
-			
-			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Inventory")).build());
-			
+
+		if (!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();
+
 			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, SQLSettings.getWorld(world).get()));
 			list.add(Text.of(TextColors.GREEN, "Command: ", TextColors.YELLOW, "/inventory set <world> <inventory>"));
-			
-			pages.contents(list);
-			
-			pages.sendTo(src);
-			
+
+			if (src instanceof Player) {
+				PaginationList.Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
+
+				pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Inventory")).build());
+
+				pages.contents(list);
+
+				pages.sendTo(src);
+			} else {
+				for (Text text : list) {
+					src.sendMessage(text);
+				}
+			}
+
 			return CommandResult.empty();
 		}
-		String name = args.<String>getOne("inv").get();
+		String name = args.<String> getOne("inv").get();
 
-		if(!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")) {
+		if (!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
 			return CommandResult.empty();
-        }
-		
+		}
+
 		SQLSettings.updateWorld(world, name);
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", worldName, " to ", name));
-		
-		return CommandResult.success();	
+
+		return CommandResult.success();
 	}
 }

@@ -18,24 +18,24 @@ public class EventManager {
 
 	@Listener
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event) {
-	    Player player = event.getTargetEntity();
-	    
-	    World world = player.getWorld();
+		Player player = event.getTargetEntity();
+
+		World world = player.getWorld();
 
 		String name = SQLSettings.getWorld(world).get();
 
-		if(!SQLSettings.getPlayer(player)) {
+		if (!SQLSettings.getPlayer(player)) {
 			SQLSettings.savePlayer(player);
 			return;
 		}
 		InventoryHelper.setInventory(player, name);
 	}
-	
+
 	@Listener
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event) {
-	    Player player = event.getTargetEntity();
-	    
-	    World world = player.getWorld();
+		Player player = event.getTargetEntity();
+
+		World world = player.getWorld();
 
 		String name = SQLSettings.getWorld(world).get();
 
@@ -44,62 +44,62 @@ public class EventManager {
 
 	@Listener
 	public void onSaveWorldEvent(SaveWorldEvent event) {
-		for(Entity entity : event.getTargetWorld().getEntities()) {
-			if(entity instanceof Player) {
+		for (Entity entity : event.getTargetWorld().getEntities()) {
+			if (entity instanceof Player) {
 				Player player = (Player) entity;
-				
-			    World world = player.getWorld();
+
+				World world = player.getWorld();
 
 				String name = SQLSettings.getWorld(world).get();
 
 				InventoryHelper.saveInventory(player, name);
 			}
 		}
-	}	
-	
+	}
+
 	@Listener
 	public void onRespawnPlayerEvent(RespawnPlayerEvent event) {
 		Player player = event.getTargetEntity();
-		
-	    World world = player.getWorld();
+
+		World world = player.getWorld();
 
 		String name = SQLSettings.getWorld(world).get();
 
 		InventoryHelper.saveInventory(player, name);
 	}
-	
+
 	@Listener(order = Order.POST)
-	public void onMoveEntityEvent(MoveEntityEvent.Teleport event) {
+	public void onMoveEntityEventTeleport(MoveEntityEvent.Teleport event) {
 		Entity entity = event.getTargetEntity();
-		
-		if(!(entity instanceof Player)) {
+
+		if (!(entity instanceof Player)) {
 			return;
 		}
 		Player player = (Player) entity;
 
 		World from = event.getFromTransform().getExtent();
 		World to = event.getToTransform().getExtent();
-		
-		if(from.equals(to)) {
+
+		if (from.equals(to)) {
 			return;
 		}
 
 		String fromName = SQLSettings.getWorld(from).get();
 		String toName = SQLSettings.getWorld(to).get();
 
-		if(fromName.equalsIgnoreCase(toName)) {
+		if (fromName.equalsIgnoreCase(toName)) {
 			return;
 		}
 
 		InventoryHelper.saveInventory(player, fromName);
-		InventoryHelper.setInventory(player, toName);	
+		InventoryHelper.setInventory(player, toName);
 	}
 
 	@Listener
 	public void onLoadWorldEvent(LoadWorldEvent event) {
 		World world = event.getTargetWorld();
-		
-		if(!SQLSettings.getWorld(world).isPresent()) {
+
+		if (!SQLSettings.getWorld(world).isPresent()) {
 			SQLSettings.saveWorld(world);
 		}
 	}

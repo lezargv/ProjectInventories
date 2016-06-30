@@ -14,40 +14,40 @@ public class ConfigManager {
 	private File file;
 	private CommentedConfigurationNode config;
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
-	
+
 	public ConfigManager(String folder, String configName) {
 		folder = "config" + File.separator + "projectinventories" + File.separator + "inventories" + File.separator + folder;
-        if (!new File(folder).isDirectory()) {
-        	new File(folder).mkdirs();
-        }
+		if (!new File(folder).isDirectory()) {
+			new File(folder).mkdirs();
+		}
 		file = new File(folder, configName);
-		
+
 		create();
 		load();
 	}
-	
+
 	public ConfigManager(String configName) {
 		String folder = "config" + File.separator + "projectinventories";
-        if (!new File(folder).isDirectory()) {
-        	new File(folder).mkdirs();
-        }
+		if (!new File(folder).isDirectory()) {
+			new File(folder).mkdirs();
+		}
 		file = new File(folder, configName);
-		
+
 		create();
 		load();
 	}
-	
+
 	public ConfigManager() {
 		String folder = "config" + File.separator + "projectinventories";
-        if (!new File(folder).isDirectory()) {
-        	new File(folder).mkdirs();
-        }
+		if (!new File(folder).isDirectory()) {
+			new File(folder).mkdirs();
+		}
 		file = new File(folder, "config.conf");
-		
+
 		create();
 		load();
 	}
-	
+
 	public ConfigurationLoader<CommentedConfigurationNode> getLoader() {
 		return loader;
 	}
@@ -64,24 +64,24 @@ public class ConfigManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void init() {
-		if(file.getName().equalsIgnoreCase("config.conf")) {
-			if(config.getNode("options", "health").isVirtual()) {
+		if (file.getName().equalsIgnoreCase("config.conf")) {
+			if (config.getNode("options", "health").isVirtual()) {
 				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");
 			}
-			if(config.getNode("options", "hunger").isVirtual()) {
+			if (config.getNode("options", "hunger").isVirtual()) {
 				config.getNode("options", "hunger").setValue(true).setComment("Enable inventory specific hunger");
 			}
-			if(config.getNode("options", "experience").isVirtual()) {
+			if (config.getNode("options", "experience").isVirtual()) {
 				config.getNode("options", "experience").setValue(true).setComment("Enable inventory specific experience");
 			}
 			// UPDATE CONFIG
-			if(!config.getNode("settings", "commands").isVirtual()) {
+			if (!config.getNode("settings", "commands").isVirtual()) {
 				config.getNode("settings").removeChild("commands");
 			}
 
-			if(config.getNode("settings", "sql").isVirtual()) {
+			if (config.getNode("settings", "sql").isVirtual()) {
 				config.getNode("settings", "sql", "enable").setValue(false);
 				config.getNode("settings", "sql", "prefix").setValue("NONE");
 				config.getNode("settings", "sql", "url").setValue("localhost:3306/database");
@@ -93,17 +93,17 @@ public class ConfigManager {
 	}
 
 	private void create() {
-		if(!file.exists()) {
+		if (!file.exists()) {
 			try {
 				Main.getLog().info("Creating new " + file.getName() + " file...");
-				file.createNewFile();		
-			} catch (IOException e) {				
+				file.createNewFile();
+			} catch (IOException e) {
 				Main.getLog().error("Failed to create new config file");
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	private void load() {
 		loader = HoconConfigurationLoader.builder().setFile(file).build();
 		try {

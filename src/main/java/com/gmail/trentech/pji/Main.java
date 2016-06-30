@@ -21,7 +21,7 @@ import com.gmail.trentech.pji.utils.Resource;
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = "ProjectInventories", repoOwner = "TrenTech", version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, authors = Resource.AUTHOR, url = Resource.URL, dependencies = {@Dependency(id = "Updatifier", optional = true)})
+@Plugin(id = Resource.ID, name = Resource.NAME, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true) })
 public class Main {
 
 	private static Game game;
@@ -29,31 +29,31 @@ public class Main {
 	private static PluginContainer plugin;
 
 	@Listener
-    public void onPreInitialization(GamePreInitializationEvent event) {
+	public void onPreInitialization(GamePreInitializationEvent event) {
 		game = Sponge.getGame();
 		plugin = getGame().getPluginManager().getPlugin(Resource.ID).get();
 		log = getPlugin().getLogger();
-    }
+	}
 
-    @Listener
-    public void onInitialization(GameInitializationEvent event) {
-    	new ConfigManager().init();
-    	
-    	getGame().getEventManager().registerListeners(this, new EventManager());
-    	
-    	getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
-    	
-    	getGame().getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
-    	
-    	SQLUtils.createSettings();
-    	
-    	SQLInventory.createInventory("default");
-    }
+	@Listener
+	public void onInitialization(GameInitializationEvent event) {
+		new ConfigManager().init();
 
-    public static Logger getLog() {
-        return log;
-    }
-    
+		getGame().getEventManager().registerListeners(this, new EventManager());
+
+		getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
+
+		getGame().getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
+
+		SQLUtils.createSettings();
+
+		SQLInventory.createInventory("default");
+	}
+
+	public static Logger getLog() {
+		return log;
+	}
+
 	public static Game getGame() {
 		return game;
 	}

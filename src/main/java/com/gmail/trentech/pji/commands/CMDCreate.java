@@ -20,25 +20,25 @@ public class CMDCreate implements CommandExecutor {
 		help.setExample(" /inventory create nether");
 		help.save();
 	}
-	
+
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if(!args.hasAny("inv")) {
+		if (!args.hasAny("inv")) {
 			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory create <inventory>"));
 			return CommandResult.empty();
 		}
-		String name = args.<String>getOne("inv").get();
+		String name = args.<String> getOne("inv").get();
 
-		if(SQLSettings.getInventory(name)) {
+		if (SQLSettings.getInventory(name)) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " already exists"));
 			return CommandResult.empty();
-        }
-        
+		}
+
 		SQLSettings.saveInventory(name);
 		SQLInventory.createInventory(name);
-		
+
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Created inventory ", name));
-		
+
 		return CommandResult.success();
 	}
 
