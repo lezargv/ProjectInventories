@@ -7,9 +7,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
+import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.world.World;
+
+import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
 
 public class SQLSettings extends SQLUtils {
 
@@ -56,18 +60,34 @@ public class SQLSettings extends SQLUtils {
 		}
 	}
 
-	public static void updateWorld(World world, String name) {
+	public static void updateWorld(World world, String oldInv, String newInv) {
 		try {
 			Connection connection = getDataSource().getConnection();
 
 			PreparedStatement statement = connection.prepareStatement("UPDATE " + prefix("Settings") + " SET Inventory = ? WHERE World = ?");
 
-			statement.setString(1, name);
+			statement.setString(1, newInv);
 			statement.setString(2, world.getName());
 
 			statement.executeUpdate();
 
 			connection.close();
+			
+			Predicate<Entity> filter = new Predicate<Entity>() {
+
+				@Override
+				public boolean test(Entity entity) {
+					return entity instanceof Player;
+				}
+			};
+
+			for(Entity entity: world.getEntities(filter)) {
+				Player player = (Player) entity;
+				
+				InventoryHelper.saveInventory(player, oldInv);
+				InventoryHelper.setInventory(player, newInv);
+			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -137,7 +157,7 @@ public class SQLSettings extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix("Inventories") + "");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix("Inventories"));
 
 			ResultSet result = statement.executeQuery();
 

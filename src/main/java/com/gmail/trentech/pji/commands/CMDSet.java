@@ -76,8 +76,8 @@ public class CMDSet implements CommandExecutor {
 			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
 			return CommandResult.empty();
 		}
-
-		SQLSettings.updateWorld(world, name);
+		
+		SQLSettings.updateWorld(world, SQLSettings.getWorld(world).get(), name);
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", worldName, " to ", name));
 

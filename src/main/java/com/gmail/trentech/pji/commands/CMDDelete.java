@@ -44,8 +44,9 @@ public class CMDDelete implements CommandExecutor {
 			if (confirm.containsKey(src)) {
 				String inv = confirm.get(src);
 				for (World world : Main.getGame().getServer().getWorlds()) {
-					if (SQLSettings.getWorld(world).get().equalsIgnoreCase(inv)) {
-						SQLSettings.updateWorld(world, "default");
+					String oldInv = SQLSettings.getWorld(world).get();
+					if (oldInv.equalsIgnoreCase(inv)) {
+						SQLSettings.updateWorld(world, oldInv, "default");
 
 						for (Entity entity : world.getEntities()) {
 							if (entity instanceof Player) {
