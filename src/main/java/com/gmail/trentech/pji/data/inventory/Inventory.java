@@ -18,9 +18,9 @@ public class Inventory implements DataSerializable {
 	private Map<Integer, ItemStack> grid = new HashMap<>();
 	private Map<Integer, ItemStack> armor = new HashMap<>();
 
-	private double health = 20;
-	private int food = 30;
-	private double saturation = 30;
+	private double health = 20.0;
+	private int food = 20;
+	private double saturation = 20.0;
 	private int expLevel = 0;
 	private int experience = 0;
 
