@@ -35,6 +35,11 @@ public class CommandManager {
 		    .executor(new CMDList())
 		    .build();
 	
+	public CommandSpec cmdInfo = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.info")
+		    .executor(new CMDInfo())
+		    .build();
+	
 	public CommandSpec cmdInventory = CommandSpec.builder()
 			.permission("pji.cmd.inventory")
 			//.child(cmdTest, "test", "t")
@@ -42,6 +47,7 @@ public class CommandManager {
 			.child(cmdDelete, "delete", "d")
 			.child(cmdSet, "set", "s")
 			.child(cmdList, "list", "l")
+			.child(cmdInfo, "info", "i")
 			.executor(new CMDInventory())
 			.build();
 }

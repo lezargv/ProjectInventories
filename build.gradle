@@ -1,11 +1,6 @@
 plugins {
   id 'maven'
-<<<<<<< HEAD
-  id 'net.ellune.blossom' version '1.0.1'
-=======
-  id 'org.spongepowered.plugin' version '0.6'
   id 'ninja.miserable.blossom' version '1.0.1'
->>>>>>> a9308e3... Fix inventory
 }
 
 sourceCompatibility = 1.8
