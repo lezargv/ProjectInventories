@@ -1,5 +1,7 @@
 package com.gmail.trentech.pji;
 
+import java.util.function.Predicate;
+
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
@@ -9,7 +11,7 @@ import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEv
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
 import com.gmail.trentech.pji.sql.SQLSettings;
@@ -20,9 +22,9 @@ public class EventManager {
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event) {
 		Player player = event.getTargetEntity();
 
-		World world = player.getWorld();
+		WorldProperties properties = player.getWorld().getProperties();
 
-		String name = SQLSettings.getWorld(world).get();
+		String name = SQLSettings.getWorld(properties).get();
 
 		if (!SQLSettings.getPlayer(player)) {
 			SQLSettings.savePlayer(player);
@@ -35,25 +37,31 @@ public class EventManager {
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event) {
 		Player player = event.getTargetEntity();
 
-		World world = player.getWorld();
+		WorldProperties properties = player.getWorld().getProperties();
 
-		String name = SQLSettings.getWorld(world).get();
+		String name = SQLSettings.getWorld(properties).get();
 
 		InventoryHelper.saveInventory(player, name);
 	}
 
 	@Listener
 	public void onSaveWorldEvent(SaveWorldEvent event) {
-		for (Entity entity : event.getTargetWorld().getEntities()) {
-			if (entity instanceof Player) {
-				Player player = (Player) entity;
+		Predicate<Entity> filter = new Predicate<Entity>() {
 
-				World world = player.getWorld();
-
-				String name = SQLSettings.getWorld(world).get();
-
-				InventoryHelper.saveInventory(player, name);
+			@Override
+			public boolean test(Entity entity) {
+				return entity instanceof Player;
 			}
+		};
+		
+		for (Entity entity : event.getTargetWorld().getEntities(filter)) {
+			Player player = (Player) entity;
+
+			WorldProperties properties = player.getWorld().getProperties();
+
+			String name = SQLSettings.getWorld(properties).get();
+
+			InventoryHelper.saveInventory(player, name);
 		}
 	}
 
@@ -61,9 +69,9 @@ public class EventManager {
 	public void onRespawnPlayerEvent(RespawnPlayerEvent event) {
 		Player player = event.getTargetEntity();
 
-		World world = player.getWorld();
+		WorldProperties properties = player.getWorld().getProperties();
 
-		String name = SQLSettings.getWorld(world).get();
+		String name = SQLSettings.getWorld(properties).get();
 
 		InventoryHelper.saveInventory(player, name);
 	}
@@ -77,8 +85,8 @@ public class EventManager {
 		}
 		Player player = (Player) entity;
 
-		World from = event.getFromTransform().getExtent();
-		World to = event.getToTransform().getExtent();
+		WorldProperties from = event.getFromTransform().getExtent().getProperties();
+		WorldProperties to = event.getToTransform().getExtent().getProperties();
 
 		if (from.equals(to)) {
 			return;
@@ -97,10 +105,10 @@ public class EventManager {
 
 	@Listener
 	public void onLoadWorldEvent(LoadWorldEvent event) {
-		World world = event.getTargetWorld();
+		WorldProperties properties = event.getTargetWorld().getProperties();
 
-		if (!SQLSettings.getWorld(world).isPresent()) {
-			SQLSettings.saveWorld(world);
+		if (!SQLSettings.getWorld(properties).isPresent()) {
+			SQLSettings.saveWorld(properties);
 		}
 	}
 }

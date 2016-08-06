@@ -2,21 +2,18 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.HashMap;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.Help;
@@ -43,18 +40,12 @@ public class CMDDelete implements CommandExecutor {
 		if (name.equalsIgnoreCase("yes")) {
 			if (confirm.containsKey(src)) {
 				String inv = confirm.get(src);
-				for (World world : Main.getGame().getServer().getWorlds()) {
-					String oldInv = SQLSettings.getWorld(world).get();
+				
+				for (WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
+					String oldInv = SQLSettings.getWorld(properties).get();
+					
 					if (oldInv.equalsIgnoreCase(inv)) {
-						SQLSettings.updateWorld(world, oldInv, "default");
-
-						for (Entity entity : world.getEntities()) {
-							if (entity instanceof Player) {
-								Player player = (Player) entity;
-								InventoryHelper.setInventory(player, "default");
-								player.sendMessage(Text.of(TextColors.RED, "[PJP] ", TextColors.YELLOW, "Admin deleted your inventory for this world"));
-							}
-						}
+						SQLSettings.updateWorld(properties, oldInv, "default");
 					}
 				}
 

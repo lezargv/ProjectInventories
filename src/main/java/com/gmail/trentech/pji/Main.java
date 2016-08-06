@@ -1,7 +1,6 @@
 package com.gmail.trentech.pji;
 
 import org.slf4j.Logger;
-import org.spongepowered.api.Game;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
@@ -24,14 +23,12 @@ import me.flibio.updatifier.Updatifier;
 @Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true) })
 public class Main {
 
-	private static Game game;
 	private static Logger log;
 	private static PluginContainer plugin;
 
 	@Listener
 	public void onPreInitialization(GamePreInitializationEvent event) {
-		game = Sponge.getGame();
-		plugin = getGame().getPluginManager().getPlugin(Resource.ID).get();
+		plugin = Sponge.getPluginManager().getPlugin(Resource.ID).get();
 		log = getPlugin().getLogger();
 	}
 
@@ -39,11 +36,11 @@ public class Main {
 	public void onInitialization(GameInitializationEvent event) {
 		new ConfigManager().init();
 
-		getGame().getEventManager().registerListeners(this, new EventManager());
+		Sponge.getEventManager().registerListeners(this, new EventManager());
 
-		getGame().getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
+		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
 
-		getGame().getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
+		Sponge.getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
 
 		SQLUtils.createSettings();
 
@@ -52,10 +49,6 @@ public class Main {
 
 	public static Logger getLog() {
 		return log;
-	}
-
-	public static Game getGame() {
-		return game;
 	}
 
 	public static PluginContainer getPlugin() {

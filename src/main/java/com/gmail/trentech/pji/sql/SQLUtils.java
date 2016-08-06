@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
 
-import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
@@ -21,7 +21,7 @@ public abstract class SQLUtils {
 
 	protected static DataSource getDataSource() throws SQLException {
 		if (sql == null) {
-			sql = Main.getGame().getServiceManager().provide(SqlService.class).get();
+			sql = Sponge.getServiceManager().provide(SqlService.class).get();
 		}
 		DataSource dataSource = null;
 		if (enableSQL) {

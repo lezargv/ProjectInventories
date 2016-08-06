@@ -7,12 +7,12 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataManager;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.translator.ConfigurateTranslator;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.inventory.Inventory;
 
 import ninja.leaping.configurate.ConfigurationNode;
@@ -42,7 +42,7 @@ public class InventorySerializer {
 		}
 
 		ConfigurateTranslator translator = ConfigurateTranslator.instance();
-		DataManager manager = Main.getGame().getDataManager();
+		DataManager manager = Sponge.getDataManager();
 
 		DataView dataView = translator.translateFrom(node);
 
@@ -77,7 +77,7 @@ public class InventorySerializer {
 		}
 
 		ConfigurateTranslator translator = ConfigurateTranslator.instance();
-		DataManager manager = Main.getGame().getDataManager();
+		DataManager manager = Sponge.getDataManager();
 
 		DataView dataView = translator.translateFrom(node);
 

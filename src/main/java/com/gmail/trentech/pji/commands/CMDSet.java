@@ -2,7 +2,9 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -13,9 +15,8 @@ import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.sql.SQLSettings;
 import com.gmail.trentech.pji.utils.Help;
 
@@ -42,20 +43,23 @@ public class CMDSet implements CommandExecutor {
 			}
 		}
 
-		if (!Main.getGame().getServer().getWorld(worldName).isPresent()) {
+		Optional<WorldProperties> optionalProperties = Sponge.getServer().getWorldProperties(worldName);
+		
+		if(!optionalProperties.isPresent()) {
 			src.sendMessage(Text.of(TextColors.DARK_RED, worldName, " does not exist"));
 			return CommandResult.empty();
 		}
-		World world = Main.getGame().getServer().getWorld(worldName).get();
+
+		WorldProperties properties = optionalProperties.get();
 
 		if (!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();
 
-			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, SQLSettings.getWorld(world).get()));
+			list.add(Text.of(TextColors.GREEN, "Current Inventory: ", TextColors.WHITE, SQLSettings.getWorld(properties).get()));
 			list.add(Text.of(TextColors.GREEN, "Command: ", TextColors.YELLOW, "/inventory set <world> <inventory>"));
 
 			if (src instanceof Player) {
-				PaginationList.Builder pages = Main.getGame().getServiceManager().provide(PaginationService.class).get().builder();
+				PaginationList.Builder pages = Sponge.getServiceManager().provide(PaginationService.class).get().builder();
 
 				pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Inventory")).build());
 
@@ -77,7 +81,7 @@ public class CMDSet implements CommandExecutor {
 			return CommandResult.empty();
 		}
 		
-		SQLSettings.updateWorld(world, SQLSettings.getWorld(world).get(), name);
+		SQLSettings.updateWorld(properties, SQLSettings.getWorld(properties).get(), name);
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", worldName, " to ", name));
 
