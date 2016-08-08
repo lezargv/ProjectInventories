@@ -23,8 +23,8 @@ import com.gmail.trentech.pji.utils.Help;
 public class CMDInfo implements CommandExecutor {
 
 	public CMDInfo() {
-		Help help = new Help("list", "list", " List all inventories");
-		help.setSyntax(" /inventory list\n /inv l");
+		Help help = new Help("info", "info", " Lists the worlds and their assigned inventories");
+		help.setSyntax(" /inventory info\n /inv i");
 		help.save();
 	}
 
