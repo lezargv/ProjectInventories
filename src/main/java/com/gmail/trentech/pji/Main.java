@@ -3,6 +3,7 @@ package com.gmail.trentech.pji;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.plugin.Dependency;
@@ -25,7 +26,8 @@ public class Main {
 
 	private static Logger log;
 	private static PluginContainer plugin;
-
+	private static ConfigManager configManager;
+	
 	@Listener
 	public void onPreInitialization(GamePreInitializationEvent event) {
 		plugin = Sponge.getPluginManager().getPlugin(Resource.ID).get();
@@ -34,12 +36,10 @@ public class Main {
 
 	@Listener
 	public void onInitialization(GameInitializationEvent event) {
-		new ConfigManager().init();
+		configManager = new ConfigManager().init();
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
-
 		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
-
 		Sponge.getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
 
 		SQLUtils.createSettings();
@@ -47,11 +47,20 @@ public class Main {
 		SQLInventory.createInventory("default");
 	}
 
+	@Listener
+	public void onReloadEvent(GameReloadEvent event) {
+		configManager = new ConfigManager().init();
+	}
+	
 	public static Logger getLog() {
 		return log;
 	}
 
 	public static PluginContainer getPlugin() {
 		return plugin;
+	}
+	
+	public static ConfigManager getConfigManager() {
+		return configManager;
 	}
 }

@@ -15,28 +15,6 @@ public class ConfigManager {
 	private CommentedConfigurationNode config;
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
 
-	public ConfigManager(String folder, String configName) {
-		folder = "config" + File.separator + Resource.NAME.toLowerCase() + File.separator + "inventories" + File.separator + folder;
-		if (!new File(folder).isDirectory()) {
-			new File(folder).mkdirs();
-		}
-		file = new File(folder, configName);
-
-		create();
-		load();
-	}
-
-	public ConfigManager(String configName) {
-		String folder = "config" + File.separator + Resource.NAME.toLowerCase();
-		if (!new File(folder).isDirectory()) {
-			new File(folder).mkdirs();
-		}
-		file = new File(folder, configName);
-
-		create();
-		load();
-	}
-
 	public ConfigManager() {
 		String folder = "config" + File.separator + Resource.NAME.toLowerCase();
 		if (!new File(folder).isDirectory()) {
@@ -65,7 +43,7 @@ public class ConfigManager {
 		}
 	}
 
-	public void init() {
+	public ConfigManager init() {
 		if (file.getName().equalsIgnoreCase("config.conf")) {
 			if (config.getNode("options", "health").isVirtual()) {
 				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");
@@ -76,11 +54,6 @@ public class ConfigManager {
 			if (config.getNode("options", "experience").isVirtual()) {
 				config.getNode("options", "experience").setValue(true).setComment("Enable inventory specific experience");
 			}
-			// UPDATE CONFIG
-			if (!config.getNode("settings", "commands").isVirtual()) {
-				config.getNode("settings").removeChild("commands");
-			}
-
 			if (config.getNode("settings", "sql").isVirtual()) {
 				config.getNode("settings", "sql", "enable").setValue(false);
 				config.getNode("settings", "sql", "prefix").setValue("NONE");
@@ -90,6 +63,8 @@ public class ConfigManager {
 			}
 			save();
 		}
+		
+		return this;
 	}
 
 	private void create() {

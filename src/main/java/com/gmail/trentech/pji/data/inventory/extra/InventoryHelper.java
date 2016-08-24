@@ -14,7 +14,6 @@ import org.spongepowered.api.item.inventory.type.GridInventory;
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.inventory.Inventory;
 import com.gmail.trentech.pji.sql.SQLInventory;
-import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -79,7 +78,7 @@ public class InventoryHelper {
 				}
 			}
 
-			ConfigurationNode config = new ConfigManager().getConfig();
+			ConfigurationNode config = Main.getConfigManager().getConfig();
 
 			if (config.getNode("options", "health").getBoolean()) {
 				player.offer(Keys.HEALTH, inventory.getHealth());
