@@ -5,12 +5,10 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataManager;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.translator.ConfigurateTranslator;
+import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.gmail.trentech.pji.data.inventory.Inventory;
@@ -21,7 +19,7 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 public class InventorySerializer {
 
 	public static String serializeItemStack(ItemStack itemStack) {
-		ConfigurationNode node = ConfigurateTranslator.instance().translateData(itemStack.toContainer());
+		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(itemStack.toContainer());
 
 		StringWriter stringWriter = new StringWriter();
 		try {
@@ -40,24 +38,14 @@ public class InventorySerializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
-		ConfigurateTranslator translator = ConfigurateTranslator.instance();
-		DataManager manager = Sponge.getDataManager();
-
-		DataView dataView = translator.translateFrom(node);
-
-		Optional<ItemStack> deserializedOptional = manager.deserialize(ItemStack.class, dataView);
-
-		if (deserializedOptional.isPresent()) {
-			return deserializedOptional.get();
-		}
-
-		return null;
+		return Sponge.getDataManager().deserialize(ItemStack.class, dataView).get();
 	}
 
 	public static String serializeInventory(Inventory inventory) {
-		ConfigurationNode node = ConfigurateTranslator.instance().translateData(inventory.toContainer());
-
+		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventory.toContainer());
 		StringWriter stringWriter = new StringWriter();
 		try {
 			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
@@ -75,18 +63,9 @@ public class InventorySerializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
-		ConfigurateTranslator translator = ConfigurateTranslator.instance();
-		DataManager manager = Sponge.getDataManager();
-
-		DataView dataView = translator.translateFrom(node);
-
-		Optional<Inventory> deserializedOptional = manager.deserialize(Inventory.class, dataView);
-
-		if (deserializedOptional.isPresent()) {
-			return deserializedOptional.get();
-		}
-
-		return null;
+		return Sponge.getDataManager().deserialize(Inventory.class, dataView).get();
 	}
 }
