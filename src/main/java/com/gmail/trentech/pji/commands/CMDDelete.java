@@ -31,10 +31,6 @@ public class CMDDelete implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!args.hasAny("inv")) {
-			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory delete <inventory>"));
-			return CommandResult.empty();
-		}
 		String name = args.<String> getOne("inv").get();
 
 		if (name.equalsIgnoreCase("yes")) {
@@ -60,12 +56,12 @@ public class CMDDelete implements CommandExecutor {
 		}
 
 		if (!SQLSettings.getInventory(name)) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
+			src.sendMessage(Text.of(TextColors.RED, name, " does not exist"));
 			return CommandResult.empty();
 		}
 
 		if (name.equalsIgnoreCase("default")) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, name, " inventory cannot be deleted"));
+			src.sendMessage(Text.of(TextColors.RED, name, " inventory cannot be deleted"));
 			return CommandResult.empty();
 		}
 

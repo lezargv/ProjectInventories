@@ -23,10 +23,6 @@ public class CMDCreate implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!args.hasAny("inv")) {
-			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory create <inventory>"));
-			return CommandResult.empty();
-		}
 		String name = args.<String> getOne("inv").get();
 
 		if (SQLSettings.getInventory(name)) {

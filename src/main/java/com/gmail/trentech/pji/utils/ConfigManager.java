@@ -1,7 +1,9 @@
 package com.gmail.trentech.pji.utils;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gmail.trentech.pji.Main;
 
@@ -11,40 +13,44 @@ import ninja.leaping.configurate.loader.ConfigurationLoader;
 
 public class ConfigManager {
 
-	private File file;
+	private Path path;
 	private CommentedConfigurationNode config;
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
+	
+	private static ConcurrentHashMap<String, ConfigManager> configManagers = new ConcurrentHashMap<>();
 
-	public ConfigManager() {
-		String folder = "config" + File.separator + Resource.NAME.toLowerCase();
-		if (!new File(folder).isDirectory()) {
-			new File(folder).mkdirs();
-		}
-		file = new File(folder, "config.conf");
-
-		create();
-		load();
-	}
-
-	public ConfigurationLoader<CommentedConfigurationNode> getLoader() {
-		return loader;
-	}
-
-	public CommentedConfigurationNode getConfig() {
-		return config;
-	}
-
-	public void save() {
+	private ConfigManager(String configName) {
 		try {
-			loader.save(config);
+			path = Main.instance().getPath().resolve(configName + ".conf");
+			
+			if (!Files.exists(path)) {		
+				Files.createFile(path);
+				Main.instance().getLog().info("Creating new " + path.getFileName() + " file...");
+			}		
 		} catch (IOException e) {
-			Main.getLog().error("Failed to save config");
 			e.printStackTrace();
 		}
+
+		load();
+	}
+	
+	public static ConfigManager get(String configName) {
+		return configManagers.get(configName);
+	}
+	
+	public static ConfigManager get() {
+		return configManagers.get("config");
 	}
 
-	public ConfigManager init() {
-		if (file.getName().equalsIgnoreCase("config.conf")) {
+	public static ConfigManager init() {
+		return init("config");
+	}
+	
+	public static ConfigManager init(String configName) {
+		ConfigManager configManager = new ConfigManager(configName);
+		CommentedConfigurationNode config = configManager.getConfig();
+		
+		if (configName.equalsIgnoreCase("config")) {
 			if (config.getNode("options", "health").isVirtual()) {
 				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");
 			}
@@ -61,30 +67,36 @@ public class ConfigManager {
 				config.getNode("settings", "sql", "username").setValue("root");
 				config.getNode("settings", "sql", "password").setValue("password");
 			}
-			save();
 		}
 		
-		return this;
+		configManager.save();
+		
+		return configManager;
+	}
+	
+	public ConfigurationLoader<CommentedConfigurationNode> getLoader() {
+		return loader;
 	}
 
-	private void create() {
-		if (!file.exists()) {
-			try {
-				Main.getLog().info("Creating new " + file.getName() + " file...");
-				file.createNewFile();
-			} catch (IOException e) {
-				Main.getLog().error("Failed to create new config file");
-				e.printStackTrace();
-			}
+	public CommentedConfigurationNode getConfig() {
+		return config;
+	}
+
+	public void save() {
+		try {
+			loader.save(config);
+		} catch (IOException e) {
+			Main.instance().getLog().error("Failed to save config");
+			e.printStackTrace();
 		}
 	}
 
 	private void load() {
-		loader = HoconConfigurationLoader.builder().setFile(file).build();
+		loader = HoconConfigurationLoader.builder().setPath(path).build();
 		try {
 			config = loader.load();
 		} catch (IOException e) {
-			Main.getLog().error("Failed to load config");
+			Main.instance().getLog().error("Failed to load config");
 			e.printStackTrace();
 		}
 	}

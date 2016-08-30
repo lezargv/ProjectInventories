@@ -2,7 +2,6 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -31,27 +30,8 @@ public class CMDSet implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		if (!args.hasAny("world")) {
-			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory set <world> <inventory>"));
-			return CommandResult.empty();
-		}
-		String worldName = args.<String> getOne("world").get();
-
-		if (worldName.equalsIgnoreCase("@w")) {
-			if (src instanceof Player) {
-				worldName = ((Player) src).getWorld().getName();
-			}
-		}
-
-		Optional<WorldProperties> optionalProperties = Sponge.getServer().getWorldProperties(worldName);
+		WorldProperties properties = args.<WorldProperties> getOne("world").get();
 		
-		if(!optionalProperties.isPresent()) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, worldName, " does not exist"));
-			return CommandResult.empty();
-		}
-
-		WorldProperties properties = optionalProperties.get();
-
 		if (!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();
 
@@ -83,7 +63,7 @@ public class CMDSet implements CommandExecutor {
 		
 		SQLSettings.updateWorld(properties, SQLSettings.getWorld(properties).get(), name);
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", worldName, " to ", name));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory for ", properties.getWorldName(), " to ", name));
 
 		return CommandResult.success();
 	}

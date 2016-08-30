@@ -9,14 +9,14 @@ import javax.sql.DataSource;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
 
-import com.gmail.trentech.pji.Main;
+import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
 public abstract class SQLUtils {
 
-	protected static String prefix = Main.getConfigManager().getConfig().getNode("settings", "sql", "prefix").getString();
-	protected static boolean enableSQL = Main.getConfigManager().getConfig().getNode("settings", "sql", "enable").getBoolean();
+	protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
+	protected static boolean enableSQL = ConfigManager.get().getConfig().getNode("settings", "sql", "enable").getBoolean();
 	protected static SqlService sql;
 
 	protected static DataSource getDataSource() throws SQLException {
@@ -25,7 +25,7 @@ public abstract class SQLUtils {
 		}
 		DataSource dataSource = null;
 		if (enableSQL) {
-			CommentedConfigurationNode config = Main.getConfigManager().getConfig();
+			CommentedConfigurationNode config = ConfigManager.get().getConfig();
 
 			String url = config.getNode("settings", "sql", "url").getString();
 			String username = config.getNode("settings", "sql", "username").getString();

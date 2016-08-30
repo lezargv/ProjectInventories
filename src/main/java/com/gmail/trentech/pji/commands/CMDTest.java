@@ -22,10 +22,6 @@ public class CMDTest implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
-		if (!args.hasAny("inv")) {
-			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory test <inventory>"));
-			return CommandResult.empty();
-		}
 		String name = args.<String> getOne("inv").get();
 
 		if (!SQLSettings.getInventory(name)) {

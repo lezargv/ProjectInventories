@@ -61,6 +61,10 @@ public class Help {
 		list.add(this);
 	}
 
+	public static List<Help> getAll() {
+		return list;
+	}
+	
 	public static Consumer<CommandSource> getHelp(String input) {
 		return (CommandSource src) -> {
 			for (Help help : list) {

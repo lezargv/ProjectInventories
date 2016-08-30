@@ -8,25 +8,25 @@ public class CommandManager {
 
 	public CommandSpec cmdTest = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.test")    
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
+		    .arguments(GenericArguments.string(Text.of("inv")))
 		    .executor(new CMDTest())
 		    .build();
 	
 	public CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
+		    .arguments(GenericArguments.string(Text.of("inv")))
 		    .executor(new CMDCreate())
 		    .build();
 	
 	public CommandSpec cmdDelete = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.delete")
-		    .arguments(GenericArguments.optional(GenericArguments.remainingJoinedStrings(Text.of("inv"))))
+		    .arguments(GenericArguments.string(Text.of("inv")))
 		    .executor(new CMDDelete())
 		    .build();
 
 	public CommandSpec cmdSet = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.set")
-		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("world"))), GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
+		    .arguments(GenericArguments.world(Text.of("world")), GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
 		    .executor(new CMDSet())
 		    .build();
 
@@ -40,6 +40,12 @@ public class CommandManager {
 		    .executor(new CMDInfo())
 		    .build();
 	
+	public CommandSpec cmdHelp = CommandSpec.builder()
+		    .permission("pji.cmd.inventory")    
+		    .arguments(GenericArguments.string(Text.of("command")))
+		    .executor(new CMDHelp())
+		    .build();
+	
 	public CommandSpec cmdInventory = CommandSpec.builder()
 			.permission("pji.cmd.inventory")
 			//.child(cmdTest, "test", "t")
@@ -48,6 +54,7 @@ public class CommandManager {
 			.child(cmdSet, "set", "s")
 			.child(cmdList, "list", "l")
 			.child(cmdInfo, "info", "i")
+			.child(cmdInfo, "help", "h")
 			.executor(new CMDInventory())
 			.build();
 }
