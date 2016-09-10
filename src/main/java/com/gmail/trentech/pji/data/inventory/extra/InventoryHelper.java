@@ -94,7 +94,7 @@ public class InventoryHelper {
 				player.offer(Keys.EXPERIENCE_LEVEL, inventory.getExpLevel());
 				player.offer(Keys.TOTAL_EXPERIENCE, inventory.getExperience());
 			}
-		}).submit(Main.instance().getPlugin());
+		}).submit(Main.getPlugin());
 	}
 
 	public static void saveInventory(Player player, String name) {

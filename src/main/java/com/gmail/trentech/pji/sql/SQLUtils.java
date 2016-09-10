@@ -33,7 +33,7 @@ public abstract class SQLUtils {
 
 			dataSource = sql.getDataSource("jdbc:mysql://" + url + "?user=" + username + "&password=" + password);
 		} else {
-			dataSource = sql.getDataSource("jdbc:h2:./config/projectinventories/data");
+			dataSource = sql.getDataSource("jdbc:h2:./config/pji/data");
 		}
 		return dataSource;
 	}
