@@ -26,8 +26,7 @@ public class CMDCreate implements CommandExecutor {
 		String name = args.<String> getOne("inv").get();
 
 		if (SQLSettings.getInventory(name)) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, name, " already exists"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.RED, name, " already exists"));
 		}
 
 		SQLSettings.saveInventory(name);

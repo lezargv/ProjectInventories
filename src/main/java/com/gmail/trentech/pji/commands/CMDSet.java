@@ -52,13 +52,12 @@ public class CMDSet implements CommandExecutor {
 				}
 			}
 
-			return CommandResult.empty();
+			return CommandResult.success();
 		}
 		String name = args.<String> getOne("inv").get();
 
 		if (!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
 		}
 		
 		SQLSettings.updateWorld(properties, SQLSettings.getWorld(properties).get(), name);

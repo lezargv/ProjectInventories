@@ -56,13 +56,11 @@ public class CMDDelete implements CommandExecutor {
 		}
 
 		if (!SQLSettings.getInventory(name)) {
-			src.sendMessage(Text.of(TextColors.RED, name, " does not exist"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
 		}
 
 		if (name.equalsIgnoreCase("default")) {
-			src.sendMessage(Text.of(TextColors.RED, name, " inventory cannot be deleted"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.RED, name, " inventory cannot be deleted"));
 		}
 
 		src.sendMessage(Text.builder().color(TextColors.RED).append(Text.of(TextColors.RED, "[WARNING] ", TextColors.YELLOW, "This will delete players inventories and cannot be undone. Confirm? ")).onClick(TextActions.runCommand("/pji:inventory delete yes")).append(Text.of(TextColors.DARK_PURPLE, TextStyles.UNDERLINE, "/inventory delete yes")).build());

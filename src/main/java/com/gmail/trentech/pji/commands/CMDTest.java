@@ -17,16 +17,14 @@ public class CMDTest implements CommandExecutor {
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if (!(src instanceof Player)) {
-			src.sendMessage(Text.of(TextColors.YELLOW, "/inventory test <inventory>"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.YELLOW, "/inventory test <inventory>"));
 		}
 		Player player = (Player) src;
 
 		String name = args.<String> getOne("inv").get();
 
 		if (!SQLSettings.getInventory(name)) {
-			src.sendMessage(Text.of(TextColors.DARK_RED, name, " does not exist"));
-			return CommandResult.empty();
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
 		}
 
 		InventoryHelper.saveInventory(player, name);
