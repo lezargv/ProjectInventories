@@ -24,6 +24,7 @@ public class CMDInfo implements CommandExecutor {
 
 	public CMDInfo() {
 		Help help = new Help("info", "info", " Lists the worlds and their assigned inventories");
+		help.setPermission("pji.cmd.inventory.info");
 		help.setSyntax(" /inventory info\n /inv i");
 		help.save();
 	}

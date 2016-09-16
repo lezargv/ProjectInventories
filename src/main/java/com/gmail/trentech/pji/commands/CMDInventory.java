@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -24,20 +25,12 @@ public class CMDInventory implements CommandExecutor {
 
 		list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command to execute "))).onClick(TextActions.runCommand("/pji:inventory help")).append(Text.of(" /inventory help")).build());
 		
-		if (src.hasPermission("pji.cmd.inventory.create")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp("create"))).append(Text.of(" /inventory create")).build());
-		}
-		if (src.hasPermission("pji.cmd.inventory.delete")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp("delete"))).append(Text.of(" /inventory delete")).build());
-		}
-		if (src.hasPermission("pji.cmd.inventory.set")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp("set"))).append(Text.of(" /inventory set")).build());
-		}
-		if (src.hasPermission("pji.cmd.inventory.list")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp("list"))).append(Text.of(" /inventory list")).build());
-		}
-		if (src.hasPermission("pji.cmd.inventory.info")) {
-			list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp("info"))).append(Text.of(" /inventory info")).build());
+		for (Entry<String, Help> entry : Help.all().entrySet()) {
+			String command = entry.getKey();
+
+			if (src.hasPermission("pji.cmd.inventory." + command)) {
+				list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(command))).append(Text.of(" /inventory " + command)).build());
+			}
 		}
 		
 		if (src instanceof Player) {

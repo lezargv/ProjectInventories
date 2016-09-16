@@ -16,6 +16,7 @@ public class CMDCreate implements CommandExecutor {
 
 	public CMDCreate() {
 		Help help = new Help("create", "create", " Create a new inventory");
+		help.setPermission("pji.cmd.inventory.create");
 		help.setSyntax(" /inventory create <name>\n /inv c <name>");
 		help.setExample(" /inventory create nether");
 		help.save();
@@ -26,7 +27,7 @@ public class CMDCreate implements CommandExecutor {
 		String name = args.<String> getOne("inv").get();
 
 		if (SQLSettings.getInventory(name)) {
-			throw new CommandException(Text.of(TextColors.RED, name, " already exists"));
+			throw new CommandException(Text.of(TextColors.RED, name, " already exists"), false);
 		}
 
 		SQLSettings.saveInventory(name);

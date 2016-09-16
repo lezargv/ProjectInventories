@@ -24,6 +24,7 @@ public class CMDDelete implements CommandExecutor {
 
 	public CMDDelete() {
 		Help help = new Help("delete", "delete", " Delete an existing inventory. WARNING: This cannot be undone.");
+		help.setPermission("pji.cmd.inventory.delete");
 		help.setSyntax(" /inventory delete <name>\n /inv d <name>");
 		help.setExample(" /inventory delete nether");
 		help.save();
@@ -56,11 +57,11 @@ public class CMDDelete implements CommandExecutor {
 		}
 
 		if (!SQLSettings.getInventory(name)) {
-			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
 		}
 
 		if (name.equalsIgnoreCase("default")) {
-			throw new CommandException(Text.of(TextColors.RED, name, " inventory cannot be deleted"));
+			throw new CommandException(Text.of(TextColors.RED, name, " inventory cannot be deleted"), false);
 		}
 
 		src.sendMessage(Text.builder().color(TextColors.RED).append(Text.of(TextColors.RED, "[WARNING] ", TextColors.YELLOW, "This will delete players inventories and cannot be undone. Confirm? ")).onClick(TextActions.runCommand("/pji:inventory delete yes")).append(Text.of(TextColors.DARK_PURPLE, TextStyles.UNDERLINE, "/inventory delete yes")).build());

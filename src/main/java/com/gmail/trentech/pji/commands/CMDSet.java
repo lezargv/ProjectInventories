@@ -23,6 +23,7 @@ public class CMDSet implements CommandExecutor {
 
 	public CMDSet() {
 		Help help = new Help("set", "set", " Set an inventory for the specified world");
+		help.setPermission("pji.cmd.inventory.set");
 		help.setSyntax(" /inventory set <world> <inventory>\n /inv s <world> <inventory>");
 		help.setExample(" /inventory set DIM-1 nether");
 		help.save();
@@ -57,7 +58,7 @@ public class CMDSet implements CommandExecutor {
 		String name = args.<String> getOne("inv").get();
 
 		if (!SQLSettings.getInventory(name) && !name.equalsIgnoreCase("default")) {
-			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"));
+			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
 		}
 		
 		SQLSettings.updateWorld(properties, SQLSettings.getWorld(properties).get(), name);
