@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import org.spongepowered.api.command.CommandException;
@@ -26,10 +27,17 @@ public class CMDInventory implements CommandExecutor {
 		list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command to execute "))).onClick(TextActions.runCommand("/pji:inventory help")).append(Text.of(" /inventory help")).build());
 		
 		for (Entry<String, Help> entry : Help.all().entrySet()) {
-			String command = entry.getKey();
-
-			if (src.hasPermission("pji.cmd.inventory." + command)) {
-				list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(command))).append(Text.of(" /inventory " + command)).build());
+			String id = entry.getKey();
+			String command = entry.getValue().getCommand();
+			
+			Optional<String> optionalPermission = entry.getValue().getPermission();
+			
+			if(optionalPermission.isPresent()) {
+				if (src.hasPermission(optionalPermission.get())) {
+					list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(id))).append(Text.of(" /inventory " + command)).build());
+				}
+			} else {
+				list.add(Text.builder().color(TextColors.GREEN).onHover(TextActions.showText(Text.of("Click command for more information "))).onClick(TextActions.executeCallback(Help.getHelp(id))).append(Text.of(" /inventory " + command)).build());
 			}
 		}
 		
