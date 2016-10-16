@@ -14,7 +14,7 @@ public class CMDHelp implements CommandExecutor {
 		new Help("inventory help", "help", "Get help with all commands in Project Inventories", false)
 			.setPermission("pjw.pji.inventory")
 			.setUsage("/inventory help <rawCommand>")
-			.setExample("/inventory help world create")
+			.setExample("/inventory help inventory create")
 			.save();
 	}
 	
