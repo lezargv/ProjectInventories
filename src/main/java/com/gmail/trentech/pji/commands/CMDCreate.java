@@ -15,11 +15,11 @@ import com.gmail.trentech.pji.utils.Help;
 public class CMDCreate implements CommandExecutor {
 
 	public CMDCreate() {
-		Help help = new Help("create", "create", " Create a new inventory");
-		help.setPermission("pji.cmd.inventory.create");
-		help.setSyntax(" /inventory create <name>\n /inv c <name>");
-		help.setExample(" /inventory create nether");
-		help.save();
+		new Help("inventory create", "create", "Create a new inventory", false)
+			.setPermission("pji.cmd.inventory.create")
+			.setUsage("/inventory create <name>\n /inv c <name>")
+			.setExample("/inventory create nether")
+			.save();
 	}
 
 	@Override

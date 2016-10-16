@@ -23,10 +23,10 @@ import com.gmail.trentech.pji.utils.Help;
 public class CMDInfo implements CommandExecutor {
 
 	public CMDInfo() {
-		Help help = new Help("info", "info", " Lists the worlds and their assigned inventories");
-		help.setPermission("pji.cmd.inventory.info");
-		help.setSyntax(" /inventory info\n /inv i");
-		help.save();
+		new Help("inventory info", "info", "Lists the worlds and their assigned inventories", false)
+			.setPermission("pji.cmd.inventory.info")
+			.setUsage("/inventory info\n /inv i")
+			.save();
 	}
 
 	@Override

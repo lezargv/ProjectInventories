@@ -10,11 +10,19 @@ import com.gmail.trentech.pji.utils.Help;
 
 public class CMDHelp implements CommandExecutor {
 
+	public CMDHelp() {
+		new Help("inventory help", "help", "Get help with all commands in Project Inventories", false)
+			.setPermission("pjw.pji.inventory")
+			.setUsage("/inventory help <rawCommand>")
+			.setExample("/inventory help world create")
+			.save();
+	}
+	
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		Help help = args.<Help> getOne("command").get();
+		Help help = args.<Help>getOne("rawCommand").get();
 		help.execute(src);
-		
+
 		return CommandResult.success();
 	}
 }

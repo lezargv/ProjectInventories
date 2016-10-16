@@ -22,11 +22,11 @@ import com.gmail.trentech.pji.utils.Help;
 public class CMDSet implements CommandExecutor {
 
 	public CMDSet() {
-		Help help = new Help("set", "set", " Set an inventory for the specified world");
-		help.setPermission("pji.cmd.inventory.set");
-		help.setSyntax(" /inventory set <world> <inventory>\n /inv s <world> <inventory>");
-		help.setExample(" /inventory set DIM-1 nether");
-		help.save();
+		new Help("inventory set", "set", "Set an inventory for the specified world", false)
+			.setPermission("pji.cmd.inventory.set")
+			.setUsage("/inventory set <world> <inventory>\n /inv s <world> <inventory>")
+			.setExample("/inventory set DIM-1 nether")
+			.save();
 	}
 
 	@Override

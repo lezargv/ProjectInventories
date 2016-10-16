@@ -8,8 +8,9 @@ import org.spongepowered.api.command.args.CommandArgs;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
-import com.flowpowered.math.vector.Vector2i;
+import com.gmail.trentech.pji.sql.SQLSettings;
 
 public class InventoryElement extends CommandElement {
 	
@@ -21,26 +22,19 @@ public class InventoryElement extends CommandElement {
 
     @Override
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
-    	
-        // <x> <y>
-        errorargs=args;
+    	final String next = args.next();
 
-        String xInput = args.next();
-        int x = parseInt(xInput);
+		if (SQLSettings.getInventory(next)) {
+			return next;
+		}
 
-        String yInput = args.next();
-        int y = parseInt(yInput);
+		if (next.equalsIgnoreCase("default")) {
+			return next;
+		}
 
-        return new Vector2i(x, y);
+		throw args.createError(Text.of(TextColors.RED, "Inventory not found"));
     }
 
-    private int parseInt(String input) throws ArgumentParseException {
-        try {
-            return Integer.parseInt(input);
-        } catch(NumberFormatException e) {
-            throw errorargs.createError(Text.of("'" + input + "' is not a valid number!"));
-        }
-    }
 
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
@@ -49,6 +43,6 @@ public class InventoryElement extends CommandElement {
 
     @Override
     public Text getUsage(CommandSource src) {
-        return Text.of("<x> <y>");
+        return Text.of(getKey());
     }
 }

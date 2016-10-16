@@ -23,11 +23,11 @@ public class CMDDelete implements CommandExecutor {
 	private static HashMap<CommandSource, String> confirm = new HashMap<>();
 
 	public CMDDelete() {
-		Help help = new Help("delete", "delete", " Delete an existing inventory. WARNING: This cannot be undone.");
-		help.setPermission("pji.cmd.inventory.delete");
-		help.setSyntax(" /inventory delete <name>\n /inv d <name>");
-		help.setExample(" /inventory delete nether");
-		help.save();
+		new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.", false)
+			.setPermission("pji.cmd.inventory.delete")
+			.setUsage("/inventory delete <name>\n /inv d <name>")
+			.setExample("/inventory delete nether")
+			.save();
 	}
 
 	@Override

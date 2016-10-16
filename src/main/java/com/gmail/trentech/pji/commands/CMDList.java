@@ -21,10 +21,10 @@ import com.gmail.trentech.pji.utils.Help;
 public class CMDList implements CommandExecutor {
 
 	public CMDList() {
-		Help help = new Help("list", "list", " List all inventories");
-		help.setPermission("pji.cmd.inventory.list");
-		help.setSyntax(" /inventory list\n /inv l");
-		help.save();
+		new Help("inventory list", "list", "List all inventories", false)
+			.setPermission("pji.cmd.inventory.list")
+			.setUsage("/inventory list\n /inv l")
+			.save();
 	}
 
 	@Override
