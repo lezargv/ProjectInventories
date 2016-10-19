@@ -64,44 +64,46 @@ public class Main {
 
 		SQLInventory.createInventory("default");
 		
-		Help invCreate = new Help("inventory create", "create", "Create a new inventory")
-				.setPermission("pji.cmd.inventory.create")
-				.addUsage("/inventory create <name>")
-				.addUsage("/inv c <name>")
-				.addExample("/inventory create nether");
-		
-		Help invDelete = new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.")
-				.setPermission("pji.cmd.inventory.delete")
-				.addUsage("/inventory delete <name>")
-				.addUsage("/inv d <name>")
-				.addExample("/inventory delete nether");
-		
-		Help invInfo = new Help("inventory info", "info", "Lists the worlds and their assigned inventories")
-				.setPermission("pji.cmd.inventory.info")
-				.addUsage("/inventory info")
-				.addUsage("/inv i");
-		
-		Help invList = new Help("inventory list", "list", "List all inventories")
-				.setPermission("pji.cmd.inventory.list")
-				.addUsage("/inventory list")
-				.addUsage("/inv l");
-		
-		Help invSet = new Help("inventory set", "set", "Set an inventory for the specified world")
-				.setPermission("pji.cmd.inventory.set")
-				.addUsage("/inventory set <world> <inventory>")
-				.addUsage("/inv s <world> <inventory>")
-				.addExample("/inventory set DIM-1 nether");
-		
-		
-		Help inv = new Help("inventory", "inventory", "Base Project Inventories command")
-				.setPermission("pji.cmd.inventory")
-				.addChild(invSet)
-				.addChild(invList)
-				.addChild(invInfo)
-				.addChild(invDelete)
-				.addChild(invCreate);
-		
-		Help.register(inv);
+		if(Sponge.getPluginManager().getPlugin("helpme").isPresent()) {
+			Help invCreate = new Help("inventory create", "create", "Create a new inventory")
+					.setPermission("pji.cmd.inventory.create")
+					.addUsage("/inventory create <name>")
+					.addUsage("/inv c <name>")
+					.addExample("/inventory create nether");
+			
+			Help invDelete = new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.")
+					.setPermission("pji.cmd.inventory.delete")
+					.addUsage("/inventory delete <name>")
+					.addUsage("/inv d <name>")
+					.addExample("/inventory delete nether");
+			
+			Help invInfo = new Help("inventory info", "info", "Lists the worlds and their assigned inventories")
+					.setPermission("pji.cmd.inventory.info")
+					.addUsage("/inventory info")
+					.addUsage("/inv i");
+			
+			Help invList = new Help("inventory list", "list", "List all inventories")
+					.setPermission("pji.cmd.inventory.list")
+					.addUsage("/inventory list")
+					.addUsage("/inv l");
+			
+			Help invSet = new Help("inventory set", "set", "Set an inventory for the specified world")
+					.setPermission("pji.cmd.inventory.set")
+					.addUsage("/inventory set <world> <inventory>")
+					.addUsage("/inv s <world> <inventory>")
+					.addExample("/inventory set DIM-1 nether");
+			
+			
+			Help inv = new Help("inventory", "inventory", "Base Project Inventories command")
+					.setPermission("pji.cmd.inventory")
+					.addChild(invSet)
+					.addChild(invList)
+					.addChild(invInfo)
+					.addChild(invDelete)
+					.addChild(invCreate);
+			
+			Help.register(inv);
+		}
 	}
 
 	@Listener
