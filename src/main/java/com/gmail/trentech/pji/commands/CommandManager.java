@@ -4,7 +4,6 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
-import com.gmail.trentech.pji.commands.elements.HelpElement;
 import com.gmail.trentech.pji.commands.elements.InventoryElement;
 
 public class CommandManager {
@@ -42,13 +41,7 @@ public class CommandManager {
 		    .permission("pji.cmd.inventory.info")
 		    .executor(new CMDInfo())
 		    .build();
-	
-	public CommandSpec cmdHelp = CommandSpec.builder()
-		    .permission("pji.cmd.inventory")    
-		    .arguments(new HelpElement(Text.of("rawCommand")))
-		    .executor(new CMDHelp())
-		    .build();
-	
+
 	public CommandSpec cmdInventory = CommandSpec.builder()
 			.permission("pji.cmd.inventory")
 			//.child(cmdTest, "test", "t")
@@ -57,7 +50,6 @@ public class CommandManager {
 			.child(cmdSet, "set", "s")
 			.child(cmdList, "list", "l")
 			.child(cmdInfo, "info", "i")
-			.child(cmdHelp, "help", "h")
 			.executor(new CMDInventory())
 			.build();
 }

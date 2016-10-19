@@ -10,17 +10,8 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.Help;
 
 public class CMDCreate implements CommandExecutor {
-
-	public CMDCreate() {
-		new Help("inventory create", "create", "Create a new inventory", false)
-			.setPermission("pji.cmd.inventory.create")
-			.setUsage("/inventory create <name>\n /inv c <name>")
-			.setExample("/inventory create nether")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

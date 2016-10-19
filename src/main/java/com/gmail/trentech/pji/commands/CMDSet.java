@@ -17,17 +17,8 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.Help;
 
 public class CMDSet implements CommandExecutor {
-
-	public CMDSet() {
-		new Help("inventory set", "set", "Set an inventory for the specified world", false)
-			.setPermission("pji.cmd.inventory.set")
-			.setUsage("/inventory set <world> <inventory>\n /inv s <world> <inventory>")
-			.setExample("/inventory set DIM-1 nether")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

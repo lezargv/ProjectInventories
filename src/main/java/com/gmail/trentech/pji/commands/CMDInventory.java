@@ -11,22 +11,42 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.service.pagination.PaginationList;
-import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.utils.Help;
+import com.gmail.trentech.helpme.Help;
 
 public class CMDInventory implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+		if(Sponge.getPluginManager().getPlugin("helpme").isPresent()) {
+			Help.executeList(src, Help.get("inventory").get().getChildren());
+			
+			return CommandResult.success();
+		}
+
 		List<Text> list = new ArrayList<>();
 
-		list.addAll(Help.getList(src));
-
+		if (src.hasPermission("pji.cmd.inventory.create")) {
+			list.add(Text.builder().color(TextColors.GREEN).onClick(TextActions.runCommand("/pji:inventory create")).append(Text.of(" /inventory create")).build());
+		}
+		if (src.hasPermission("pji.cmd.inventory.delete")) {
+			list.add(Text.builder().color(TextColors.GREEN).onClick(TextActions.runCommand("/pji:inventory delete")).append(Text.of(" /inventory delete")).build());
+		}
+		if (src.hasPermission("pji.cmd.inventory.set")) {
+			list.add(Text.builder().color(TextColors.GREEN).onClick(TextActions.runCommand("/pji:inventory set")).append(Text.of(" /inventory set")).build());
+		}
+		if (src.hasPermission("pji.cmd.inventory.list")) {
+			list.add(Text.builder().color(TextColors.GREEN).onClick(TextActions.runCommand("/pji:inventory list")).append(Text.of(" /inventory list")).build());
+		}
+		if (src.hasPermission("pji.cmd.inventory.info")) {
+			list.add(Text.builder().color(TextColors.GREEN).onClick(TextActions.runCommand("/pji:inventory into")).append(Text.of(" /inventory info")).build());
+		}
+		
 		if (src instanceof Player) {
-			PaginationList.Builder pages = Sponge.getServiceManager().provide(PaginationService.class).get().builder();
+			PaginationList.Builder pages = PaginationList.builder();
 
 			pages.title(Text.builder().color(TextColors.DARK_GREEN).append(Text.of(TextColors.GREEN, "Command List")).build());
 

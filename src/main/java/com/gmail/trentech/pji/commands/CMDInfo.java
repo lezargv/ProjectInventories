@@ -18,16 +18,8 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.Help;
 
 public class CMDInfo implements CommandExecutor {
-
-	public CMDInfo() {
-		new Help("inventory info", "info", "Lists the worlds and their assigned inventories", false)
-			.setPermission("pji.cmd.inventory.info")
-			.setUsage("/inventory info\n /inv i")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

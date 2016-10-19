@@ -16,19 +16,10 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.sql.SQLInventory;
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.Help;
 
 public class CMDDelete implements CommandExecutor {
 
 	private static HashMap<CommandSource, String> confirm = new HashMap<>();
-
-	public CMDDelete() {
-		new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.", false)
-			.setPermission("pji.cmd.inventory.delete")
-			.setUsage("/inventory delete <name>\n /inv d <name>")
-			.setExample("/inventory delete nether")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {

@@ -16,16 +16,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.sql.SQLSettings;
-import com.gmail.trentech.pji.utils.Help;
 
 public class CMDList implements CommandExecutor {
-
-	public CMDList() {
-		new Help("inventory list", "list", "List all inventories", false)
-			.setPermission("pji.cmd.inventory.list")
-			.setUsage("/inventory list\n /inv l")
-			.save();
-	}
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
