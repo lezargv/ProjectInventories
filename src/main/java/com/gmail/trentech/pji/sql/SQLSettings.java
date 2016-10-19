@@ -26,7 +26,7 @@ public class SQLSettings extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Settings");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix("Settings"));
 
 			ResultSet result = statement.executeQuery();
 
