@@ -48,7 +48,7 @@ public class CommandManager {
 			.child(cmdCreate, "create", "c")
 			.child(cmdDelete, "delete", "d")
 			.child(cmdSet, "set", "s")
-			.child(cmdList, "list", "l")
+			.child(cmdList, "list", "ls")
 			.child(cmdInfo, "info", "i")
 			.executor(new CMDInventory())
 			.build();

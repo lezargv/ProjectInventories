@@ -64,7 +64,7 @@ public class Main {
 
 		SQLInventory.createInventory("default");
 		
-		if(Sponge.getPluginManager().getPlugin("helpme").isPresent()) {
+		if (Sponge.getPluginManager().isLoaded("helpme")) {
 			Help invCreate = new Help("inventory create", "create", "Create a new inventory")
 					.setPermission("pji.cmd.inventory.create")
 					.addUsage("/inventory create <name>")
