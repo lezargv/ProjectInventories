@@ -1,6 +1,7 @@
 package com.gmail.trentech.pji.commands.elements;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.ArgumentParseException;
@@ -13,10 +14,8 @@ import org.spongepowered.api.text.format.TextColors;
 import com.gmail.trentech.pji.sql.SQLSettings;
 
 public class InventoryElement extends CommandElement {
-	
-    CommandArgs errorargs;
 
-    protected InventoryElement(Text key) {
+    public InventoryElement(Text key) {
         super(key);
     }
 
@@ -35,10 +34,29 @@ public class InventoryElement extends CommandElement {
 		throw args.createError(Text.of(TextColors.RED, "Inventory not found"));
     }
 
-
     @Override
     public List<String> complete(CommandSource src, CommandArgs args, CommandContext context) {
-        return Collections.emptyList();
+    	List<String> list = new ArrayList<>();
+
+    	Optional<String> next = args.nextIfPresent();
+    	
+    	if(next.isPresent()) {
+            for(String inv : SQLSettings.getInventoryList()) {
+            	if(inv.startsWith(next.get())) {
+            		list.add(inv);
+            	}
+            }
+            if("default".startsWith(next.get())) {
+            	list.add("default");
+            }
+    	} else {
+    		for(String inv : SQLSettings.getInventoryList()) {
+            	list.add(inv);
+            }
+    		list.add("default");
+    	}
+
+        return list;
     }
 
     @Override

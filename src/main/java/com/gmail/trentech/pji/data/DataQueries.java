@@ -5,9 +5,10 @@ import org.spongepowered.api.data.DataQuery;
 
 public class DataQueries {
 
-	public static final DataQuery INVENTORY = of("inventory");
 	public static final DataQuery HOTBAR = of("hotbar");
-	public static final DataQuery ARMOR = of("armor");
+	public static final DataQuery OFF_HAND = of("offhand");
+	public static final DataQuery EQUIPMENT = of("equipment");
+	public static final DataQuery GRID = of("grid");
 	public static final DataQuery HEALTH = of("health");
 	public static final DataQuery FOOD = of("food");
 	public static final DataQuery SATURATION = of("saturation");

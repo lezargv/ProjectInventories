@@ -5,12 +5,13 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.text.Text;
 
 import com.gmail.trentech.pji.commands.elements.HelpElement;
+import com.gmail.trentech.pji.commands.elements.InventoryElement;
 
 public class CommandManager {
 
 	public CommandSpec cmdTest = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.test")    
-		    .arguments(GenericArguments.string(Text.of("inv")))
+		    .arguments(new InventoryElement(Text.of("inv")))
 		    .executor(new CMDTest())
 		    .build();
 	
@@ -22,13 +23,13 @@ public class CommandManager {
 	
 	public CommandSpec cmdDelete = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.delete")
-		    .arguments(GenericArguments.string(Text.of("inv")))
+		    .arguments(new InventoryElement(Text.of("inv")))
 		    .executor(new CMDDelete())
 		    .build();
 
 	public CommandSpec cmdSet = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.set")
-		    .arguments(GenericArguments.world(Text.of("world")), GenericArguments.optional(GenericArguments.string(Text.of("inv"))))
+		    .arguments(GenericArguments.world(Text.of("world")), GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDSet())
 		    .build();
 
