@@ -11,7 +11,7 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.sql.SQLSettings;
+import com.gmail.trentech.pji.settings.Inventories;
 
 public class InventoryElement extends CommandElement {
 
@@ -23,11 +23,11 @@ public class InventoryElement extends CommandElement {
     protected Object parseValue(CommandSource source, CommandArgs args) throws ArgumentParseException {
     	final String next = args.next();
 
-		if (SQLSettings.getInventory(next)) {
+		if (Inventories.exists(next)) {
 			return next;
 		}
 
-		if (next.equalsIgnoreCase("default")) {
+		if (next.equalsIgnoreCase("DEFAULT")) {
 			return next;
 		}
 
@@ -41,19 +41,19 @@ public class InventoryElement extends CommandElement {
     	Optional<String> next = args.nextIfPresent();
     	
     	if(next.isPresent()) {
-            for(String inv : SQLSettings.getInventoryList()) {
+            for(String inv : Inventories.all()) {
             	if(inv.startsWith(next.get())) {
             		list.add(inv);
             	}
             }
-            if("default".startsWith(next.get())) {
-            	list.add("default");
+            if("DEFAULT".startsWith(next.get())) {
+            	list.add("DEFAULT");
             }
     	} else {
-    		for(String inv : SQLSettings.getInventoryList()) {
+    		for(String inv : Inventories.all()) {
             	list.add(inv);
             }
-    		list.add("default");
+    		list.add("DEFAULT");
     	}
 
         return list;

@@ -5,6 +5,7 @@ import org.spongepowered.api.data.DataQuery;
 
 public class DataQueries {
 
+	public static final DataQuery NAME = of("name");
 	public static final DataQuery HOTBAR = of("hotbar");
 	public static final DataQuery OFF_HAND = of("offhand");
 	public static final DataQuery EQUIPMENT = of("equipment");

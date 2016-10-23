@@ -17,12 +17,10 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.helpme.Help;
 import com.gmail.trentech.pji.commands.CommandManager;
-import com.gmail.trentech.pji.data.inventory.Inventory;
-import com.gmail.trentech.pji.data.inventory.InventoryBuilder;
-import com.gmail.trentech.pji.sql.SQLInventory;
-import com.gmail.trentech.pji.sql.SQLUtils;
+import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
+import com.gmail.trentech.pji.utils.SQLUtils;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
@@ -58,11 +56,11 @@ public class Main {
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
 		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
-		Sponge.getDataManager().registerBuilder(Inventory.class, new InventoryBuilder());
+		Sponge.getDataManager().registerBuilder(PlayerData.class, new PlayerData.Builder());
 
 		SQLUtils.createSettings();
 
-		SQLInventory.createInventory("default");
+		SQLUtils.createTable("DEFAULT");
 		
 		if (Sponge.getPluginManager().isLoaded("helpme")) {
 			Help invCreate = new Help("inventory create", "create", "Create a new inventory")

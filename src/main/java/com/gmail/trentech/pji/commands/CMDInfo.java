@@ -2,7 +2,6 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -17,7 +16,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.sql.SQLSettings;
+import com.gmail.trentech.pji.settings.WorldData;
 
 public class CMDInfo implements CommandExecutor {
 
@@ -26,13 +25,9 @@ public class CMDInfo implements CommandExecutor {
 		List<Text> list = new ArrayList<>();
 
 		for(WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
-			Optional<String> optionalInv = SQLSettings.getWorld(properties);
-			
-			if(optionalInv.isPresent()) {
-				list.add(Text.of(TextColors.GREEN, properties.getWorldName(), " : ", TextColors.WHITE, " ", optionalInv.get()));
-			} else {
-				list.add(Text.of(TextColors.GREEN, properties.getWorldName(), " : ", TextColors.WHITE, " default"));
-			}
+			WorldData worldData = WorldData.get(properties);
+
+			list.add(Text.of(TextColors.GREEN, properties.getWorldName(), " : ", TextColors.WHITE, " ", worldData.getInventory()));
 		}
 
 		if (src instanceof Player) {

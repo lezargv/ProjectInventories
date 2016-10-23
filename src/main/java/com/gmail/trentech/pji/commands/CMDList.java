@@ -15,7 +15,7 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.sql.SQLSettings;
+import com.gmail.trentech.pji.settings.Inventories;
 
 public class CMDList implements CommandExecutor {
 
@@ -23,9 +23,9 @@ public class CMDList implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
 
-		list.add(Text.of(TextColors.GREEN, " - default"));
+		list.add(Text.of(TextColors.GREEN, " - DEFAULT"));
 
-		for (String name : SQLSettings.getInventoryList()) {
+		for (String name : Inventories.all()) {
 			list.add(Text.of(TextColors.GREEN, " - ", name));
 		}
 

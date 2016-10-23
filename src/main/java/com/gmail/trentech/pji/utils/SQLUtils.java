@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.sql;
+package com.gmail.trentech.pji.utils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,33 +9,25 @@ import javax.sql.DataSource;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
 
-import com.gmail.trentech.pji.utils.ConfigManager;
-
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-
 public abstract class SQLUtils {
 
 	protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
 	protected static boolean enableSQL = ConfigManager.get().getConfig().getNode("settings", "sql", "enable").getBoolean();
+	protected static String url = ConfigManager.get().getConfig().getNode("settings", "sql", "url").getString();
+	protected static String username = ConfigManager.get().getConfig().getNode("settings", "sql", "username").getString();
+	protected static String password = ConfigManager.get().getConfig().getNode("settings", "sql", "password").getString();
 	protected static SqlService sql;
 
 	protected static DataSource getDataSource() throws SQLException {
 		if (sql == null) {
 			sql = Sponge.getServiceManager().provide(SqlService.class).get();
 		}
-		DataSource dataSource = null;
+
 		if (enableSQL) {
-			CommentedConfigurationNode config = ConfigManager.get().getConfig();
-
-			String url = config.getNode("settings", "sql", "url").getString();
-			String username = config.getNode("settings", "sql", "username").getString();
-			String password = config.getNode("settings", "sql", "password").getString();
-
-			dataSource = sql.getDataSource("jdbc:mysql://" + url + "?user=" + username + "&password=" + password);
+			return sql.getDataSource("jdbc:mysql://" + url + "?user=" + username + "&password=" + password);
 		} else {
-			dataSource = sql.getDataSource("jdbc:h2:./config/pji/data");
+			return sql.getDataSource("jdbc:h2:./config/pji/data");
 		}
-		return dataSource;
 	}
 
 	protected static String prefix(String table) {
@@ -45,29 +37,43 @@ public abstract class SQLUtils {
 		return "`" + table + "`";
 	}
 
-	public static void deleteTable(String name) {
+	public static boolean createTable(String name) {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DROP TABLE " + prefix(name));
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix(name.toUpperCase()) + " (Player TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
+	}
+	
+	public static boolean deleteTable(String name) {
+		try {
+			Connection connection = getDataSource().getConnection();
+
+			PreparedStatement statement = connection.prepareStatement("DROP TABLE " + prefix(name.toUpperCase()));
+
+			statement.executeUpdate();
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 
 	public static void createSettings() {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix("Settings") + " (World TEXT, Inventory TEXT)");
-
-			statement.executeUpdate();
-
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix("Players") + " (Player TEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix("Settings") + " (World TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 

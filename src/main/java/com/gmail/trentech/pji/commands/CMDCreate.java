@@ -8,21 +8,19 @@ import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.sql.SQLInventory;
-import com.gmail.trentech.pji.sql.SQLSettings;
+import com.gmail.trentech.pji.settings.Inventories;
 
 public class CMDCreate implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		String name = args.<String> getOne("inv").get();
+		String name = args.<String> getOne("inv").get().toUpperCase();
 
-		if (SQLSettings.getInventory(name)) {
+		if (Inventories.exists(name)) {
 			throw new CommandException(Text.of(TextColors.RED, name, " already exists"), false);
 		}
 
-		SQLSettings.saveInventory(name);
-		SQLInventory.createInventory(name);
+		Inventories.save(name);
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Created inventory ", name));
 

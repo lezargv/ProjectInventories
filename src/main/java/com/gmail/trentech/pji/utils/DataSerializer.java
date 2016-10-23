@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.data.inventory.extra;
+package com.gmail.trentech.pji.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,12 +11,12 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import com.gmail.trentech.pji.data.inventory.Inventory;
+import com.gmail.trentech.pji.data.PlayerData;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-public class InventorySerializer {
+public class DataSerializer {
 
 	public static String serializeItemStack(ItemStack itemStack) {
 		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(itemStack.toContainer());
@@ -44,8 +44,8 @@ public class InventorySerializer {
 		return Sponge.getDataManager().deserialize(ItemStack.class, dataView).get();
 	}
 
-	public static String serializeInventory(Inventory inventory) {
-		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventory.toContainer());
+	public static String serializePlayerData(PlayerData playerData) {
+		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(playerData.toContainer());
 		StringWriter stringWriter = new StringWriter();
 		try {
 			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
@@ -56,7 +56,7 @@ public class InventorySerializer {
 		return stringWriter.toString();
 	}
 
-	public static Inventory deserializeInventory(String item) {
+	public static PlayerData deserializePlayerData(String item) {
 		ConfigurationNode node = null;
 		try {
 			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
@@ -66,6 +66,6 @@ public class InventorySerializer {
 		
 		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
-		return Sponge.getDataManager().deserialize(Inventory.class, dataView).get();
+		return Sponge.getDataManager().deserialize(PlayerData.class, dataView).get();
 	}
 }

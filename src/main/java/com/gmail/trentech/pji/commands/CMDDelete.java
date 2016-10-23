@@ -14,8 +14,8 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.sql.SQLInventory;
-import com.gmail.trentech.pji.sql.SQLSettings;
+import com.gmail.trentech.pji.settings.Inventories;
+import com.gmail.trentech.pji.settings.WorldData;
 
 public class CMDDelete implements CommandExecutor {
 
@@ -23,22 +23,21 @@ public class CMDDelete implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		String name = args.<String> getOne("inv").get();
+		String name = args.<String> getOne("inv").get().toUpperCase();
 
 		if (name.equalsIgnoreCase("yes")) {
 			if (confirm.containsKey(src)) {
 				String inv = confirm.get(src);
 				
 				for (WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
-					String oldInv = SQLSettings.getWorld(properties).get();
-					
-					if (oldInv.equalsIgnoreCase(inv)) {
-						SQLSettings.updateWorld(properties, oldInv, "default");
+					WorldData worldData = WorldData.get(properties);
+
+					if (worldData.getInventory().equalsIgnoreCase(inv)) {
+						worldData.setInventory("DEFAULT").save();
 					}
 				}
 
-				SQLInventory.deleteTable(inv);
-				SQLSettings.deleteInventory(inv);
+				Inventories.delete(inv);
 
 				src.sendMessage(Text.of(TextColors.DARK_GREEN, "Deleted inventory ", inv));
 
@@ -47,11 +46,11 @@ public class CMDDelete implements CommandExecutor {
 			return CommandResult.success();
 		}
 
-		if (!SQLSettings.getInventory(name)) {
+		if (!Inventories.exists(name)) {
 			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
 		}
 
-		if (name.equalsIgnoreCase("default")) {
+		if (name.equalsIgnoreCase("DEFAULT")) {
 			throw new CommandException(Text.of(TextColors.RED, name, " inventory cannot be deleted"), false);
 		}
 

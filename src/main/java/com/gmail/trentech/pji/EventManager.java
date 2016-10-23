@@ -1,47 +1,43 @@
 package com.gmail.trentech.pji;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
+import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
-import org.spongepowered.api.event.world.LoadWorldEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.data.inventory.extra.InventoryHelper;
-import com.gmail.trentech.pji.sql.SQLSettings;
+import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.settings.WorldData;
 
 public class EventManager {
 
-	@Listener
-	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event) {
-		Player player = event.getTargetEntity();
+	@Listener(order = Order.POST)
+	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
+		Sponge.getScheduler().createTaskBuilder().async().delayTicks(40).execute(t -> {
+			WorldProperties properties = player.getWorld().getProperties();
 
-		WorldProperties properties = player.getWorld().getProperties();
-
-		String name = SQLSettings.getWorld(properties).get();
-
-		if (!SQLSettings.getPlayer(player)) {
-			SQLSettings.savePlayer(player);
-			return;
-		}
-		InventoryHelper.setInventory(player, name);
+			Optional<PlayerData> optionalPlayerData = PlayerData.get(player, WorldData.get(properties).getInventory());
+			
+			if(optionalPlayerData.isPresent()) {
+				optionalPlayerData.get().set();
+			}
+		}).submit(Main.getPlugin());
 	}
 
-	@Listener
-	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event) {
-		Player player = event.getTargetEntity();
-
+	@Listener(order = Order.PRE)
+	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
 		WorldProperties properties = player.getWorld().getProperties();
 
-		String name = SQLSettings.getWorld(properties).get();
-
-		InventoryHelper.saveInventory(player, name);
+		new PlayerData(player, WorldData.get(properties).getInventory()).save();
 	}
 
 	@Listener
@@ -59,9 +55,7 @@ public class EventManager {
 
 			WorldProperties properties = player.getWorld().getProperties();
 
-			String name = SQLSettings.getWorld(properties).get();
-
-			InventoryHelper.saveInventory(player, name);
+			new PlayerData(player, WorldData.get(properties).getInventory()).save();
 		}
 	}
 
@@ -69,22 +63,35 @@ public class EventManager {
 	public void onRespawnPlayerEvent(RespawnPlayerEvent event) {
 		Player player = event.getTargetEntity();
 
-		WorldProperties properties = player.getWorld().getProperties();
+		WorldProperties from = event.getFromTransform().getExtent().getProperties();
+		WorldProperties to = event.getToTransform().getExtent().getProperties();
+		
+		String fromName = WorldData.get(from).getInventory();
 
-		String name = SQLSettings.getWorld(properties).get();
+		new PlayerData(player, fromName).save();
+		
+		if (from.equals(to)) {
+			return;
+		}
 
-		InventoryHelper.saveInventory(player, name);
+		String toName = WorldData.get(to).getInventory();
+		
+		if (toName.equals(fromName)) {	
+			return;
+		}
+
+		Optional<PlayerData> optionalPlayerData = PlayerData.get(player, toName);
+		
+		if(optionalPlayerData.isPresent()) {
+			optionalPlayerData.get().set();
+		} else {
+			player.getInventory().clear();
+			new PlayerData(player, toName).save();
+		}	
 	}
 
 	@Listener(order = Order.POST)
-	public void onMoveEntityEventTeleport(MoveEntityEvent.Teleport event) {
-		Entity entity = event.getTargetEntity();
-
-		if (!(entity instanceof Player)) {
-			return;
-		}
-		Player player = (Player) entity;
-
+	public void onMoveEntityEventTeleport(MoveEntityEvent.Teleport event, @Getter("getTargetEntity") Player player) {
 		WorldProperties from = event.getFromTransform().getExtent().getProperties();
 		WorldProperties to = event.getToTransform().getExtent().getProperties();
 
@@ -92,23 +99,22 @@ public class EventManager {
 			return;
 		}
 
-		String fromName = SQLSettings.getWorld(from).get();
-		String toName = SQLSettings.getWorld(to).get();
+		String fromName =  WorldData.get(from).getInventory();
+		String toName =  WorldData.get(to).getInventory();
 
 		if (fromName.equalsIgnoreCase(toName)) {
 			return;
 		}
 
-		InventoryHelper.saveInventory(player, fromName);
-		InventoryHelper.setInventory(player, toName);
-	}
-
-	@Listener
-	public void onLoadWorldEvent(LoadWorldEvent event) {
-		WorldProperties properties = event.getTargetWorld().getProperties();
-
-		if (!SQLSettings.getWorld(properties).isPresent()) {
-			SQLSettings.saveWorld(properties);
+		new PlayerData(player, fromName).save();
+		
+		Optional<PlayerData> optionalPlayerData = PlayerData.get(player, toName);
+		
+		if(optionalPlayerData.isPresent()) {
+			optionalPlayerData.get().set();
+		} else {
+			player.getInventory().clear();
+			new PlayerData(player, toName).save();
 		}
 	}
 }
