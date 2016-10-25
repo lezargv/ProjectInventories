@@ -15,9 +15,9 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import com.gmail.trentech.helpme.Help;
 import com.gmail.trentech.pji.commands.CommandManager;
 import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.utils.CommandHelp;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
 import com.gmail.trentech.pji.utils.SQLUtils;
@@ -26,7 +26,7 @@ import com.google.inject.Inject;
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = Resource.NAME, repoOwner = Resource.AUTHOR, version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", optional = true) })
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", version = "0.2.1", optional = true) })
 public class Main {
 
 	@Inject @ConfigDir(sharedRoot = false)
@@ -62,46 +62,7 @@ public class Main {
 
 		SQLUtils.createTable("DEFAULT");
 		
-		if (Sponge.getPluginManager().isLoaded("helpme")) {
-			Help invCreate = new Help("inventory create", "create", "Create a new inventory")
-					.setPermission("pji.cmd.inventory.create")
-					.addUsage("/inventory create <name>")
-					.addUsage("/inv c <name>")
-					.addExample("/inventory create nether");
-			
-			Help invDelete = new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.")
-					.setPermission("pji.cmd.inventory.delete")
-					.addUsage("/inventory delete <name>")
-					.addUsage("/inv d <name>")
-					.addExample("/inventory delete nether");
-			
-			Help invInfo = new Help("inventory info", "info", "Lists the worlds and their assigned inventories")
-					.setPermission("pji.cmd.inventory.info")
-					.addUsage("/inventory info")
-					.addUsage("/inv i");
-			
-			Help invList = new Help("inventory list", "list", "List all inventories")
-					.setPermission("pji.cmd.inventory.list")
-					.addUsage("/inventory list")
-					.addUsage("/inv l");
-			
-			Help invSet = new Help("inventory set", "set", "Set an inventory for the specified world")
-					.setPermission("pji.cmd.inventory.set")
-					.addUsage("/inventory set <world> <inventory>")
-					.addUsage("/inv s <world> <inventory>")
-					.addExample("/inventory set DIM-1 nether");
-			
-			
-			Help inv = new Help("inventory", "inventory", "Base Project Inventories command")
-					.setPermission("pji.cmd.inventory")
-					.addChild(invSet)
-					.addChild(invList)
-					.addChild(invInfo)
-					.addChild(invDelete)
-					.addChild(invCreate);
-			
-			Help.register(inv);
-		}
+		CommandHelp.init();
 	}
 
 	@Listener
