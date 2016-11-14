@@ -44,7 +44,7 @@ public class WorldData extends SQLUtils {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				list.put(result.getString("World"), new WorldData(result.getString("World"), result.getString("Inventory")));
+				list.put(result.getString("World"), new WorldData(result.getString("World"), result.getString("Data")));
 			}
 
 			connection.close();
@@ -71,12 +71,12 @@ public class WorldData extends SQLUtils {
 			PreparedStatement statement;
 			
 			if(exist(worldUuid)) {
-				statement = connection.prepareStatement("UPDATE " + prefix("Settings") + " SET Inventory = ? WHERE World = ?");
+				statement = connection.prepareStatement("UPDATE " + prefix("Settings") + " SET Data = ? WHERE World = ?");
 
 				statement.setString(1, inventory);
 				statement.setString(2, worldUuid);
 			} else {
-				statement = connection.prepareStatement("INSERT into " + prefix("Settings") + " (World, Inventory) VALUES (?, ?)");
+				statement = connection.prepareStatement("INSERT into " + prefix("Settings") + " (World, Data) VALUES (?, ?)");
 				
 				statement.setString(1, worldUuid);
 				statement.setString(2, inventory);
