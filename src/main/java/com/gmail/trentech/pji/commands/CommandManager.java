@@ -8,10 +8,16 @@ import com.gmail.trentech.pji.commands.elements.InventoryElement;
 
 public class CommandManager {
 
-	public CommandSpec cmdTest = CommandSpec.builder()
-		    .permission("pji.cmd.inventory.test")    
-		    .arguments(new InventoryElement(Text.of("inv")))
-		    .executor(new CMDTest())
+	public CommandSpec cmdSee = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.see")    
+		    .arguments(GenericArguments.player(Text.of("player")), new InventoryElement(Text.of("inv")))
+		    .executor(new CMDSee())
+		    .build();
+	
+	public CommandSpec cmdGet = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.get")    
+		    .arguments(GenericArguments.string(Text.of("inv")))
+		    .executor(new CMDGet())
 		    .build();
 	
 	public CommandSpec cmdCreate = CommandSpec.builder()
@@ -44,7 +50,8 @@ public class CommandManager {
 
 	public CommandSpec cmdInventory = CommandSpec.builder()
 			.permission("pji.cmd.inventory")
-			//.child(cmdTest, "test", "t")
+			.child(cmdSee, "see", "s")
+			.child(cmdGet, "get", "g")
 			.child(cmdCreate, "create", "c")
 			.child(cmdDelete, "delete", "d")
 			.child(cmdSet, "set", "s")

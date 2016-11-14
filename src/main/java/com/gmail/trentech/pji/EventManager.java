@@ -22,7 +22,7 @@ public class EventManager {
 
 	@Listener(order = Order.POST)
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-		Sponge.getScheduler().createTaskBuilder().async().delayTicks(40).execute(t -> {
+		Sponge.getScheduler().createTaskBuilder().async().delayTicks(35).execute(t -> {
 			WorldProperties properties = player.getWorld().getProperties();
 
 			Optional<PlayerData> optionalPlayerData = PlayerData.get(player, WorldData.get(properties).getInventory());

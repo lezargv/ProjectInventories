@@ -12,9 +12,9 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.data.PlayerData;
-import com.gmail.trentech.pji.settings.Inventories;
+import com.gmail.trentech.pji.settings.WorldData;
 
-public class CMDTest implements CommandExecutor {
+public class CMDGet implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
@@ -25,11 +25,7 @@ public class CMDTest implements CommandExecutor {
 
 		String name = args.<String> getOne("inv").get();
 
-		if (!Inventories.exists(name)) {
-			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
-		}
-
-		new PlayerData(player, name).save();
+		new PlayerData(player, WorldData.get(player.getWorld().getProperties()).getInventory()).save();
 		
 		Optional<PlayerData> optionalPlayerData = PlayerData.get(player, name);
 		
@@ -40,7 +36,7 @@ public class CMDTest implements CommandExecutor {
 			new PlayerData(player, name).save();
 		}
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory ", name));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory to ", name));
 
 		return CommandResult.success();
 	}

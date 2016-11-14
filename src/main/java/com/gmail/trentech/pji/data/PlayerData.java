@@ -164,14 +164,26 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		this.hotbar.put(slot, itemStack);
 	}
 
+	public void removeHotbar(Integer slot) {
+		this.hotbar.remove(slot);
+	}
+	
 	public void addGrid(Integer slot, ItemStack itemStack) {
 		this.grid.put(slot, itemStack);
 	}
 
+	public void removeGrid(Integer slot) {
+		this.grid.remove(slot);
+	}
+	
 	public void addEquipment(Integer slot, ItemStack itemStack) {
 		this.equipment.put(slot, itemStack);
 	}
 
+	public void removeEquipment(Integer slot) {
+		this.equipment.remove(slot);
+	}
+	
 	public void setOffHand(Optional<ItemStack> itemStack) {
 		this.offHand = itemStack;
 	}
@@ -196,7 +208,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		this.experience = experience;
 	}
 	
-	public void save() {
+	public PlayerData save() {
 		try {
 			Connection connection = getDataSource().getConnection();
 			PreparedStatement statement;
@@ -219,6 +231,8 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		
+		return this;
 	}
 	
 	public void set() {
