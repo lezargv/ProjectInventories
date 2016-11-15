@@ -41,38 +41,34 @@ public class CommandHelp {
 			Usage usageSet = new Usage(Argument.of("<world>", "Specifies the targeted world"))
 					.addArgument(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
 				
-			Help invAdd = new Help("inventory world add", "add", "Adds an inventory to the specified world")
-					.setPermission("pji.cmd.inventory.world.add")
+			Help invAdd = new Help("inventory add", "add", "Adds an inventory to the specified world")
+					.setPermission("pji.cmd.inventory.add")
 					.setUsage(usageSet)
-					.addExample("/inventory world add DIM-1 nether");
+					.addExample("/inventory add DIM-1 nether");
 
-			Help invRemove = new Help("inventory world remove", "remove", "Removes an inventory from the specified world")
-					.setPermission("pji.cmd.inventory.world.remove")
+			Help invRemove = new Help("inventory remove", "remove", "Removes an inventory from the specified world")
+					.setPermission("pji.cmd.inventory.remove")
 					.setUsage(usageSet)
-					.addExample("/inventory world remove DIM-1 nether");
+					.addExample("/inventory remove DIM-1 nether");
 			
 			Usage usageWorld = new Usage(Argument.of("[world]", "Specifies the targeted world"));
 					
-			Help invWorldList = new Help("inventory world list", "list", "List all worlds and there assigned inventories")
-					.setPermission("pji.cmd.inventory.world.list")
+			Help invInfo = new Help("inventory info", "info", "List all worlds and there assigned inventories")
+					.setPermission("pji.cmd.inventory.info")
 					.setUsage(usageWorld)
-					.addExample("/inventory world list")
-					.addExample("/inventory world list world");
-			
-			Help invWorld = new Help("inventory world", "world", "World settings commands")
-					.setPermission("pji.cmd.inventory")
-					.addChild(invRemove)
-					.addChild(invAdd)
-					.addChild(invWorldList);
-			
+					.addExample("/inventory info")
+					.addExample("/inventory info world");
+
 			Help inv = new Help("inventory", "inventory", "Base Project Inventories command")
 					.setPermission("pji.cmd.inventory")
-					.addChild(invWorld)
 					.addChild(invList)
 					.addChild(invDelete)
 					.addChild(invCreate)
 					.addChild(invGet)
-					.addChild(invSee);
+					.addChild(invSee)
+					.addChild(invRemove)
+					.addChild(invAdd)
+					.addChild(invInfo);
 			
 			Help.register(inv);
 		}

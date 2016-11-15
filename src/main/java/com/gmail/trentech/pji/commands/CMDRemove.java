@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.commands.world;
+package com.gmail.trentech.pji.commands;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -11,25 +11,24 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.WorldSettings;
 
-public class CMDAdd implements CommandExecutor {
+public class CMDRemove implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		WorldProperties properties = args.<WorldProperties> getOne("world").get();
 		String name = args.<String> getOne("inv").get().toUpperCase();
 		
-		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		WorldSettings worldSettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getWorldSettings();
 
-		boolean isDefault = false;
-		
-		if(args.hasAny("true|false")) {
-			isDefault = args.<Boolean> getOne("true|false").get();
+		if(!worldSettings.contains(properties, name)) {
+			throw new CommandException(Text.of(TextColors.RED, name, " is not assigned to ", properties.getWorldName()), false);
 		}
+		
+		worldSettings.remove(properties, name);
 
-		inventoryService.getWorldSettings().add(properties, name, isDefault);
-
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Assigned inventory " + name + " to ", properties.getWorldName()));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Unassigned inventory " + name + " from ", properties.getWorldName()));
 
 		return CommandResult.success();
 	}
