@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.utils;
+package com.gmail.trentech.pji.sql;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,9 +9,11 @@ import javax.sql.DataSource;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.service.sql.SqlService;
 
+import com.gmail.trentech.pji.utils.ConfigManager;
+
 public abstract class SQLUtils {
 
-	protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
+	//protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
 	protected static boolean enableSQL = ConfigManager.get().getConfig().getNode("settings", "sql", "enable").getBoolean();
 	protected static String url = ConfigManager.get().getConfig().getNode("settings", "sql", "url").getString();
 	protected static String username = ConfigManager.get().getConfig().getNode("settings", "sql", "username").getString();
@@ -30,34 +32,36 @@ public abstract class SQLUtils {
 		}
 	}
 
-	protected static String prefix(String table) {
-		if (!prefix.equalsIgnoreCase("NONE") && enableSQL) {
-			return "`" + prefix + table + "`";
-		}
-		return "`" + table + "`";
-	}
+//	protected static String prefix(String table) {
+//		if (!prefix.equalsIgnoreCase("NONE") && enableSQL) {
+//			return "`" + prefix + table + "`";
+//		}
+//		return "`" + table + "`";
+//	}
 
-	public static boolean createTable(String name) {
+	public static void createSettings() {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix(name.toUpperCase()) + " (Player TEXT, Data TEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Worlds (UUID TEXT, Inventories TEXT)");
+
+			statement.executeUpdate();
+
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Players (UUID TEXT, Inventory TEXT)");
 
 			statement.executeUpdate();
 
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
-		return true;
 	}
 	
 	public static boolean deleteTable(String name) {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DROP TABLE " + prefix(name.toUpperCase()));
+			PreparedStatement statement = connection.prepareStatement("DROP TABLE `" + name.toUpperCase() + "`");
 
 			statement.executeUpdate();
 
@@ -69,21 +73,4 @@ public abstract class SQLUtils {
 		return true;
 	}
 
-	public static void createSettings() {
-		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix("Settings") + " (World TEXT, Data TEXT)");
-
-			statement.executeUpdate();
-
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + prefix("Inventories") + " (Name TEXT)");
-
-			statement.executeUpdate();
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
 }

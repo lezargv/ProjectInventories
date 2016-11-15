@@ -15,7 +15,8 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.settings.Inventories;
+import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.InventorySettings;
 
 public class CMDList implements CommandExecutor {
 
@@ -23,10 +24,10 @@ public class CMDList implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
 
-		list.add(Text.of(TextColors.GREEN, " - DEFAULT"));
+		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
 
-		for (String name : Inventories.all()) {
-			list.add(Text.of(TextColors.GREEN, " - ", name));
+		for (String name : inventorySettings.all()) {
+			list.add(Text.of(TextColors.YELLOW, " - ", name));
 		}
 
 		if (src instanceof Player) {
@@ -38,6 +39,8 @@ public class CMDList implements CommandExecutor {
 
 			pages.sendTo(src);
 		} else {
+			src.sendMessage(Text.of(TextColors.GREEN, "Inventories:"));
+			
 			for (Text text : list) {
 				src.sendMessage(text);
 			}

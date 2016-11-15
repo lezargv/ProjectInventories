@@ -3,6 +3,7 @@ package com.gmail.trentech.pji.commands;
 import java.util.Map;
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -22,6 +23,8 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.PlayerSettings;
 
 public class CMDSee implements CommandExecutor {
 
@@ -36,12 +39,28 @@ public class CMDSee implements CommandExecutor {
 		
 		String name = args.<String> getOne("inv").get().toUpperCase();
 
-		PlayerData playerData = new PlayerData(target, name).save();
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+		
+		PlayerData playerData;
+		
+		if(playerSettings.getInventory(target).equals(name)) {
+			playerData = new PlayerData(target);
+			inventoryService.save(playerData);
+		} else {
+			Optional<PlayerData> optionalPlayerData = inventoryService.get(target, name);
+			
+			if(optionalPlayerData.isPresent()) {
+				playerData = optionalPlayerData.get();
+			} else {
+				playerData = new PlayerData(target, name);
+				inventoryService.save(playerData);
+			}
+		}
 
 		Inventory inventory = Inventory.builder().of(InventoryArchetypes.DOUBLE_CHEST)
 				.property(InventoryDimension.PROPERTY_NAM, new InventoryDimension(9, 5)).property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(Text.of(target.getName()))).listener(InteractInventoryEvent.Close.class, (event) -> {		
 					int i = 0;
-					System.out.println("INTERACT");
 					for (Inventory slot : event.getTargetInventory().slots()) {
 						if(i < 27) {
 							Optional<ItemStack> optionalItem = slot.peek();
@@ -71,8 +90,11 @@ public class CMDSee implements CommandExecutor {
 						
 						i++;
 					}
-					playerData.save();
-					playerData.set();
+					inventoryService.save(playerData);
+					
+					if(playerSettings.getInventory(target).equals(name)) {
+						playerData.set();
+					}
 				}).build(Main.getPlugin());
 
 		Map<Integer, ItemStack> grid = playerData.getGrid();

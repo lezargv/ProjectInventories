@@ -16,28 +16,25 @@ import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.data.PlayerData;
-import com.gmail.trentech.pji.settings.WorldData;
+import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.PlayerSettings;
+import com.gmail.trentech.pji.service.settings.WorldSettings;
+import com.gmail.trentech.pji.utils.ConfigManager;
 
 public class EventManager {
 
 	@Listener(order = Order.POST)
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
 		Sponge.getScheduler().createTaskBuilder().async().delayTicks(35).execute(t -> {
-			WorldProperties properties = player.getWorld().getProperties();
-
-			Optional<PlayerData> optionalPlayerData = PlayerData.get(player, WorldData.get(properties).getInventory());
+			PlayerSettings playerSettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings();
 			
-			if(optionalPlayerData.isPresent()) {
-				optionalPlayerData.get().set();
-			}
+			playerSettings.set(player, playerSettings.getInventory(player), true);
 		}).submit(Main.getPlugin());
 	}
 
 	@Listener(order = Order.PRE)
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-		WorldProperties properties = player.getWorld().getProperties();
-
-		new PlayerData(player, WorldData.get(properties).getInventory()).save();
+		Sponge.getServiceManager().provideUnchecked(InventoryService.class).save(new PlayerData(player));
 	}
 
 	@Listener
@@ -53,9 +50,7 @@ public class EventManager {
 		for (Entity entity : event.getTargetWorld().getEntities(filter)) {
 			Player player = (Player) entity;
 
-			WorldProperties properties = player.getWorld().getProperties();
-
-			new PlayerData(player, WorldData.get(properties).getInventory()).save();
+			Sponge.getServiceManager().provideUnchecked(InventoryService.class).save(new PlayerData(player));
 		}
 	}
 
@@ -65,28 +60,28 @@ public class EventManager {
 
 		WorldProperties from = event.getFromTransform().getExtent().getProperties();
 		WorldProperties to = event.getToTransform().getExtent().getProperties();
-		
-		String fromName = WorldData.get(from).getInventory();
 
-		new PlayerData(player, fromName).save();
-		
 		if (from.equals(to)) {
 			return;
 		}
 
-		String toName = WorldData.get(to).getInventory();
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		WorldSettings worldSettings = inventoryService.getWorldSettings();
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		
-		if (toName.equals(fromName)) {	
+		if(worldSettings.contains(to, playerSettings.getInventory(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
+		
+		inventoryService.save(new PlayerData(player));
 
-		Optional<PlayerData> optionalPlayerData = PlayerData.get(player, toName);
+		Optional<PlayerData> optionalPlayerData = inventoryService.get(player, worldSettings.getDefault(to));
 		
 		if(optionalPlayerData.isPresent()) {
 			optionalPlayerData.get().set();
 		} else {
 			player.getInventory().clear();
-			new PlayerData(player, toName).save();
+			inventoryService.save(new PlayerData(player));
 		}	
 	}
 
@@ -99,22 +94,16 @@ public class EventManager {
 			return;
 		}
 
-		String fromName =  WorldData.get(from).getInventory();
-		String toName =  WorldData.get(to).getInventory();
-
-		if (fromName.equalsIgnoreCase(toName)) {
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		WorldSettings worldSettings = inventoryService.getWorldSettings();
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+		
+		if(worldSettings.contains(to, playerSettings.getInventory(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
-
-		new PlayerData(player, fromName).save();
 		
-		Optional<PlayerData> optionalPlayerData = PlayerData.get(player, toName);
+		inventoryService.save(new PlayerData(player));
 		
-		if(optionalPlayerData.isPresent()) {
-			optionalPlayerData.get().set();
-		} else {
-			player.getInventory().clear();
-			new PlayerData(player, toName).save();
-		}
+		playerSettings.set(player, worldSettings.getDefault(to), false);
 	}
 }

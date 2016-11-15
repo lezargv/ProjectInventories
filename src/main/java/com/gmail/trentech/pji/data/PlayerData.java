@@ -11,15 +11,12 @@ import static com.gmail.trentech.pji.data.DataQueries.NAME;
 import static com.gmail.trentech.pji.data.DataQueries.OFF_HAND;
 import static com.gmail.trentech.pji.data.DataQueries.SATURATION;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
@@ -33,9 +30,10 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
+import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.sql.SQLUtils;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.DataSerializer;
-import com.gmail.trentech.pji.utils.SQLUtils;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -67,8 +65,13 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	}
 
 	public PlayerData(Player player, String name) {
-		this.player = player;
-		this.name = name;
+		this.setPlayer(player);
+		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().getInventory(player);
+	}
+	
+	public PlayerData(Player player) {
+		this.setPlayer(player);
+		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().getInventory(player);
 		
 		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
 
@@ -119,9 +122,9 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public String getName() {
 		return name.toUpperCase();
 	}
-	
-	private void setPlayer(Player player) {
-		this.player = player;
+
+	public Player getPlayer() {
+		return player;
 	}
 	
 	public Optional<ItemStack> getOffHand() {
@@ -160,6 +163,10 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		return this.experience;
 	}
 
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+	
 	public void addHotbar(Integer slot, ItemStack itemStack) {
 		this.hotbar.put(slot, itemStack);
 	}
@@ -208,37 +215,10 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		this.experience = experience;
 	}
 	
-	public PlayerData save() {
-		try {
-			Connection connection = getDataSource().getConnection();
-			PreparedStatement statement;
-			
-			if(exists(player, getName())) {
-				statement = connection.prepareStatement("UPDATE " + prefix(getName()) + " SET Data = ? WHERE Player = ?");
-
-				statement.setString(1, DataSerializer.serializePlayerData(this));
-				statement.setString(2, player.getUniqueId().toString());
-			} else {
-				statement = connection.prepareStatement("INSERT into " + prefix(getName()) + " (Player, Data) VALUES (?, ?)");
-
-				statement.setString(1, player.getUniqueId().toString());
-				statement.setString(2, DataSerializer.serializePlayerData(this));
-			}
-			
-			statement.executeUpdate();
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
-		return this;
-	}
-	
 	public void set() {
-		player.getInventory().clear();
+		getPlayer().getInventory().clear();
 		
-		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
+		PlayerInventory inv = getPlayer().getInventory().query(PlayerInventory.class);
 
 		Map<Integer, ItemStack> hotbar = this.getHotbar();
 
@@ -285,17 +265,17 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		ConfigurationNode config = ConfigManager.get().getConfig();
 
 		if (config.getNode("options", "health").getBoolean()) {
-			player.offer(Keys.HEALTH, this.getHealth());
+			getPlayer().offer(Keys.HEALTH, this.getHealth());
 		}
 
 		if (config.getNode("options", "hunger").getBoolean()) {
-			player.offer(Keys.FOOD_LEVEL, this.getFood());
-			player.offer(Keys.SATURATION, this.getSaturation());
+			getPlayer().offer(Keys.FOOD_LEVEL, this.getFood());
+			getPlayer().offer(Keys.SATURATION, this.getSaturation());
 		}
 
 		if (config.getNode("options", "experience").getBoolean()) {
-			player.offer(Keys.EXPERIENCE_LEVEL, this.getExpLevel());
-			player.offer(Keys.TOTAL_EXPERIENCE, this.getExperience());
+			getPlayer().offer(Keys.EXPERIENCE_LEVEL, this.getExpLevel());
+			getPlayer().offer(Keys.TOTAL_EXPERIENCE, this.getExperience());
 		}
 	}
 	
@@ -341,60 +321,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		
 		return container;
 	}
-	
-	public static Optional<PlayerData> get(Player player, String name) {
-		Optional<PlayerData> optionalPlayerData = Optional.empty();
 
-		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix(name.toUpperCase()));
-
-			ResultSet result = statement.executeQuery();
-
-			while (result.next()) {
-				if (result.getString("Player").equalsIgnoreCase(player.getUniqueId().toString())) {
-					PlayerData playerData = DataSerializer.deserializePlayerData(result.getString("Data"));
-					playerData.setPlayer(player);
-					optionalPlayerData = Optional.of(playerData);
-
-					break;
-				}
-			}
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return optionalPlayerData;
-	}
-
-	private static boolean exists(Player player, String name) {
-		boolean b = false;
-
-		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix(name.toUpperCase()));
-
-			ResultSet result = statement.executeQuery();
-
-			while (result.next()) {
-				if (result.getString("Player").equalsIgnoreCase(player.getUniqueId().toString())) {
-					b = true;
-					break;
-				}
-			}
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return b;
-	}
-	
 	public static class Builder extends AbstractDataBuilder<PlayerData> {
 
 		public Builder() {

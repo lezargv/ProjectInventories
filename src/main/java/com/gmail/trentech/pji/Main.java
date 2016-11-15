@@ -17,10 +17,13 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.pji.commands.CommandManager;
 import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.sql.PlayerDB;
+import com.gmail.trentech.pji.sql.SQLUtils;
+import com.gmail.trentech.pji.sql.WorldDB;
 import com.gmail.trentech.pji.utils.CommandHelp;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
-import com.gmail.trentech.pji.utils.SQLUtils;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
@@ -60,9 +63,14 @@ public class Main {
 
 		SQLUtils.createSettings();
 
-		SQLUtils.createTable("DEFAULT");
-		
 		CommandHelp.init();
+		
+		Sponge.getServiceManager().setProvider(getPlugin(), InventoryService.class, new InventoryService());
+		
+		Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings().create("DEFAULT");
+		
+		PlayerDB.init();
+		WorldDB.init();
 	}
 
 	@Listener
