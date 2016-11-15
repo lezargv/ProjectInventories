@@ -3,6 +3,7 @@ package com.gmail.trentech.pji.commands;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -18,6 +19,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.PermissionSettings;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
 import com.gmail.trentech.pji.service.settings.WorldSettings;
 
@@ -33,18 +35,25 @@ public class CMDGet implements CommandExecutor {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
 		
 		if(!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();	
 			
 			for(Entry<String, Boolean> entry : worldSettings.all(player.getWorld().getProperties()).entrySet()) {
 				Text text = Text.of(TextColors.YELLOW, " - ", entry.getKey());
-				
+
 				if(entry.getValue()) {
 					text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
+				} else {
+					Optional<String> optionalPermission = permissionSettings.get(entry.getKey());
+					
+					if(optionalPermission.isPresent()) {
+						text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
+					}
 				}
 				
-				if(playerSettings.getInventory(player).equals(entry.getKey())) {
+				if(playerSettings.get(player).equals(entry.getKey())) {
 					text = Text.join(text, Text.of(TextColors.GREEN, " [Current]"));
 				}
 
@@ -75,6 +84,12 @@ public class CMDGet implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, "This inventory is not assigned to this world"), false);
 		}
 
+		Optional<String> optionalPermission = permissionSettings.get(name);
+		
+		if(optionalPermission.isPresent() && !src.hasPermission(optionalPermission.get())) {
+			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
+		}
+		
 		inventoryService.save(new PlayerData(player));
 
 		playerSettings.set(player, name, false);

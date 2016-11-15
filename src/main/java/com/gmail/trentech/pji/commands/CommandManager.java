@@ -22,7 +22,7 @@ public class CommandManager {
 	
 	public CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
-		    .arguments(GenericArguments.string(Text.of("inv")))
+		    .arguments(GenericArguments.string(Text.of("inv")), GenericArguments.optional(GenericArguments.string(Text.of("permission"))))
 		    .executor(new CMDCreate())
 		    .build();
 	

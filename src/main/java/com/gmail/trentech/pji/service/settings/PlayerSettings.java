@@ -16,7 +16,7 @@ public class PlayerSettings {
 		this.inventoryService = inventoryService;
 	}
 	
-	public String getInventory(Player player) {
+	public String get(Player player) {
 		return PlayerDB.get(player);
 	}
 	

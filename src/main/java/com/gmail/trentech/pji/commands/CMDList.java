@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -17,6 +18,7 @@ import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
 import com.gmail.trentech.pji.service.settings.InventorySettings;
+import com.gmail.trentech.pji.service.settings.PermissionSettings;
 
 public class CMDList implements CommandExecutor {
 
@@ -24,10 +26,20 @@ public class CMDList implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		List<Text> list = new ArrayList<>();
 
-		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		InventorySettings inventorySettings = inventoryService.getInventorySettings();
+		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
 
 		for (String name : inventorySettings.all()) {
-			list.add(Text.of(TextColors.YELLOW, " - ", name));
+			Text text = Text.of(TextColors.YELLOW, " - ", name);
+			
+			Optional<String> optionalPermission = permissionSettings.get(name);
+			
+			if(optionalPermission.isPresent()) {
+				text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
+			}
+
+			list.add(text);
 		}
 
 		if (src instanceof Player) {

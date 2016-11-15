@@ -26,9 +26,13 @@ public class CMDRemove implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, name, " is not assigned to ", properties.getWorldName()), false);
 		}
 		
+		if(worldSettings.all(properties).size() == 1) {
+			throw new CommandException(Text.of(TextColors.RED, "World must contain at least one inventory. Add another inventory before removing ", name, false));
+		}
+		
 		worldSettings.remove(properties, name);
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Unassigned inventory " + name + " from ", properties.getWorldName()));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Removed inventory " + name + " from ", properties.getWorldName()));
 
 		return CommandResult.success();
 	}

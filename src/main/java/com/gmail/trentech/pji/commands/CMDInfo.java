@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map.Entry;
 
 import org.spongepowered.api.Sponge;
@@ -67,8 +68,14 @@ public class CMDInfo implements CommandExecutor {
 			
 			if(entry.getValue()) {
 				text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
+			} else {
+				Optional<String> optionalPermission = inventoryService.getPermissionSettings().get(entry.getKey());
+				
+				if(optionalPermission.isPresent()) {
+					text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
+				}
 			}
-			
+
 			list.add(text);
 		}
 		

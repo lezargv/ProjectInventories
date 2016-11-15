@@ -25,7 +25,7 @@ public class InventorySettings {
 		InventoryDB.create(inventory);
 	}
 
-	public void remove(String inventory) {
+	public void delete(String inventory) {
 		for (WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
 			WorldSettings worldSettings = inventoryService.getWorldSettings();
 			
@@ -45,7 +45,7 @@ public class InventorySettings {
 				for (Entity entity : world.getEntities(filter)) {
 					Player player = (Player) entity;
 
-					if (playerSettings.getInventory(player).equals(inventory)) {
+					if (playerSettings.get(player).equals(inventory)) {
 						inventoryService.get(player, worldSettings.getDefault(properties)).get().set();
 
 						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));

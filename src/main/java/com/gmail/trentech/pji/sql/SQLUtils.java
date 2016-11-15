@@ -58,6 +58,10 @@ public abstract class SQLUtils {
 
 			statement.executeUpdate();
 
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.PERMISSIONS") + " (Inventory TEXT, Permission TEXT)");
+
+			statement.executeUpdate();
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

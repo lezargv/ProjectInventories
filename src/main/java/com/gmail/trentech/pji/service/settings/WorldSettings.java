@@ -15,10 +15,6 @@ public class WorldSettings {
 	public WorldSettings(InventoryService inventoryService) {
 		this.inventoryService = inventoryService;
 	}
-	
-	public HashMap<String, Boolean> all(WorldProperties world) {
-		return WorldDB.get(world);
-	}
 
 	public String getDefault(WorldProperties world) {
 		for(Entry<String, Boolean> entry : all(world).entrySet()) {
@@ -40,5 +36,9 @@ public class WorldSettings {
 
 	public boolean contains(WorldProperties world, String inventory) {
 		return WorldDB.get(world).containsKey(inventory);
+	}
+	
+	public HashMap<String, Boolean> all(WorldProperties world) {
+		return WorldDB.get(world);
 	}
 }

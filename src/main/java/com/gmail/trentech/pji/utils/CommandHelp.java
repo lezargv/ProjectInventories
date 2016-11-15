@@ -10,13 +10,16 @@ public class CommandHelp {
 
 	public static void init() {
 		if (Sponge.getPluginManager().isLoaded("helpme")) {
-			Usage usageInv = new Usage(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
-	
-			Help invCreate = new Help("inventory create", "create", "Create a new inventory")
+			Usage usageCreate = new Usage(Argument.of("<inv>", "Specifies the name of the targeted inventory"))
+					.addArgument(Argument.of("[permission]", "Adds a permission node to inventory"));
+					
+			Help invCreate = new Help("inventory create", "create", "Create a new inventory or edit existing")
 					.setPermission("pji.cmd.inventory.create")
-					.setUsage(usageInv)
+					.setUsage(usageCreate)
 					.addExample("/inventory create nether");
 		
+			Usage usageInv = new Usage(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
+			
 			Help invDelete = new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.")
 					.setPermission("pji.cmd.inventory.delete")
 					.setUsage(usageInv)
@@ -41,7 +44,7 @@ public class CommandHelp {
 			Usage usageSet = new Usage(Argument.of("<world>", "Specifies the targeted world"))
 					.addArgument(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
 				
-			Help invAdd = new Help("inventory add", "add", "Adds an inventory to the specified world")
+			Help invAdd = new Help("inventory add", "add", "Adds an inventory to the specified world or altered already assigned")
 					.setPermission("pji.cmd.inventory.add")
 					.setUsage(usageSet)
 					.addExample("/inventory add DIM-1 nether");

@@ -44,7 +44,7 @@ public class CMDSee implements CommandExecutor {
 		
 		PlayerData playerData;
 		
-		if(playerSettings.getInventory(target).equals(name)) {
+		if(playerSettings.get(target).equals(name)) {
 			playerData = new PlayerData(target);
 			inventoryService.save(playerData);
 		} else {
@@ -92,7 +92,7 @@ public class CMDSee implements CommandExecutor {
 					}
 					inventoryService.save(playerData);
 					
-					if(playerSettings.getInventory(target).equals(name)) {
+					if(playerSettings.get(target).equals(name)) {
 						playerData.set();
 					}
 				}).build(Main.getPlugin());

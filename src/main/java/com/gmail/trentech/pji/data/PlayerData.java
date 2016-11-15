@@ -66,12 +66,12 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 
 	public PlayerData(Player player, String name) {
 		this.setPlayer(player);
-		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().getInventory(player);
+		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().get(player);
 	}
 	
 	public PlayerData(Player player) {
 		this.setPlayer(player);
-		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().getInventory(player);
+		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().get(player);
 		
 		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
 

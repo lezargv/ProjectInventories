@@ -25,7 +25,7 @@ public class CMDYes implements CommandExecutor {
 
 			InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
 			
-			inventorySettings.remove(inventory);
+			inventorySettings.delete(inventory);
 
 			src.sendMessage(Text.of(TextColors.DARK_GREEN, "Deleted inventory ", inventory));
 

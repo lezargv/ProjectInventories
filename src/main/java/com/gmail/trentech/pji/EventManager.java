@@ -27,7 +27,7 @@ public class EventManager {
 		Sponge.getScheduler().createTaskBuilder().async().delayTicks(35).execute(t -> {
 			PlayerSettings playerSettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings();
 			
-			playerSettings.set(player, playerSettings.getInventory(player), true);
+			playerSettings.set(player, playerSettings.get(player), true);
 		}).submit(Main.getPlugin());
 	}
 
@@ -68,7 +68,7 @@ public class EventManager {
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		
-		if(worldSettings.contains(to, playerSettings.getInventory(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if(worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 		
@@ -90,7 +90,7 @@ public class EventManager {
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		
-		if(worldSettings.contains(to, playerSettings.getInventory(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if(worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 		
