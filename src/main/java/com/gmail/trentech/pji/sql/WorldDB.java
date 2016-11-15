@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.world.storage.WorldProperties;
@@ -19,9 +18,9 @@ import com.google.gson.reflect.TypeToken;
 
 public class WorldDB extends SQLUtils {
 
-	private static ConcurrentHashMap<UUID, HashMap<String, Boolean>> cache = new ConcurrentHashMap<UUID, HashMap<String, Boolean>>();
-
-	public static void init() {
+	public static HashMap<UUID, HashMap<String, Boolean>> all() {
+		HashMap<UUID, HashMap<String, Boolean>> map = new HashMap<>();
+		
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -42,24 +41,40 @@ public class WorldDB extends SQLUtils {
 					add(Sponge.getServer().getWorldProperties(uuid).get(), "DEFAULT", true);
 				}
 				
-				cache.put(uuid, inventories);
+				map.put(uuid, inventories);
 			}
 
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static ConcurrentHashMap<UUID, HashMap<String, Boolean>> all() {
-		return cache;
+		
+		return map;
 	}
 
 	public static HashMap<String, Boolean> get(WorldProperties properties) {
-		UUID uuid = properties.getUniqueId();
+		try {
+			Connection connection = getDataSource().getConnection();
 
-		if (cache.containsKey(uuid)) {
-			return cache.get(uuid);
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Worlds");
+
+			ResultSet result = statement.executeQuery();
+
+			Gson gson = new Gson();
+			Type type = new TypeToken<HashMap<String, Boolean>>() {
+			}.getType();
+
+			while (result.next()) {
+				if(result.getString("UUID").equals(properties.getUniqueId().toString())) {
+					connection.close();
+					
+					return gson.fromJson(result.getString("Inventories"), type);
+				}
+			}
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 		HashMap<String, Boolean> list = new HashMap<>();
@@ -102,7 +117,7 @@ public class WorldDB extends SQLUtils {
 	}
 
 	public static void save(WorldProperties world, HashMap<String, Boolean> inventories) {
-		if(cache.containsKey(world.getUniqueId())) {
+		if(all().containsKey(world.getUniqueId())) {
 			update(world, inventories);
 		} else {
 			create(world, inventories);
@@ -121,8 +136,6 @@ public class WorldDB extends SQLUtils {
 			statement.executeUpdate();
 
 			connection.close();
-
-			cache.remove(uuid);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -146,8 +159,6 @@ public class WorldDB extends SQLUtils {
 			statement.executeUpdate();
 
 			connection.close();
-
-			cache.put(uuid, inventories);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -171,8 +182,6 @@ public class WorldDB extends SQLUtils {
 			statement.executeUpdate();
 
 			connection.close();
-
-			cache.put(uuid, inventories);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

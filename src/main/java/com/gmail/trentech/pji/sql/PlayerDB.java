@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -15,9 +15,9 @@ import com.gmail.trentech.pji.utils.DataSerializer;
 
 public class PlayerDB extends SQLUtils {
 
-	private static ConcurrentHashMap<UUID, String> cache = new ConcurrentHashMap<>();
-
-	public static void init() {
+	public static HashMap<UUID, String> all() {
+		HashMap<UUID, String> map = new HashMap<>();
+		
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -29,33 +29,45 @@ public class PlayerDB extends SQLUtils {
 				String uuid = result.getString("UUID");
 				String inventory = result.getString("Inventory");
 
-				cache.put(UUID.fromString(uuid), inventory);
+				map.put(UUID.fromString(uuid), inventory);
 			}
 
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static ConcurrentHashMap<UUID, String> all() {
-		return cache;
+		
+		return map;
 	}
 
 	public static String get(Player player) {
-		UUID uuid = player.getUniqueId();
+		try {
+			Connection connection = getDataSource().getConnection();
 
-		if (cache.containsKey(uuid)) {
-			return cache.get(uuid);
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Players");
+
+			ResultSet result = statement.executeQuery();
+
+			while (result.next()) {
+				if(result.getString("UUID").equals(player.getUniqueId().toString())) {
+					connection.close();
+					
+					return result.getString("Inventory");
+				}
+			}
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-
+		
 		save(player, "DEFAULT");
 		
 		return "DEFAULT";
 	}
 
 	public static void save(Player player, String inventory) {
-		if (cache.containsKey(player.getUniqueId())) {
+		if (all().containsKey(player.getUniqueId())) {
 			update(player, inventory);
 		} else {
 			create(player, inventory);
@@ -74,8 +86,6 @@ public class PlayerDB extends SQLUtils {
 			statement.executeUpdate();
 
 			connection.close();
-
-			cache.remove(uuid);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -94,9 +104,7 @@ public class PlayerDB extends SQLUtils {
 
 			statement.executeUpdate();
 
-			connection.close();
-
-			cache.put(uuid, inventory);
+			connection.close();;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -116,8 +124,6 @@ public class PlayerDB extends SQLUtils {
 			statement.executeUpdate();
 
 			connection.close();
-
-			cache.put(uuid, inventory);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
