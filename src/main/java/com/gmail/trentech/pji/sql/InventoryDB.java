@@ -14,7 +14,7 @@ public class InventoryDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS `PJI_" + inventory.toUpperCase() + "` (UUID TEXT, Inventory TEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INV." + inventory) + " (UUID TEXT, Inventory TEXT)");
 
 			statement.executeUpdate();
 
@@ -28,7 +28,7 @@ public class InventoryDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DROP TABLE `PJI_" + inventory.toUpperCase() + "`");
+			PreparedStatement statement = connection.prepareStatement("DROP TABLE " + getPrefix("PJI.INV." + inventory));
 
 			statement.executeUpdate();
 
@@ -42,7 +42,7 @@ public class InventoryDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM `PJI_" + inventory.toUpperCase() + "`");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + inventory));
 
 			statement.executeQuery();
 
@@ -66,10 +66,10 @@ public class InventoryDB extends SQLUtils {
 
 			ResultSet result = metaData.getTables(null, null, "%", null);
 			while (result.next()) {
-				String name = result.getString(3).toUpperCase();
+				String name = stripPrefix(result.getString(3));
 
-				if (name.startsWith("PJI_")) {
-					list.add(name.replace("PJI_", ""));
+				if (name.startsWith("PJI.INV.")) {
+					list.add(name.replace("PJI.INV.", ""));
 				}
 			}
 			

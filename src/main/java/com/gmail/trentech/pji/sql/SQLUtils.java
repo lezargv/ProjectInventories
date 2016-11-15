@@ -13,7 +13,7 @@ import com.gmail.trentech.pji.utils.ConfigManager;
 
 public abstract class SQLUtils {
 
-	//protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
+	protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
 	protected static boolean enableSQL = ConfigManager.get().getConfig().getNode("settings", "sql", "enable").getBoolean();
 	protected static String url = ConfigManager.get().getConfig().getNode("settings", "sql", "url").getString();
 	protected static String username = ConfigManager.get().getConfig().getNode("settings", "sql", "username").getString();
@@ -32,22 +32,29 @@ public abstract class SQLUtils {
 		}
 	}
 
-//	protected static String prefix(String table) {
-//		if (!prefix.equalsIgnoreCase("NONE") && enableSQL) {
-//			return "`" + prefix + table + "`";
-//		}
-//		return "`" + table + "`";
-//	}
+	protected static String getPrefix(String table) {
+		if (!prefix.equalsIgnoreCase("NONE") && enableSQL) {
+			return "`" + prefix + table + "`".toUpperCase();
+		}
+		return "`" + table + "`".toUpperCase();
+	}
 
+	protected static String stripPrefix(String table) {
+		if (!prefix.equalsIgnoreCase("NONE") && enableSQL) {
+			return table.toUpperCase().replace(prefix.toUpperCase(), "").toUpperCase();
+		}
+		return table.toUpperCase();
+	}
+	
 	public static void createSettings() {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Worlds (UUID TEXT, Inventories TEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.WORLDS") + " (UUID TEXT, Inventories TEXT)");
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Players (UUID TEXT, Inventory TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.PLAYERS") + " (UUID TEXT, Inventory TEXT)");
 
 			statement.executeUpdate();
 
@@ -56,21 +63,4 @@ public abstract class SQLUtils {
 			e.printStackTrace();
 		}
 	}
-	
-	public static boolean deleteTable(String name) {
-		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("DROP TABLE `" + name.toUpperCase() + "`");
-
-			statement.executeUpdate();
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return true;
-	}
-
 }

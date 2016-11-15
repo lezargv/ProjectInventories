@@ -21,7 +21,7 @@ public class PlayerDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Players");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.PLAYERS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -44,7 +44,7 @@ public class PlayerDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Players");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.PLAYERS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -80,7 +80,7 @@ public class PlayerDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE from Players WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
 
 			statement.setString(1, uuid.toString());
 			statement.executeUpdate();
@@ -97,7 +97,7 @@ public class PlayerDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into Players (UUID, Inventory) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.PLAYERS") + " (UUID, Inventory) VALUES (?, ?)");
 
 			statement.setString(1, uuid.toString());
 			statement.setString(2, inventory);
@@ -116,7 +116,7 @@ public class PlayerDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE Players SET Inventory = ? WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.PLAYERS") + " SET Inventory = ? WHERE UUID = ?");
 
 			statement.setString(2, uuid.toString());
 			statement.setString(1, inventory);
@@ -135,7 +135,7 @@ public class PlayerDB extends SQLUtils {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM `PJI_" + inventory.toUpperCase() + "`");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + inventory));
 
 				ResultSet result = statement.executeQuery();
 
@@ -162,7 +162,7 @@ public class PlayerDB extends SQLUtils {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM `PJI_" + playerData.getName().toUpperCase() + "`");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + playerData.getName()));
 
 				ResultSet result = statement.executeQuery();
 
@@ -185,7 +185,7 @@ public class PlayerDB extends SQLUtils {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into `PJI_" + playerData.getName().toUpperCase() + "` (UUID, Inventory) VALUES (?, ?)");
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + playerData.getName()) + " (UUID, Inventory) VALUES (?, ?)");
 
 				statement.setString(1, playerData.getPlayer().getUniqueId().toString());
 				statement.setString(2, DataSerializer.serializePlayerData(playerData));
@@ -202,7 +202,7 @@ public class PlayerDB extends SQLUtils {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE `PJI_" + playerData.getName().toUpperCase() + "` SET Inventory = ? WHERE UUID = ?");
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + playerData.getName()) + " SET Inventory = ? WHERE UUID = ?");
 
 				statement.setString(2, playerData.getPlayer().getUniqueId().toString());
 				statement.setString(1, DataSerializer.serializePlayerData(playerData));

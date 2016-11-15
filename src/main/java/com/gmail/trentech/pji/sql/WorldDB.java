@@ -24,7 +24,7 @@ public class WorldDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Worlds");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.WORLDS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -56,7 +56,7 @@ public class WorldDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM Worlds");
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.WORLDS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -130,7 +130,7 @@ public class WorldDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE from Worlds WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
 
 			statement.setString(1, uuid.toString());
 			statement.executeUpdate();
@@ -151,7 +151,7 @@ public class WorldDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into Worlds (UUID, Inventories) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.WORLDS") + " (UUID, Inventories) VALUES (?, ?)");
 
 			statement.setString(1, uuid.toString());
 			statement.setString(2, gson.toJson(inventories, type));
@@ -174,7 +174,7 @@ public class WorldDB extends SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE Worlds SET Inventories = ? WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.WORLDS") + " SET Inventories = ? WHERE UUID = ?");
 
 			statement.setString(2, uuid.toString());
 			statement.setString(1, gson.toJson(inventories, type));
