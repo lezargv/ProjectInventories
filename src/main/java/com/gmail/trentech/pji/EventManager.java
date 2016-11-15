@@ -1,6 +1,5 @@
 package com.gmail.trentech.pji;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.spongepowered.api.Sponge;
@@ -75,14 +74,7 @@ public class EventManager {
 		
 		inventoryService.save(new PlayerData(player));
 
-		Optional<PlayerData> optionalPlayerData = inventoryService.get(player, worldSettings.getDefault(to));
-		
-		if(optionalPlayerData.isPresent()) {
-			optionalPlayerData.get().set();
-		} else {
-			player.getInventory().clear();
-			inventoryService.save(new PlayerData(player));
-		}	
+		playerSettings.set(player, worldSettings.getDefault(to), false);
 	}
 
 	@Listener(order = Order.POST)
