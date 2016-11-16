@@ -32,10 +32,10 @@ public class CMDList implements CommandExecutor {
 
 		for (String name : inventorySettings.all()) {
 			Text text = Text.of(TextColors.YELLOW, " - ", name);
-			
+
 			Optional<String> optionalPermission = permissionSettings.get(name);
-			
-			if(optionalPermission.isPresent()) {
+
+			if (optionalPermission.isPresent()) {
 				text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
 			}
 
@@ -52,7 +52,7 @@ public class CMDList implements CommandExecutor {
 			pages.sendTo(src);
 		} else {
 			src.sendMessage(Text.of(TextColors.GREEN, "Inventories:"));
-			
+
 			for (Text text : list) {
 				src.sendMessage(text);
 			}

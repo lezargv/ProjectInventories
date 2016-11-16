@@ -24,14 +24,14 @@ public class CMDYes implements CommandExecutor {
 			String inventory = confirm.get(src);
 
 			InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
-			
+
 			inventorySettings.delete(inventory);
 
 			src.sendMessage(Text.of(TextColors.DARK_GREEN, "Deleted inventory ", inventory));
 
 			confirm.remove(src);
 		}
-		
+
 		return CommandResult.success();
 	}
 }

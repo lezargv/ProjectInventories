@@ -68,11 +68,11 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		this.setPlayer(player);
 		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().get(player);
 	}
-	
+
 	public PlayerData(Player player) {
 		this.setPlayer(player);
 		this.name = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings().get(player);
-		
+
 		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
 
 		int i = 0;
@@ -126,11 +126,11 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public Player getPlayer() {
 		return player;
 	}
-	
+
 	public Optional<ItemStack> getOffHand() {
 		return this.offHand;
 	}
-	
+
 	public Map<Integer, ItemStack> getHotbar() {
 		return this.hotbar;
 	}
@@ -166,7 +166,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
-	
+
 	public void addHotbar(Integer slot, ItemStack itemStack) {
 		this.hotbar.put(slot, itemStack);
 	}
@@ -174,7 +174,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public void removeHotbar(Integer slot) {
 		this.hotbar.remove(slot);
 	}
-	
+
 	public void addGrid(Integer slot, ItemStack itemStack) {
 		this.grid.put(slot, itemStack);
 	}
@@ -182,7 +182,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public void removeGrid(Integer slot) {
 		this.grid.remove(slot);
 	}
-	
+
 	public void addEquipment(Integer slot, ItemStack itemStack) {
 		this.equipment.put(slot, itemStack);
 	}
@@ -190,11 +190,11 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public void removeEquipment(Integer slot) {
 		this.equipment.remove(slot);
 	}
-	
+
 	public void setOffHand(Optional<ItemStack> itemStack) {
 		this.offHand = itemStack;
 	}
-	
+
 	public void setHealth(double health) {
 		this.health = health;
 	}
@@ -214,10 +214,10 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 	public void setExperience(int experience) {
 		this.experience = experience;
 	}
-	
+
 	public void set() {
 		getPlayer().getInventory().clear();
-		
+
 		PlayerInventory inv = getPlayer().getInventory().query(PlayerInventory.class);
 
 		Map<Integer, ItemStack> hotbar = this.getHotbar();
@@ -255,10 +255,10 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 				i++;
 			}
 		}
-		
+
 		Optional<ItemStack> offHand = this.getOffHand();
-		
-		if(offHand.isPresent()) {
+
+		if (offHand.isPresent()) {
 			inv.getOffhand().set(offHand.get());
 		}
 
@@ -278,7 +278,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 			getPlayer().offer(Keys.TOTAL_EXPERIENCE, this.getExperience());
 		}
 	}
-	
+
 	@Override
 	public int getContentVersion() {
 		return 1;
@@ -304,21 +304,12 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 			equipment.put(entry.getKey().toString(), DataSerializer.serializeItemStack(entry.getValue()));
 		}
 
-		DataContainer container = new MemoryDataContainer()
-				.set(NAME, getName())
-				.set(HOTBAR, hotbar)
-				.set(GRID, grid)
-				.set(EQUIPMENT, equipment)
-				.set(HEALTH, health)
-				.set(FOOD, food)
-				.set(SATURATION, saturation)
-				.set(EXP_LEVEL, expLevel)
-				.set(EXPERIENCE, experience);
-		
-		if(this.offHand.isPresent()) {
+		DataContainer container = new MemoryDataContainer().set(NAME, getName()).set(HOTBAR, hotbar).set(GRID, grid).set(EQUIPMENT, equipment).set(HEALTH, health).set(FOOD, food).set(SATURATION, saturation).set(EXP_LEVEL, expLevel).set(EXPERIENCE, experience);
+
+		if (this.offHand.isPresent()) {
 			container.set(OFF_HAND, DataSerializer.serializeItemStack(this.offHand.get()));
 		}
-		
+
 		return container;
 	}
 
@@ -333,7 +324,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		protected Optional<PlayerData> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(NAME, HOTBAR, GRID, EQUIPMENT, HEALTH, FOOD, SATURATION, EXP_LEVEL, EXPERIENCE)) {
 				String name = container.getString(NAME).get();
-				
+
 				Map<Integer, ItemStack> hotbar = new HashMap<>();
 
 				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(HOTBAR).get()).entrySet()) {
@@ -358,13 +349,13 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 				int expLevel = container.getInt(EXP_LEVEL).get();
 				int experience = container.getInt(EXPERIENCE).get();
 				Optional<ItemStack> offHand = Optional.empty();
-				
-				if(container.contains(OFF_HAND)) {
+
+				if (container.contains(OFF_HAND)) {
 					offHand = Optional.of(DataSerializer.deserializeItemStack(container.getString(OFF_HAND).get()));
 				}
-				
+
 				PlayerData playerData = new PlayerData(name, offHand, hotbar, equipment, grid, health, food, saturation, expLevel, experience);
-				
+
 				return Optional.of(playerData);
 			}
 			return Optional.empty();

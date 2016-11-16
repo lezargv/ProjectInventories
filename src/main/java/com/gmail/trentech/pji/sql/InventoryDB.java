@@ -72,7 +72,7 @@ public class InventoryDB extends SQLUtils {
 					list.add(name.replace("PJI.INV.", ""));
 				}
 			}
-			
+
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

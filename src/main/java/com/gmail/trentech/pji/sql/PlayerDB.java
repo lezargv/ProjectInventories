@@ -17,7 +17,7 @@ public class PlayerDB extends SQLUtils {
 
 	public static HashMap<UUID, String> all() {
 		HashMap<UUID, String> map = new HashMap<>();
-		
+
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -36,7 +36,7 @@ public class PlayerDB extends SQLUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return map;
 	}
 
@@ -49,9 +49,9 @@ public class PlayerDB extends SQLUtils {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				if(result.getString("UUID").equals(player.getUniqueId().toString())) {
+				if (result.getString("UUID").equals(player.getUniqueId().toString())) {
 					connection.close();
-					
+
 					return result.getString("Inventory");
 				}
 			}
@@ -60,9 +60,9 @@ public class PlayerDB extends SQLUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		save(player, "DEFAULT");
-		
+
 		return "DEFAULT";
 	}
 
@@ -104,7 +104,8 @@ public class PlayerDB extends SQLUtils {
 
 			statement.executeUpdate();
 
-			connection.close();;
+			connection.close();
+			;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -130,7 +131,7 @@ public class PlayerDB extends SQLUtils {
 	}
 
 	public static class Data {
-		
+
 		public static Optional<PlayerData> get(Player player, String inventory) {
 			try {
 				Connection connection = getDataSource().getConnection();
@@ -157,7 +158,7 @@ public class PlayerDB extends SQLUtils {
 
 			return Optional.empty();
 		}
-		
+
 		public static boolean exists(PlayerData playerData) {
 			try {
 				Connection connection = getDataSource().getConnection();

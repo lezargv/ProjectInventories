@@ -17,19 +17,19 @@ public class CMDAdd implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		WorldProperties properties = args.<WorldProperties> getOne("world").get();
-		String name = args.<String> getOne("inv").get().toUpperCase();
-		
+		WorldProperties properties = args.<WorldProperties>getOne("world").get();
+		String name = args.<String>getOne("inv").get().toUpperCase();
+
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-		
+
 		boolean isDefault = false;
-		
-		if(args.hasAny("true|false")) {
-			isDefault = args.<Boolean> getOne("true|false").get();
+
+		if (args.hasAny("true|false")) {
+			isDefault = args.<Boolean>getOne("true|false").get();
 		}
 
-		if(isDefault && permissionSettings.get(name).isPresent()) {
+		if (isDefault && permissionSettings.get(name).isPresent()) {
 			src.sendMessage(Text.of(TextColors.RED, name, "WARNING: Permission will be ignored when changing worlds, while inventory is set to default"));
 		}
 

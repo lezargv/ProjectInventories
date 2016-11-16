@@ -23,7 +23,7 @@ public class CMDInventory implements CommandExecutor {
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		if (Sponge.getPluginManager().isLoaded("helpme")) {
 			Help.executeList(src, Help.get("inventory").get().getChildren());
-			
+
 			return CommandResult.success();
 		}
 
@@ -44,7 +44,7 @@ public class CMDInventory implements CommandExecutor {
 		if (src.hasPermission("pji.cmd.inventory.info")) {
 			list.add(Text.builder().color(TextColors.GREEN).onClick(TextActions.runCommand("/pji:inventory into")).append(Text.of(" /inventory info")).build());
 		}
-		
+
 		if (src instanceof Player) {
 			PaginationList.Builder pages = PaginationList.builder();
 

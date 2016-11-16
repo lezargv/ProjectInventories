@@ -30,22 +30,23 @@ import me.flibio.updatifier.Updatifier;
 @Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", version = "0.2.1", optional = true) })
 public class Main {
 
-	@Inject @ConfigDir(sharedRoot = false)
-    private Path path;
+	@Inject
+	@ConfigDir(sharedRoot = false)
+	private Path path;
 
 	@Inject
 	private Logger log;
 
 	private static PluginContainer plugin;
 	private static Main instance;
-	
+
 	@Listener
 	public void onPreInitializationEvent(GamePreInitializationEvent event) {
 		plugin = Sponge.getPluginManager().getPlugin(Resource.ID).get();
 		instance = this;
-		
-		try {			
-			Files.createDirectories(path);		
+
+		try {
+			Files.createDirectories(path);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -62,9 +63,9 @@ public class Main {
 		SQLUtils.createSettings();
 
 		CommandHelp.init();
-		
+
 		Sponge.getServiceManager().setProvider(getPlugin(), InventoryService.class, new InventoryService());
-		
+
 		Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings().create("DEFAULT");
 	}
 
@@ -72,7 +73,7 @@ public class Main {
 	public void onReloadEvent(GameReloadEvent event) {
 		ConfigManager.init();
 	}
-	
+
 	public Logger getLog() {
 		return log;
 	}
@@ -80,11 +81,11 @@ public class Main {
 	public Path getPath() {
 		return path;
 	}
-	
+
 	public static PluginContainer getPlugin() {
 		return plugin;
 	}
-	
+
 	public static Main instance() {
 		return instance;
 	}

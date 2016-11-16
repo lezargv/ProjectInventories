@@ -16,7 +16,7 @@ public class InventoryService {
 	public PlayerSettings getPlayerSettings() {
 		return new PlayerSettings(this);
 	}
-	
+
 	public WorldSettings getWorldSettings() {
 		return new WorldSettings(this);
 	}
@@ -24,11 +24,11 @@ public class InventoryService {
 	public InventorySettings getInventorySettings() {
 		return new InventorySettings(this);
 	}
-	
+
 	public PermissionSettings getPermissionSettings() {
 		return new PermissionSettings(this);
 	}
-	
+
 	public Optional<PlayerData> get(Player player, String inventory) {
 		return PlayerDB.Data.get(player, inventory);
 	}

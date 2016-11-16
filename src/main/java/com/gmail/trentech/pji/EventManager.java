@@ -26,7 +26,7 @@ public class EventManager {
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
 		Sponge.getScheduler().createTaskBuilder().async().delayTicks(35).execute(t -> {
 			PlayerSettings playerSettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getPlayerSettings();
-			
+
 			playerSettings.set(player, playerSettings.get(player), true);
 		}).submit(Main.getPlugin());
 	}
@@ -45,7 +45,7 @@ public class EventManager {
 				return entity instanceof Player;
 			}
 		};
-		
+
 		for (Entity entity : event.getTargetWorld().getEntities(filter)) {
 			Player player = (Player) entity;
 
@@ -67,11 +67,11 @@ public class EventManager {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-		
-		if(worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+
+		if (worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
-		
+
 		inventoryService.save(new PlayerData(player));
 
 		playerSettings.set(player, worldSettings.getDefault(to), false);
@@ -89,13 +89,13 @@ public class EventManager {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-		
-		if(worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+
+		if (worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
-		
+
 		inventoryService.save(new PlayerData(player));
-		
+
 		playerSettings.set(player, worldSettings.getDefault(to), false);
 	}
 }

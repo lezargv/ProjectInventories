@@ -11,21 +11,21 @@ import com.gmail.trentech.pji.sql.WorldDB;
 public class WorldSettings {
 
 	InventoryService inventoryService;
-	
+
 	public WorldSettings(InventoryService inventoryService) {
 		this.inventoryService = inventoryService;
 	}
 
 	public String getDefault(WorldProperties world) {
-		for(Entry<String, Boolean> entry : all(world).entrySet()) {
-			if(entry.getValue()) {
+		for (Entry<String, Boolean> entry : all(world).entrySet()) {
+			if (entry.getValue()) {
 				return entry.getKey();
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	public void add(WorldProperties world, String inventory, boolean isDefault) {
 		WorldDB.add(world, inventory, isDefault);
 	}
@@ -37,7 +37,7 @@ public class WorldSettings {
 	public boolean contains(WorldProperties world, String inventory) {
 		return WorldDB.get(world).containsKey(inventory);
 	}
-	
+
 	public HashMap<String, Boolean> all(WorldProperties world) {
 		return WorldDB.get(world);
 	}

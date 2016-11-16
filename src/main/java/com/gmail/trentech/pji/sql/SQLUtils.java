@@ -45,7 +45,7 @@ public abstract class SQLUtils {
 		}
 		return table.toUpperCase();
 	}
-	
+
 	public static void createSettings() {
 		try {
 			Connection connection = getDataSource().getConnection();
@@ -61,7 +61,7 @@ public abstract class SQLUtils {
 			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.PERMISSIONS") + " (Inventory TEXT, Permission TEXT)");
 
 			statement.executeUpdate();
-			
+
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

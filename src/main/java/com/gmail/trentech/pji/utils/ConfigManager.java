@@ -16,28 +16,28 @@ public class ConfigManager {
 	private Path path;
 	private CommentedConfigurationNode config;
 	private ConfigurationLoader<CommentedConfigurationNode> loader;
-	
+
 	private static ConcurrentHashMap<String, ConfigManager> configManagers = new ConcurrentHashMap<>();
 
 	private ConfigManager(String configName) {
 		try {
 			path = Main.instance().getPath().resolve(configName + ".conf");
-			
-			if (!Files.exists(path)) {		
+
+			if (!Files.exists(path)) {
 				Files.createFile(path);
 				Main.instance().getLog().info("Creating new " + path.getFileName() + " file...");
-			}		
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		load();
 	}
-	
+
 	public static ConfigManager get(String configName) {
 		return configManagers.get(configName);
 	}
-	
+
 	public static ConfigManager get() {
 		return configManagers.get("config");
 	}
@@ -45,11 +45,11 @@ public class ConfigManager {
 	public static ConfigManager init() {
 		return init("config");
 	}
-	
+
 	public static ConfigManager init(String configName) {
 		ConfigManager configManager = new ConfigManager(configName);
 		CommentedConfigurationNode config = configManager.getConfig();
-		
+
 		if (configName.equalsIgnoreCase("config")) {
 			if (config.getNode("options", "health").isVirtual()) {
 				config.getNode("options", "health").setValue(true).setComment("Enable inventory specific health");
@@ -71,14 +71,14 @@ public class ConfigManager {
 				config.getNode("settings", "sql", "password").setValue("password");
 			}
 		}
-		
+
 		configManager.save();
-		
+
 		configManagers.put(configName, configManager);
-		
+
 		return configManager;
 	}
-	
+
 	public ConfigurationLoader<CommentedConfigurationNode> getLoader() {
 		return loader;
 	}

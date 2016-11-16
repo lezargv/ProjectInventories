@@ -38,7 +38,7 @@ public class DataSerializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
 		return Sponge.getDataManager().deserialize(ItemStack.class, dataView).get();
@@ -63,7 +63,7 @@ public class DataSerializer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
 		return Sponge.getDataManager().deserialize(PlayerData.class, dataView).get();

@@ -18,7 +18,7 @@ public class CMDDelete implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		String name = args.<String> getOne("inv").get().toUpperCase();
+		String name = args.<String>getOne("inv").get().toUpperCase();
 
 		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
 

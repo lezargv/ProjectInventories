@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class PermissionDB extends SQLUtils {
-	
+
 	public static HashMap<String, String> all() {
 		HashMap<String, String> map = new HashMap<>();
-		
+
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -27,10 +27,10 @@ public class PermissionDB extends SQLUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return map;
 	}
-	
+
 	public static Optional<String> get(String inventory) {
 		try {
 			Connection connection = getDataSource().getConnection();
@@ -56,7 +56,6 @@ public class PermissionDB extends SQLUtils {
 
 		return Optional.empty();
 	}
-	
 
 	public static boolean exists(String inventory) {
 		try {
@@ -82,13 +81,13 @@ public class PermissionDB extends SQLUtils {
 	}
 
 	public static void save(String inventory, String permission) {
-		if(all().containsKey(inventory)) {
+		if (all().containsKey(inventory)) {
 			update(inventory, permission);
 		} else {
 			create(inventory, permission);
 		}
 	}
-	
+
 	public static void remove(String inventory) {
 		try {
 			Connection connection = getDataSource().getConnection();
@@ -96,7 +95,7 @@ public class PermissionDB extends SQLUtils {
 			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + getPrefix("PJI.PERMISSIONS") + " WHERE Inventory = ?");
 
 			statement.setString(1, inventory);
-			
+
 			statement.executeUpdate();
 
 			connection.close();
@@ -104,7 +103,7 @@ public class PermissionDB extends SQLUtils {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void create(String inventory, String permission) {
 		try {
 			Connection connection = getDataSource().getConnection();

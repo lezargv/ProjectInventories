@@ -9,15 +9,15 @@ import com.gmail.trentech.pji.sql.PermissionDB;
 public class PermissionSettings {
 
 	InventoryService inventoryService;
-	
+
 	public PermissionSettings(InventoryService inventoryService) {
 		this.inventoryService = inventoryService;
 	}
-	
+
 	public Optional<String> get(String inventory) {
 		return PermissionDB.get(inventory);
 	}
-	
+
 	public void set(String inventory, String permission) {
 		PermissionDB.save(inventory, permission);
 	}
@@ -29,7 +29,7 @@ public class PermissionSettings {
 	public boolean exists(String inventory) {
 		return PermissionDB.exists(inventory);
 	}
-	
+
 	public HashMap<String, String> all() {
 		return PermissionDB.all();
 	}

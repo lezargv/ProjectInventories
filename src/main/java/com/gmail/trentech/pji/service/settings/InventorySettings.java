@@ -16,11 +16,11 @@ import com.gmail.trentech.pji.sql.InventoryDB;
 public class InventorySettings {
 
 	InventoryService inventoryService;
-	
+
 	public InventorySettings(InventoryService inventoryService) {
 		this.inventoryService = inventoryService;
 	}
-	
+
 	public void create(String inventory) {
 		InventoryDB.create(inventory);
 	}
@@ -28,7 +28,7 @@ public class InventorySettings {
 	public void delete(String inventory) {
 		for (WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
 			WorldSettings worldSettings = inventoryService.getWorldSettings();
-			
+
 			worldSettings.remove(properties, inventory);
 
 			Sponge.getServer().getWorld(properties.getWorldName()).ifPresent(world -> {
@@ -41,7 +41,7 @@ public class InventorySettings {
 				};
 
 				PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-				
+
 				for (Entity entity : world.getEntities(filter)) {
 					Player player = (Player) entity;
 
@@ -51,11 +51,11 @@ public class InventorySettings {
 						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
 					}
 				}
-			});		
+			});
 		}
-		
+
 		inventoryService.getPermissionSettings().remove(inventory);
-		
+
 		InventoryDB.remove(inventory);
 	}
 

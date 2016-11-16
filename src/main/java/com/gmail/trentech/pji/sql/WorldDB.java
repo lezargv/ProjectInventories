@@ -20,7 +20,7 @@ public class WorldDB extends SQLUtils {
 
 	public static HashMap<UUID, HashMap<String, Boolean>> all() {
 		HashMap<UUID, HashMap<String, Boolean>> map = new HashMap<>();
-		
+
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -36,11 +36,11 @@ public class WorldDB extends SQLUtils {
 				UUID uuid = UUID.fromString(result.getString("UUID"));
 				HashMap<String, Boolean> inventories = gson.fromJson(result.getString("Inventories"), type);
 
-				if(inventories.isEmpty()) {
+				if (inventories.isEmpty()) {
 					inventories.put("DEFAULT", true);
 					add(Sponge.getServer().getWorldProperties(uuid).get(), "DEFAULT", true);
 				}
-				
+
 				map.put(uuid, inventories);
 			}
 
@@ -48,7 +48,7 @@ public class WorldDB extends SQLUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return map;
 	}
 
@@ -65,9 +65,9 @@ public class WorldDB extends SQLUtils {
 			}.getType();
 
 			while (result.next()) {
-				if(result.getString("UUID").equals(properties.getUniqueId().toString())) {
+				if (result.getString("UUID").equals(properties.getUniqueId().toString())) {
 					connection.close();
-					
+
 					return gson.fromJson(result.getString("Inventories"), type);
 				}
 			}
@@ -79,21 +79,21 @@ public class WorldDB extends SQLUtils {
 
 		HashMap<String, Boolean> list = new HashMap<>();
 		list.put("DEFAULT", true);
-		
+
 		save(properties, list);
-		
+
 		return list;
 	}
 
 	public static void add(WorldProperties world, String inventory, boolean isDefault) {
 		HashMap<String, Boolean> inventories = WorldDB.get(world);
 
-		if(isDefault) {
-			for(Entry<String, Boolean> entry : Maps.newHashMap(inventories).entrySet()) {
+		if (isDefault) {
+			for (Entry<String, Boolean> entry : Maps.newHashMap(inventories).entrySet()) {
 				inventories.put(entry.getKey(), false);
 			}
 		}
-		
+
 		inventories.put(inventory, isDefault);
 
 		save(world, inventories);
@@ -104,20 +104,20 @@ public class WorldDB extends SQLUtils {
 
 		inventories.remove(inventory);
 
-		for(Entry<String, Boolean> entry : Maps.newHashMap(inventories).entrySet()) {
-			if(entry.getValue()) {
+		for (Entry<String, Boolean> entry : Maps.newHashMap(inventories).entrySet()) {
+			if (entry.getValue()) {
 				save(world, inventories);
 				return;
 			}
 		}
-		
+
 		inventories.put(inventories.entrySet().iterator().next().getKey(), true);
-		
+
 		save(world, inventories);
 	}
 
 	public static void save(WorldProperties world, HashMap<String, Boolean> inventories) {
-		if(all().containsKey(world.getUniqueId())) {
+		if (all().containsKey(world.getUniqueId())) {
 			update(world, inventories);
 		} else {
 			create(world, inventories);

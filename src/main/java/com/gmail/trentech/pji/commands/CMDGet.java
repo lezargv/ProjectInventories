@@ -36,24 +36,24 @@ public class CMDGet implements CommandExecutor {
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-		
-		if(!args.hasAny("inv")) {
-			List<Text> list = new ArrayList<>();	
-			
-			for(Entry<String, Boolean> entry : worldSettings.all(player.getWorld().getProperties()).entrySet()) {
+
+		if (!args.hasAny("inv")) {
+			List<Text> list = new ArrayList<>();
+
+			for (Entry<String, Boolean> entry : worldSettings.all(player.getWorld().getProperties()).entrySet()) {
 				Text text = Text.of(TextColors.YELLOW, " - ", entry.getKey());
 
-				if(entry.getValue()) {
+				if (entry.getValue()) {
 					text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
 				} else {
 					Optional<String> optionalPermission = permissionSettings.get(entry.getKey());
-					
-					if(optionalPermission.isPresent()) {
+
+					if (optionalPermission.isPresent()) {
 						text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
 					}
 				}
-				
-				if(playerSettings.get(player).equals(entry.getKey())) {
+
+				if (playerSettings.get(player).equals(entry.getKey())) {
 					text = Text.join(text, Text.of(TextColors.GREEN, " [Current]"));
 				}
 
@@ -70,26 +70,26 @@ public class CMDGet implements CommandExecutor {
 				pages.sendTo(src);
 			} else {
 				src.sendMessage(Text.of(TextColors.GREEN, "Inventories:"));
-				
-				for (Text text : list) {			
+
+				for (Text text : list) {
 					src.sendMessage(text);
 				}
 			}
-			
+
 			return CommandResult.success();
 		}
-		String name = args.<String> getOne("inv").get().toUpperCase();
-		
-		if(!worldSettings.contains(player.getWorld().getProperties(), name)) {
+		String name = args.<String>getOne("inv").get().toUpperCase();
+
+		if (!worldSettings.contains(player.getWorld().getProperties(), name)) {
 			throw new CommandException(Text.of(TextColors.RED, "This inventory is not assigned to this world"), false);
 		}
 
 		Optional<String> optionalPermission = permissionSettings.get(name);
-		
-		if(optionalPermission.isPresent() && !src.hasPermission(optionalPermission.get())) {
+
+		if (optionalPermission.isPresent() && !src.hasPermission(optionalPermission.get())) {
 			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
 		}
-		
+
 		inventoryService.save(new PlayerData(player));
 
 		playerSettings.set(player, name, false);
