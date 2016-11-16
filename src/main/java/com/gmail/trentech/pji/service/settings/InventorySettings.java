@@ -51,8 +51,10 @@ public class InventorySettings {
 						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
 					}
 				}
-			});
+			});		
 		}
+		
+		inventoryService.getPermissionSettings().remove(inventory);
 		
 		InventoryDB.remove(inventory);
 	}
