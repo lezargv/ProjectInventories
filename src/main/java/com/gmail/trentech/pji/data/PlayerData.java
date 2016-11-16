@@ -24,6 +24,7 @@ import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -31,13 +32,12 @@ import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.sql.SQLUtils;
 import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.DataSerializer;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
-public class PlayerData extends SQLUtils implements DataSerializable {
+public class PlayerData implements DataSerializable {
 
 	private String name;
 	private Player player;
@@ -259,7 +259,7 @@ public class PlayerData extends SQLUtils implements DataSerializable {
 		Optional<ItemStack> offHand = this.getOffHand();
 
 		if (offHand.isPresent()) {
-			inv.getOffhand().set(offHand.get());
+			getPlayer().setItemInHand(HandTypes.OFF_HAND, offHand.get());
 		}
 
 		ConfigurationNode config = ConfigManager.get().getConfig();

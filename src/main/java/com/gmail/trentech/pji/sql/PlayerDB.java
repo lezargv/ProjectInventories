@@ -50,9 +50,11 @@ public class PlayerDB extends SQLUtils {
 
 			while (result.next()) {
 				if (result.getString("UUID").equals(player.getUniqueId().toString())) {
+					String inventory = result.getString("Inventory");
+					
 					connection.close();
 
-					return result.getString("Inventory");
+					return inventory;
 				}
 			}
 
@@ -105,7 +107,6 @@ public class PlayerDB extends SQLUtils {
 			statement.executeUpdate();
 
 			connection.close();
-			;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

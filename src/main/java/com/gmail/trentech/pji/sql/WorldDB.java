@@ -66,9 +66,11 @@ public class WorldDB extends SQLUtils {
 
 			while (result.next()) {
 				if (result.getString("UUID").equals(properties.getUniqueId().toString())) {
+					HashMap<String, Boolean> map = gson.fromJson(result.getString("Inventories"), type);
+					
 					connection.close();
 
-					return gson.fromJson(result.getString("Inventories"), type);
+					return map;
 				}
 			}
 

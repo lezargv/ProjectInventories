@@ -65,6 +65,7 @@ public class InventoryDB extends SQLUtils {
 			DatabaseMetaData metaData = connection.getMetaData();
 
 			ResultSet result = metaData.getTables(null, null, "%", null);
+			
 			while (result.next()) {
 				String name = stripPrefix(result.getString(3));
 
