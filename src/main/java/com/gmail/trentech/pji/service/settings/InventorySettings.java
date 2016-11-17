@@ -46,7 +46,7 @@ public class InventorySettings {
 					Player player = (Player) entity;
 
 					if (playerSettings.get(player).equals(inventory)) {
-						inventoryService.get(player, worldSettings.getDefault(properties)).get().set();
+						playerSettings.set(player, worldSettings.getDefault(properties), false);
 
 						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
 					}

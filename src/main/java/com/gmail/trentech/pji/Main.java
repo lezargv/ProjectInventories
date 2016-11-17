@@ -16,7 +16,7 @@ import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.pji.commands.CommandManager;
-import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.service.InventoryData;
 import com.gmail.trentech.pji.service.InventoryService;
 import com.gmail.trentech.pji.sql.SQLUtils;
 import com.gmail.trentech.pji.utils.CommandHelp;
@@ -58,7 +58,7 @@ public class Main {
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
 		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
-		Sponge.getDataManager().registerBuilder(PlayerData.class, new PlayerData.Builder());
+		Sponge.getDataManager().registerBuilder(InventoryData.class, new InventoryData.Builder());
 
 		SQLUtils.createSettings();
 

@@ -14,7 +14,6 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.service.InventoryService;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
 import com.gmail.trentech.pji.service.settings.WorldSettings;
@@ -33,7 +32,9 @@ public class EventManager {
 
 	@Listener(order = Order.PRE)
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
-		Sponge.getServiceManager().provideUnchecked(InventoryService.class).save(new PlayerData(player));
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		
+		inventoryService.save(player, inventoryService.copy(player));
 	}
 
 	@Listener
@@ -49,7 +50,9 @@ public class EventManager {
 		for (Entity entity : event.getTargetWorld().getEntities(filter)) {
 			Player player = (Player) entity;
 
-			Sponge.getServiceManager().provideUnchecked(InventoryService.class).save(new PlayerData(player));
+			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+			
+			inventoryService.save(player, inventoryService.copy(player));
 		}
 	}
 
@@ -72,7 +75,7 @@ public class EventManager {
 			return;
 		}
 
-		inventoryService.save(new PlayerData(player));
+		inventoryService.save(player, inventoryService.copy(player));
 
 		playerSettings.set(player, worldSettings.getDefault(to), false);
 	}
@@ -94,7 +97,7 @@ public class EventManager {
 			return;
 		}
 
-		inventoryService.save(new PlayerData(player));
+		inventoryService.save(player, inventoryService.copy(player));
 
 		playerSettings.set(player, worldSettings.getDefault(to), false);
 	}

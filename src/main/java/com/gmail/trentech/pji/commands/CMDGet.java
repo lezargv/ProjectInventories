@@ -17,7 +17,6 @@ import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.service.InventoryService;
 import com.gmail.trentech.pji.service.settings.PermissionSettings;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
@@ -90,7 +89,7 @@ public class CMDGet implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
 		}
 
-		inventoryService.save(new PlayerData(player));
+		inventoryService.save(player, inventoryService.copy(player));
 
 		playerSettings.set(player, name, false);
 

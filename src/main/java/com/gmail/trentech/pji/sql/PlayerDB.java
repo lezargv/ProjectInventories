@@ -10,7 +10,7 @@ import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
 
-import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.service.InventoryData;
 import com.gmail.trentech.pji.utils.DataSerializer;
 
 public class PlayerDB extends SQLUtils {
@@ -133,7 +133,7 @@ public class PlayerDB extends SQLUtils {
 
 	public static class Data {
 
-		public static Optional<PlayerData> get(Player player, String inventory) {
+		public static Optional<InventoryData> get(Player player, String inventory) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
@@ -143,12 +143,11 @@ public class PlayerDB extends SQLUtils {
 
 				while (result.next()) {
 					if (result.getString("UUID").equals(player.getUniqueId().toString())) {
-						PlayerData playerData = DataSerializer.deserializePlayerData(result.getString("Inventory"));
-						playerData.setPlayer(player);
+						InventoryData inventoryData = DataSerializer.deserializeInventoryData(result.getString("Inventory"));
 
 						connection.close();
 
-						return Optional.of(playerData);
+						return Optional.of(inventoryData);
 					}
 				}
 
@@ -160,16 +159,16 @@ public class PlayerDB extends SQLUtils {
 			return Optional.empty();
 		}
 
-		public static boolean exists(PlayerData playerData) {
+		public static boolean exists(Player player, String name) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + playerData.getName()));
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + name));
 
 				ResultSet result = statement.executeQuery();
 
 				while (result.next()) {
-					if (result.getString("UUID").equalsIgnoreCase(playerData.getPlayer().getUniqueId().toString())) {
+					if (result.getString("UUID").equalsIgnoreCase(player.getUniqueId().toString())) {
 						connection.close();
 						return true;
 					}
@@ -183,14 +182,14 @@ public class PlayerDB extends SQLUtils {
 			return false;
 		}
 
-		public static void create(PlayerData playerData) {
+		public static void create(Player player, InventoryData inventoryData) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + playerData.getName()) + " (UUID, Inventory) VALUES (?, ?)");
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + inventoryData.getName()) + " (UUID, Inventory) VALUES (?, ?)");
 
-				statement.setString(1, playerData.getPlayer().getUniqueId().toString());
-				statement.setString(2, DataSerializer.serializePlayerData(playerData));
+				statement.setString(1, player.getUniqueId().toString());
+				statement.setString(2, DataSerializer.serializeInventoryData(inventoryData));
 
 				statement.executeUpdate();
 
@@ -200,14 +199,14 @@ public class PlayerDB extends SQLUtils {
 			}
 		}
 
-		public static void update(PlayerData playerData) {
+		public static void update(Player player, InventoryData inventoryData) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + playerData.getName()) + " SET Inventory = ? WHERE UUID = ?");
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + inventoryData.getName()) + " SET Inventory = ? WHERE UUID = ?");
 
-				statement.setString(2, playerData.getPlayer().getUniqueId().toString());
-				statement.setString(1, DataSerializer.serializePlayerData(playerData));
+				statement.setString(2, player.getUniqueId().toString());
+				statement.setString(1, DataSerializer.serializeInventoryData(inventoryData));
 
 				statement.executeUpdate();
 
