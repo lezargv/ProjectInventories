@@ -222,9 +222,9 @@ public class InventoryData implements DataSerializable {
 					offHand = Optional.of(DataSerializer.deserializeItemStack(container.getString(OFF_HAND).get()));
 				}
 
-				InventoryData playerData = new InventoryData(name, offHand, hotbar, equipment, grid, health, food, saturation, expLevel, experience);
+				InventoryData inventoryData = new InventoryData(name, offHand, hotbar, equipment, grid, health, food, saturation, expLevel, experience);
 
-				return Optional.of(playerData);
+				return Optional.of(inventoryData);
 			}
 			return Optional.empty();
 		}
