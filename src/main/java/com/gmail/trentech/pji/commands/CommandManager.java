@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands;
 
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.text.Text;
 
 import com.gmail.trentech.pji.commands.elements.InventoryElement;
@@ -22,7 +23,9 @@ public class CommandManager {
 	
 	public CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
-		    .arguments(GenericArguments.string(Text.of("inv")), GenericArguments.optional(GenericArguments.string(Text.of("permission"))))
+		    .arguments(GenericArguments.string(Text.of("inv")), GenericArguments.flags()
+		    		.valueFlag(GenericArguments.string(Text.of("permission")), "p")
+		    		.valueFlag(GenericArguments.catalogedElement(Text.of("gamemode"), GameMode.class), "g").buildWith(GenericArguments.none()))
 		    .executor(new CMDCreate())
 		    .build();
 	

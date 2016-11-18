@@ -11,12 +11,15 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.GamemodeSettings;
 import com.gmail.trentech.pji.service.settings.InventorySettings;
 import com.gmail.trentech.pji.service.settings.PermissionSettings;
 
@@ -29,17 +32,29 @@ public class CMDList implements CommandExecutor {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-
+		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
+		
 		for (String name : inventorySettings.all()) {
 			Text text = Text.of(TextColors.YELLOW, " - ", name);
-
+			Text hover = Text.EMPTY;
+			
 			Optional<String> optionalPermission = permissionSettings.get(name);
 
 			if (optionalPermission.isPresent()) {
-				text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
+				hover = Text.of(TextColors.BLUE, "Permission: ", TextColors.WHITE, optionalPermission.get());
+			}
+			
+			Optional<GameMode> optionalGamemode = gamemodeSettings.get(name);
+
+			if (optionalGamemode.isPresent()) {
+				hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
 			}
 
-			list.add(text);
+			if(!hover.isEmpty()) {
+				list.add(Text.builder().onHover(TextActions.showText(hover)).append(text).build());
+			} else {
+				list.add(text);
+			}			
 		}
 
 		if (src instanceof Player) {

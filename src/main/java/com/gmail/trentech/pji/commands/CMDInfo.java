@@ -12,13 +12,17 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.GamemodeSettings;
+import com.gmail.trentech.pji.service.settings.PermissionSettings;
 
 public class CMDInfo implements CommandExecutor {
 
@@ -59,24 +63,41 @@ public class CMDInfo implements CommandExecutor {
 	}
 
 	private List<Text> get(InventoryService inventoryService, WorldProperties properties) {
+		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
+		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
+
 		List<Text> list = new ArrayList<>();
 
 		list.add(Text.of(TextColors.GREEN, " ", properties.getWorldName(), ":"));
-
+		
 		for (Entry<String, Boolean> entry : inventoryService.getWorldSettings().all(properties).entrySet()) {
-			Text text = Text.of(TextColors.YELLOW, "  - ", entry.getKey());
+			String name = entry.getKey();
 
+			Text text = Text.of(TextColors.YELLOW, " - ", name);
+			Text hover = Text.EMPTY;
+			
 			if (entry.getValue()) {
 				text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
 			} else {
-				Optional<String> optionalPermission = inventoryService.getPermissionSettings().get(entry.getKey());
+				Optional<String> optionalPermission = permissionSettings.get(name);
 
 				if (optionalPermission.isPresent()) {
-					text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
+					hover = Text.of(TextColors.BLUE, "Permission: ", TextColors.WHITE, optionalPermission.get());
 				}
 			}
 
-			list.add(text);
+			Optional<GameMode> optionalGamemode = gamemodeSettings.get(name);
+
+			if (optionalGamemode.isPresent()) {
+				hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
+			}
+
+			if(!hover.isEmpty()) {
+				list.add(Text.builder().onHover(TextActions.showText(hover)).append(text).build());
+			} else {
+				list.add(text);
+			}			
+
 		}
 
 		return list;

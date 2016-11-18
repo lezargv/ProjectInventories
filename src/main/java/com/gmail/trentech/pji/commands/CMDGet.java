@@ -11,13 +11,16 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.settings.GamemodeSettings;
 import com.gmail.trentech.pji.service.settings.PermissionSettings;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
 import com.gmail.trentech.pji.service.settings.WorldSettings;
@@ -35,7 +38,8 @@ public class CMDGet implements CommandExecutor {
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-
+		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
+		
 		if (!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();
 
@@ -89,6 +93,12 @@ public class CMDGet implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
 		}
 
+		Optional<GameMode> optionalGamemode = gamemodeSettings.get(name);
+
+		if (optionalGamemode.isPresent() && !src.hasPermission("pji.override.gamemode")) {
+			player.offer(Keys.GAME_MODE, optionalGamemode.get());
+		}
+		
 		inventoryService.save(player, inventoryService.copy(player));
 
 		playerSettings.set(player, name, false);

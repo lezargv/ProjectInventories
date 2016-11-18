@@ -62,6 +62,10 @@ public abstract class SQLUtils {
 
 			statement.executeUpdate();
 
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.GAMEMODE") + " (Inventory TEXT, Gamemode TEXT)");
+
+			statement.executeUpdate();
+			
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();

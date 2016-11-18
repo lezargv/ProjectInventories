@@ -11,6 +11,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
+import com.gmail.trentech.pji.service.settings.GamemodeSettings;
 import com.gmail.trentech.pji.service.settings.InventorySettings;
 import com.gmail.trentech.pji.service.settings.PermissionSettings;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
@@ -35,6 +36,10 @@ public class InventoryService {
 		return new PermissionSettings(this);
 	}
 
+	public GamemodeSettings getGamemodeSettings() {
+		return new GamemodeSettings(this);
+	}
+	
 	public InventoryData empty(String name) {
 		return new InventoryData(name);
 	}
