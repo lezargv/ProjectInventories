@@ -1,13 +1,10 @@
 package com.gmail.trentech.pji;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
@@ -17,11 +14,10 @@ import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.data.InventoryData;
-import com.gmail.trentech.pji.service.settings.InventorySettings;
-import com.gmail.trentech.pji.service.settings.PlayerSettings;
-import com.gmail.trentech.pji.service.settings.WorldSettings;
+import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.settings.InventorySettings;
+import com.gmail.trentech.pji.settings.PlayerSettings;
+import com.gmail.trentech.pji.settings.WorldSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 
 public class EventManager {
@@ -34,15 +30,9 @@ public class EventManager {
 			InventorySettings inventorySettings = inventoryService.getInventorySettings();
 			PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 
-			InventoryData inventory = inventorySettings.get(playerSettings.getInventoryName(player)).get();
-			
-			Optional<GameMode> optionalGamemode = inventory.getGamemode();
+			InventoryData inventoryData = inventorySettings.get(playerSettings.getInventoryName(player)).get();
 
-			if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
-				player.offer(Keys.GAME_MODE, optionalGamemode.get());
-			}
-			
-			playerSettings.set(player, inventory.getName(), true);
+			playerSettings.set(player, inventoryData, true);
 		}).submit(Main.getPlugin());
 	}
 
@@ -93,21 +83,15 @@ public class EventManager {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();		
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 
-		if (worldSettings.contains(to, playerSettings.getInventoryName(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if (worldSettings.get(to).contains(playerSettings.getInventoryName(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 
 		playerSettings.save(player, playerSettings.copy(player));
 		
-		InventoryData inventory = inventorySettings.get(worldSettings.getDefault(to)).get();
+		InventoryData inventoryData = inventorySettings.get(worldSettings.get(to).getDefault()).get();
 
-		Optional<GameMode> optionalGamemode = inventory.getGamemode();
-
-		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
-			player.offer(Keys.GAME_MODE, optionalGamemode.get());
-		}
-
-		playerSettings.set(player, inventory.getName(), false);
+		playerSettings.set(player, inventoryData, false);
 	}
 
 	@Listener(order = Order.POST)
@@ -125,20 +109,14 @@ public class EventManager {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 		
-		if (worldSettings.contains(to, playerSettings.getInventoryName(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if (worldSettings.get(to).contains(playerSettings.getInventoryName(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 
 		playerSettings.save(player, playerSettings.copy(player));
 
-		InventoryData inventory = inventorySettings.get(worldSettings.getDefault(to)).get();
-		
-		Optional<GameMode> optionalGamemode = inventory.getGamemode();
+		InventoryData inventoryData = inventorySettings.get(worldSettings.get(to).getDefault()).get();
 
-		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
-			player.offer(Keys.GAME_MODE, optionalGamemode.get());
-		}
-		
-		playerSettings.set(player, inventory.getName(), false);
+		playerSettings.set(player, inventoryData, false);
 	}
 }

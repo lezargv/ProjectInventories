@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.service.settings;
+package com.gmail.trentech.pji.settings;
 
 import java.util.HashMap;
 import java.util.Optional;
@@ -11,8 +11,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.data.InventoryData;
+import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.sql.InventoryDB;
 
 public class InventorySettings {
@@ -43,7 +43,7 @@ public class InventorySettings {
 		for (WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
 			WorldSettings worldSettings = inventoryService.getWorldSettings();
 
-			worldSettings.remove(properties, inventory);
+			worldSettings.get(properties).remove(inventory);
 
 			Sponge.getServer().getWorld(properties.getWorldName()).ifPresent(world -> {
 				Predicate<Entity> filter = new Predicate<Entity>() {
@@ -55,12 +55,13 @@ public class InventorySettings {
 				};
 
 				PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+				InventoryData inventoryData = inventoryService.getInventorySettings().get(worldSettings.get(properties).getDefault()).get();
 
 				for (Entity entity : world.getEntities(filter)) {
 					Player player = (Player) entity;
 
 					if (playerSettings.getInventoryName(player).equals(inventory)) {
-						playerSettings.set(player, worldSettings.getDefault(properties), false);
+						playerSettings.set(player, inventoryData, false);
 
 						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
 					}

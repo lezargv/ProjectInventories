@@ -1,26 +1,32 @@
 package com.gmail.trentech.pji.sql;
 
-import java.lang.reflect.Type;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.world.storage.WorldProperties;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.persistence.DataTranslators;
+import org.spongepowered.api.scheduler.Task;
 
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.gmail.trentech.pji.Main;
+import com.gmail.trentech.pji.data.WorldData;
 
-public class WorldDB extends SQLUtils {
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-	public static HashMap<UUID, HashMap<String, Boolean>> all() {
-		HashMap<UUID, HashMap<String, Boolean>> map = new HashMap<>();
+public class WorldDB extends InitDB {
 
+	public static WorldData get(UUID uuid) {
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -28,49 +34,19 @@ public class WorldDB extends SQLUtils {
 
 			ResultSet result = statement.executeQuery();
 
-			Gson gson = new Gson();
-			Type type = new TypeToken<HashMap<String, Boolean>>() {
-			}.getType();
-
 			while (result.next()) {
-				UUID uuid = UUID.fromString(result.getString("UUID"));
-				HashMap<String, Boolean> inventories = gson.fromJson(result.getString("Inventories"), type);
+				if(uuid.equals(UUID.fromString(result.getString("UUID")))) {
+					WorldData worldData = deserialize(result.getString("Data"));
 
-				if (inventories.isEmpty()) {
-					inventories.put("DEFAULT", true);
-					add(Sponge.getServer().getWorldProperties(uuid).get(), "DEFAULT", true);
-				}
-
-				map.put(uuid, inventories);
-			}
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return map;
-	}
-
-	public static HashMap<String, Boolean> get(WorldProperties properties) {
-		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.WORLDS"));
-
-			ResultSet result = statement.executeQuery();
-
-			Gson gson = new Gson();
-			Type type = new TypeToken<HashMap<String, Boolean>>() {
-			}.getType();
-
-			while (result.next()) {
-				if (result.getString("UUID").equals(properties.getUniqueId().toString())) {
-					HashMap<String, Boolean> map = gson.fromJson(result.getString("Inventories"), type);
+					if (worldData.getInventories().isEmpty()) {
+						worldData.add("DEFAULT", true);
+						
+						update(worldData);
+					}
 					
 					connection.close();
-
-					return map;
+					
+					return worldData;
 				}
 			}
 
@@ -79,113 +55,93 @@ public class WorldDB extends SQLUtils {
 			e.printStackTrace();
 		}
 
-		HashMap<String, Boolean> list = new HashMap<>();
+		Map<String, Boolean> list = new HashMap<>();
 		list.put("DEFAULT", true);
 
-		save(properties, list);
-
-		return list;
+		WorldData worldData = new WorldData(uuid, list);
+		
+		create(worldData);
+		
+		return worldData;
 	}
 
-	public static void add(WorldProperties world, String inventory, boolean isDefault) {
-		HashMap<String, Boolean> inventories = WorldDB.get(world);
+	public static void remove(WorldData worldData) {
+		Task.builder().async().execute(c -> {
+			try {
+				Connection connection = getDataSource().getConnection();
 
-		if (isDefault) {
-			for (Entry<String, Boolean> entry : Maps.newHashMap(inventories).entrySet()) {
-				inventories.put(entry.getKey(), false);
+				PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
+
+				statement.setString(1, worldData.getUniqueId().toString());
+				statement.executeUpdate();
+
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		}
-
-		inventories.put(inventory, isDefault);
-
-		save(world, inventories);
+		}).submit(Main.getPlugin());
 	}
 
-	public static void remove(WorldProperties world, String inventory) {
-		HashMap<String, Boolean> inventories = WorldDB.get(world);
+	private static void create(WorldData worldData) {
+		Task.builder().async().execute(c -> {
+			try {
+				Connection connection = getDataSource().getConnection();
 
-		inventories.remove(inventory);
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
 
-		for (Entry<String, Boolean> entry : Maps.newHashMap(inventories).entrySet()) {
-			if (entry.getValue()) {
-				save(world, inventories);
-				return;
+				statement.setString(1, worldData.getUniqueId().toString());
+				statement.setString(2, serialize(worldData));
+
+				statement.executeUpdate();
+
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		}
-
-		inventories.put(inventories.entrySet().iterator().next().getKey(), true);
-
-		save(world, inventories);
+		}).submit(Main.getPlugin());
 	}
 
-	public static void save(WorldProperties world, HashMap<String, Boolean> inventories) {
-		if (all().containsKey(world.getUniqueId())) {
-			update(world, inventories);
-		} else {
-			create(world, inventories);
-		}
+	public static void update(WorldData worldData) {
+		Task.builder().async().execute(c -> {
+			try {
+				Connection connection = getDataSource().getConnection();
+
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.WORLDS") + " SET Data = ? WHERE UUID = ?");
+
+				statement.setString(2, worldData.getUniqueId().toString());
+				statement.setString(1, serialize(worldData));
+
+				statement.executeUpdate();
+
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}).submit(Main.getPlugin());
 	}
-
-	public static void remove(WorldProperties world) {
-		UUID uuid = world.getUniqueId();
-
+	
+	private static String serialize(WorldData worldData) {
+		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(worldData.toContainer());
+		StringWriter stringWriter = new StringWriter();
 		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
-
-			statement.setString(1, uuid.toString());
-			statement.executeUpdate();
-
-			connection.close();
-		} catch (SQLException e) {
+			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		return stringWriter.toString();
 	}
 
-	private static void create(WorldProperties world, HashMap<String, Boolean> inventories) {
-		UUID uuid = world.getUniqueId();
-
-		Gson gson = new Gson();
-		Type type = new TypeToken<HashMap<String, Boolean>>() {
-		}.getType();
-
+	private static WorldData deserialize(String item) {
+		ConfigurationNode node = null;
 		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.WORLDS") + " (UUID, Inventories) VALUES (?, ?)");
-
-			statement.setString(1, uuid.toString());
-			statement.setString(2, gson.toJson(inventories, type));
-
-			statement.executeUpdate();
-
-			connection.close();
-		} catch (SQLException e) {
+			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
 
-	private static void update(WorldProperties world, HashMap<String, Boolean> inventories) {
-		UUID uuid = world.getUniqueId();
+		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
-		Gson gson = new Gson();
-		Type type = new TypeToken<HashMap<String, Boolean>>() {
-		}.getType();
-
-		try {
-			Connection connection = getDataSource().getConnection();
-
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.WORLDS") + " SET Inventories = ? WHERE UUID = ?");
-
-			statement.setString(2, uuid.toString());
-			statement.setString(1, gson.toJson(inventories, type));
-
-			statement.executeUpdate();
-
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		return Sponge.getDataManager().deserialize(WorldData.class, dataView).get();
 	}
 }

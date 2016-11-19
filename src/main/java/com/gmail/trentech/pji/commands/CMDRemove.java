@@ -10,29 +10,34 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.WorldSettings;
+import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.settings.WorldSettings;
 
 public class CMDRemove implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		WorldProperties properties = args.<WorldProperties>getOne("world").get();
-		String name = args.<String>getOne("inv").get().toUpperCase();
+		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
 		WorldSettings worldSettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getWorldSettings();
-
-		if (!worldSettings.contains(properties, name)) {
-			throw new CommandException(Text.of(TextColors.RED, name, " is not assigned to ", properties.getWorldName()), false);
+		WorldData worldData = worldSettings.get(properties);
+		
+		if (!worldData.contains(inventoryData.getName())) {
+			throw new CommandException(Text.of(TextColors.RED, inventoryData.getName(), " is not assigned to ", properties.getWorldName()), false);
 		}
 
-		if (worldSettings.all(properties).size() == 1) {
-			throw new CommandException(Text.of(TextColors.RED, "World must contain at least one inventory. Add another inventory before removing ", name, false));
+		if (worldData.getInventories().size() == 1) {
+			throw new CommandException(Text.of(TextColors.RED, "World must contain at least one inventory. Add another inventory before removing ", inventoryData.getName(), false));
 		}
 
-		worldSettings.remove(properties, name);
+		worldData.remove(inventoryData.getName());
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Removed inventory " + name + " from ", properties.getWorldName()));
+		worldSettings.save(worldData);
+		
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Removed inventory " + inventoryData.getName() + " from ", properties.getWorldName()));
 
 		return CommandResult.success();
 	}

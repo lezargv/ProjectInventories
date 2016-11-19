@@ -1,8 +1,8 @@
-package com.gmail.trentech.pji.service;
+package com.gmail.trentech.pji;
 
-import com.gmail.trentech.pji.service.settings.InventorySettings;
-import com.gmail.trentech.pji.service.settings.PlayerSettings;
-import com.gmail.trentech.pji.service.settings.WorldSettings;
+import com.gmail.trentech.pji.settings.InventorySettings;
+import com.gmail.trentech.pji.settings.PlayerSettings;
+import com.gmail.trentech.pji.settings.WorldSettings;
 
 public class InventoryService {
 

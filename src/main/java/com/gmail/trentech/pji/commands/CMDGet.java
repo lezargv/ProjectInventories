@@ -11,7 +11,6 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.service.pagination.PaginationList;
@@ -20,10 +19,11 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.data.InventoryData;
-import com.gmail.trentech.pji.service.settings.PlayerSettings;
-import com.gmail.trentech.pji.service.settings.WorldSettings;
+import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.settings.PlayerSettings;
+import com.gmail.trentech.pji.settings.WorldSettings;
 
 public class CMDGet implements CommandExecutor {
 
@@ -39,10 +39,12 @@ public class CMDGet implements CommandExecutor {
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 
+		WorldData worldData = worldSettings.get(player.getWorld().getProperties());
+		
 		if (!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();
 
-			for (Entry<String, Boolean> entry : worldSettings.all(player.getWorld().getProperties()).entrySet()) {
+			for (Entry<String, Boolean> entry : worldData.getInventories().entrySet()) {
 				InventoryData inventoryData = inventoryService.getInventorySettings().get(entry.getKey()).get();
 
 				Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());
@@ -95,7 +97,7 @@ public class CMDGet implements CommandExecutor {
 		}
 		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
-		if (!worldSettings.contains(player.getWorld().getProperties(), inventoryData.getName())) {
+		if (!worldData.contains(inventoryData.getName())) {
 			throw new CommandException(Text.of(TextColors.RED, "This inventory is not assigned to this world"), false);
 		}
 
@@ -105,15 +107,9 @@ public class CMDGet implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
 		}
 
-		Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
-
-		if (optionalGamemode.isPresent() && !src.hasPermission("pji.override.gamemode")) {
-			player.offer(Keys.GAME_MODE, optionalGamemode.get());
-		}
-		
 		playerSettings.save(player, playerSettings.copy(player));
 
-		playerSettings.set(player, inventoryData.getName(), false);
+		playerSettings.set(player, inventoryData, false);
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory to ", inventoryData.getName()));
 

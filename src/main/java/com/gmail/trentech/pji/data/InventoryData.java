@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.service.data;
+package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
@@ -102,11 +102,10 @@ public class InventoryData implements DataSerializable {
 				if (container.contains(GAMEMODE)) {
 					gamemode = Optional.of(Sponge.getRegistry().getType(GameMode.class, container.getString(GAMEMODE).get()).get());
 				}
-				
-				InventoryData inventoryData = new InventoryData(name, permission, gamemode);
 
-				return Optional.of(inventoryData);
+				return Optional.of(new InventoryData(name, permission, gamemode));
 			}
+			
 			return Optional.empty();
 		}
 	}

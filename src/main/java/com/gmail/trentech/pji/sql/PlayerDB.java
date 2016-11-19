@@ -17,15 +17,20 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.Task;
 
-import com.gmail.trentech.pji.service.data.InventoryPlayer;
+import com.gmail.trentech.pji.Main;
+import com.gmail.trentech.pji.data.PlayerData;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-public class PlayerDB extends SQLUtils {
+public class PlayerDB extends InitDB {
 
 	public static HashMap<UUID, String> all() {
+		Task.builder().async().execute(c -> {
+			
+		}).submit(Main.getPlugin());
 		HashMap<UUID, String> map = new HashMap<>();
 
 		try {
@@ -87,63 +92,69 @@ public class PlayerDB extends SQLUtils {
 	}
 
 	public static void remove(Player player) {
-		UUID uuid = player.getUniqueId();
+		Task.builder().async().execute(c -> {
+			UUID uuid = player.getUniqueId();
 
-		try {
-			Connection connection = getDataSource().getConnection();
+			try {
+				Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
+				PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
 
-			statement.setString(1, uuid.toString());
-			statement.executeUpdate();
+				statement.setString(1, uuid.toString());
+				statement.executeUpdate();
 
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}).submit(Main.getPlugin());
 	}
 
 	private static void create(Player player, String inventory) {
-		UUID uuid = player.getUniqueId();
+		Task.builder().async().execute(c -> {
+			UUID uuid = player.getUniqueId();
 
-		try {
-			Connection connection = getDataSource().getConnection();
+			try {
+				Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.PLAYERS") + " (UUID, Inventory) VALUES (?, ?)");
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.PLAYERS") + " (UUID, Inventory) VALUES (?, ?)");
 
-			statement.setString(1, uuid.toString());
-			statement.setString(2, inventory);
+				statement.setString(1, uuid.toString());
+				statement.setString(2, inventory);
 
-			statement.executeUpdate();
+				statement.executeUpdate();
 
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}).submit(Main.getPlugin());
 	}
 
 	private static void update(Player player, String inventory) {
-		UUID uuid = player.getUniqueId();
+		Task.builder().async().execute(c -> {
+			UUID uuid = player.getUniqueId();
 
-		try {
-			Connection connection = getDataSource().getConnection();
+			try {
+				Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.PLAYERS") + " SET Inventory = ? WHERE UUID = ?");
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.PLAYERS") + " SET Inventory = ? WHERE UUID = ?");
 
-			statement.setString(2, uuid.toString());
-			statement.setString(1, inventory);
+				statement.setString(2, uuid.toString());
+				statement.setString(1, inventory);
 
-			statement.executeUpdate();
+				statement.executeUpdate();
 
-			connection.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}).submit(Main.getPlugin());
 	}
 
 	public static class Data {
 
-		public static Optional<InventoryPlayer> get(Player player, String inventory) {
+		public static Optional<PlayerData> get(Player player, String inventory) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
@@ -153,11 +164,11 @@ public class PlayerDB extends SQLUtils {
 
 				while (result.next()) {
 					if (result.getString("UUID").equals(player.getUniqueId().toString())) {
-						InventoryPlayer inventoryPlayer = deserialize(result.getString("Inventory"));
+						PlayerData playerData = deserialize(result.getString("Inventory"));
 
 						connection.close();
 
-						return Optional.of(inventoryPlayer);
+						return Optional.of(playerData);
 					}
 				}
 
@@ -192,41 +203,47 @@ public class PlayerDB extends SQLUtils {
 			return false;
 		}
 
-		public static void create(Player player, InventoryPlayer inventoryPlayer) {
-			try {
-				Connection connection = getDataSource().getConnection();
+		public static void create(Player player, PlayerData playerData) {
+			Task.builder().async().execute(c -> {
+				try {
+					Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + inventoryPlayer.getName()) + " (UUID, Inventory) VALUES (?, ?)");
+					PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + playerData.getName()) + " (UUID, Inventory) VALUES (?, ?)");
 
-				statement.setString(1, player.getUniqueId().toString());
-				statement.setString(2, serialize(inventoryPlayer));
+					statement.setString(1, player.getUniqueId().toString());
+					statement.setString(2, serialize(playerData));
 
-				statement.executeUpdate();
+					statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}).submit(Main.getPlugin());
+
 		}
 
-		public static void update(Player player, InventoryPlayer inventoryPlayer) {
-			try {
-				Connection connection = getDataSource().getConnection();
+		public static void update(Player player, PlayerData playerData) {
+			Task.builder().async().execute(c -> {
+				try {
+					Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + inventoryPlayer.getName()) + " SET Inventory = ? WHERE UUID = ?");
+					PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + playerData.getName()) + " SET Inventory = ? WHERE UUID = ?");
 
-				statement.setString(2, player.getUniqueId().toString());
-				statement.setString(1, serialize(inventoryPlayer));
+					statement.setString(2, player.getUniqueId().toString());
+					statement.setString(1, serialize(playerData));
 
-				statement.executeUpdate();
+					statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}).submit(Main.getPlugin());
+
 		}
 		
-		private static String serialize(InventoryPlayer inventoryData) {
+		private static String serialize(PlayerData inventoryData) {
 			ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventoryData.toContainer());
 			StringWriter stringWriter = new StringWriter();
 			try {
@@ -238,7 +255,7 @@ public class PlayerDB extends SQLUtils {
 			return stringWriter.toString();
 		}
 
-		private static InventoryPlayer deserialize(String item) {
+		private static PlayerData deserialize(String item) {
 			ConfigurationNode node = null;
 			try {
 				node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
@@ -248,7 +265,7 @@ public class PlayerDB extends SQLUtils {
 
 			DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
 
-			return Sponge.getDataManager().deserialize(InventoryPlayer.class, dataView).get();
+			return Sponge.getDataManager().deserialize(PlayerData.class, dataView).get();
 		}
 	}
 }

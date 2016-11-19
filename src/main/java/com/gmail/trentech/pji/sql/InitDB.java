@@ -11,7 +11,7 @@ import org.spongepowered.api.service.sql.SqlService;
 
 import com.gmail.trentech.pji.utils.ConfigManager;
 
-public abstract class SQLUtils {
+public abstract class InitDB {
 
 	protected static String prefix = ConfigManager.get().getConfig().getNode("settings", "sql", "prefix").getString();
 	protected static boolean enableSQL = ConfigManager.get().getConfig().getNode("settings", "sql", "enable").getBoolean();
@@ -50,7 +50,7 @@ public abstract class SQLUtils {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.WORLDS") + " (UUID TEXT, Inventories TEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.WORLDS") + " (UUID TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 
@@ -58,7 +58,7 @@ public abstract class SQLUtils {
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INVENTORIES") + " (Inventory TEXT, DATA TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INVENTORIES") + " (Inventory TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 			

@@ -14,9 +14,9 @@ import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.data.InventoryData;
-import com.gmail.trentech.pji.service.settings.InventorySettings;
+import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.settings.InventorySettings;
 
 public class InventoryElement extends CommandElement {
 

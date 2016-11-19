@@ -20,8 +20,8 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.data.InventoryData;
+import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.data.InventoryData;
 
 public class CMDInfo implements CommandExecutor {
 
@@ -66,7 +66,7 @@ public class CMDInfo implements CommandExecutor {
 
 		list.add(Text.of(TextColors.GREEN, " ", properties.getWorldName(), ":"));
 		
-		for (Entry<String, Boolean> entry : inventoryService.getWorldSettings().all(properties).entrySet()) {
+		for (Entry<String, Boolean> entry : inventoryService.getWorldSettings().get(properties).getInventories().entrySet()) {
 			InventoryData inventoryData = inventoryService.getInventorySettings().get(entry.getKey()).get();
 
 			Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());

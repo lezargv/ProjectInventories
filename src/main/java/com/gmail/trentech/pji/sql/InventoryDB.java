@@ -15,39 +15,16 @@ import java.util.Optional;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.DataTranslators;
+import org.spongepowered.api.scheduler.Task;
 
-import com.gmail.trentech.pji.service.data.InventoryData;
+import com.gmail.trentech.pji.Main;
+import com.gmail.trentech.pji.data.InventoryData;
 
 import ninja.leaping.configurate.ConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
-public class InventoryDB extends SQLUtils {
+public class InventoryDB extends InitDB {
 
-	private static String serialize(InventoryData inventoryData) {
-		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventoryData.toContainer());
-		StringWriter stringWriter = new StringWriter();
-		try {
-			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return stringWriter.toString();
-	}
-
-	private static InventoryData deserialize(String item) {
-		ConfigurationNode node = null;
-		try {
-			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
-
-		return Sponge.getDataManager().deserialize(InventoryData.class, dataView).get();
-	}
-	
 	public static HashMap<String, InventoryData> all() {
 		HashMap<String, InventoryData> map = new HashMap<>();
 
@@ -105,6 +82,9 @@ public class InventoryDB extends SQLUtils {
 	}
 
 	public static void remove(String inventory) {
+		Task.builder().async().execute(c -> {
+			
+		}).submit(Main.getPlugin());
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -125,6 +105,9 @@ public class InventoryDB extends SQLUtils {
 	}
 
 	public static void create(InventoryData inventoryData) {
+		Task.builder().async().execute(c -> {
+			
+		}).submit(Main.getPlugin());
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -146,6 +129,9 @@ public class InventoryDB extends SQLUtils {
 	}
 
 	public static void update(InventoryData inventoryData) {
+		Task.builder().async().execute(c -> {
+			
+		}).submit(Main.getPlugin());
 		try {
 			Connection connection = getDataSource().getConnection();
 
@@ -160,5 +146,30 @@ public class InventoryDB extends SQLUtils {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static String serialize(InventoryData inventoryData) {
+		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventoryData.toContainer());
+		StringWriter stringWriter = new StringWriter();
+		try {
+			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return stringWriter.toString();
+	}
+
+	private static InventoryData deserialize(String item) {
+		ConfigurationNode node = null;
+		try {
+			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
+
+		return Sponge.getDataManager().deserialize(InventoryData.class, dataView).get();
 	}
 }

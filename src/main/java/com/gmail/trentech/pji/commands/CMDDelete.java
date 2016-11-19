@@ -11,8 +11,8 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.InventorySettings;
+import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.settings.InventorySettings;
 
 public class CMDDelete implements CommandExecutor {
 
