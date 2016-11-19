@@ -58,6 +58,10 @@ public class CMDGet implements CommandExecutor {
 					}
 				}
 
+				if(inventoryService.getPlayerSettings().getInventoryName(player).equalsIgnoreCase(inventoryData.getName())) {
+					text = Text.join(text, Text.of(TextColors.GREEN, " [Current]"));
+				}
+				
 				Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 				if (optionalGamemode.isPresent()) {
