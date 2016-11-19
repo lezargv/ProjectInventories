@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands.elements;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
@@ -14,6 +15,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.data.InventoryData;
 import com.gmail.trentech.pji.service.settings.InventorySettings;
 
 public class InventoryElement extends CommandElement {
@@ -28,8 +30,10 @@ public class InventoryElement extends CommandElement {
 
 		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
 
-		if (inventorySettings.exists(next)) {
-			return next;
+		Optional<InventoryData> optionalData = inventorySettings.get(next);
+		
+		if (optionalData.isPresent()) {
+			return optionalData.get();
 		}
 
 		throw args.createError(Text.of(TextColors.RED, "Inventory not found"));
@@ -44,14 +48,16 @@ public class InventoryElement extends CommandElement {
 		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
 
 		if (next.isPresent()) {
-			for (String inv : inventorySettings.all()) {
+			for (Entry<String, InventoryData> entry : inventorySettings.all().entrySet()) {
+				String inv = entry.getKey();
+				
 				if (inv.startsWith(next.get().toUpperCase())) {
 					list.add(inv);
 				}
 			}
 		} else {
-			for (String inv : inventorySettings.all()) {
-				list.add(inv);
+			for (Entry<String, InventoryData> entry : inventorySettings.all().entrySet()) {
+				list.add(entry.getKey());
 			}
 		}
 

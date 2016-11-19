@@ -25,8 +25,9 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.Main;
-import com.gmail.trentech.pji.service.InventoryData;
 import com.gmail.trentech.pji.service.InventoryService;
+import com.gmail.trentech.pji.service.data.InventoryData;
+import com.gmail.trentech.pji.service.data.InventoryPlayer;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 
@@ -43,24 +44,25 @@ public class CMDSee implements CommandExecutor {
 
 		Player target = args.<Player>getOne("player").get();
 
-		String name = args.<String>getOne("inv").get().toUpperCase();
+		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 
-		InventoryData inventoryData;
+		InventoryPlayer inventoryPlayer;
 
-		if (playerSettings.get(target).equals(name)) {
-			inventoryData = inventoryService.copy(target);
-			inventoryService.save(target, inventoryData);
+		if (playerSettings.getInventoryName(target).equals(inventoryData.getName())) {
+			inventoryPlayer = playerSettings.copy(target);
+			playerSettings.save(target, inventoryPlayer);
 		} else {
-			Optional<InventoryData> optionalInventoryData = inventoryService.get(target, name);
+			Optional<InventoryPlayer> optionalInventoryPlayer = playerSettings.get(target, inventoryData.getName());
 
-			if (optionalInventoryData.isPresent()) {
-				inventoryData = optionalInventoryData.get();
+			if (optionalInventoryPlayer.isPresent()) {
+				inventoryPlayer = optionalInventoryPlayer.get();
 			} else {
-				inventoryData = inventoryService.empty(name);
-				inventoryService.save(target, inventoryData);
+				inventoryPlayer = playerSettings.empty(inventoryData.getName());
+				playerSettings.save(target, inventoryPlayer);
 			}
 		}
 
@@ -71,38 +73,38 @@ public class CMDSee implements CommandExecutor {
 					Optional<ItemStack> optionalItem = slot.peek();
 
 					if (optionalItem.isPresent()) {
-						inventoryData.addGrid(i, optionalItem.get());
+						inventoryPlayer.addGrid(i, optionalItem.get());
 					} else {
-						inventoryData.removeGrid(i);
+						inventoryPlayer.removeGrid(i);
 					}
 				} else if (i < 36) {
 					Optional<ItemStack> optionalItem = slot.peek();
 
 					if (optionalItem.isPresent()) {
-						inventoryData.addHotbar(i - 27, optionalItem.get());
+						inventoryPlayer.addHotbar(i - 27, optionalItem.get());
 					} else {
-						inventoryData.removeHotbar(i - 27);
+						inventoryPlayer.removeHotbar(i - 27);
 					}
 				} else {
 					Optional<ItemStack> optionalItem = slot.peek();
 
 					if (optionalItem.isPresent()) {
-						inventoryData.addEquipment(i - 36, optionalItem.get());
+						inventoryPlayer.addEquipment(i - 36, optionalItem.get());
 					} else {
-						inventoryData.removeEquipment(i - 36);
+						inventoryPlayer.removeEquipment(i - 36);
 					}
 				}
 
 				i++;
 			}
-			inventoryService.save(target, inventoryData);
+			playerSettings.save(target, inventoryPlayer);
 
-			if (playerSettings.get(target).equals(name)) {
+			if (playerSettings.getInventoryName(target).equals(inventoryData.getName())) {
 				player.getInventory().clear();
 
 				PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
 
-				Map<Integer, ItemStack> hotbar = inventoryData.getHotbar();
+				Map<Integer, ItemStack> hotbar = inventoryPlayer.getHotbar();
 
 				if (!hotbar.isEmpty()) {
 					i = 0;
@@ -114,7 +116,7 @@ public class CMDSee implements CommandExecutor {
 					}
 				}
 
-				Map<Integer, ItemStack> grid = inventoryData.getGrid();
+				Map<Integer, ItemStack> grid = inventoryPlayer.getGrid();
 
 				if (!grid.isEmpty()) {
 					i = 0;
@@ -126,7 +128,7 @@ public class CMDSee implements CommandExecutor {
 					}
 				}
 
-				Map<Integer, ItemStack> equipment = inventoryData.getEquipment();
+				Map<Integer, ItemStack> equipment = inventoryPlayer.getEquipment();
 
 				if (!equipment.isEmpty()) {
 					i = 0;
@@ -138,7 +140,7 @@ public class CMDSee implements CommandExecutor {
 					}
 				}
 
-				Optional<ItemStack> offHand = inventoryData.getOffHand();
+				Optional<ItemStack> offHand = inventoryPlayer.getOffHand();
 
 				if (offHand.isPresent()) {
 					player.setItemInHand(HandTypes.OFF_HAND, offHand.get());
@@ -147,24 +149,24 @@ public class CMDSee implements CommandExecutor {
 				ConfigurationNode config = ConfigManager.get().getConfig();
 
 				if (config.getNode("options", "health").getBoolean()) {
-					player.offer(Keys.HEALTH, inventoryData.getHealth());
+					player.offer(Keys.HEALTH, inventoryPlayer.getHealth());
 				}
 
 				if (config.getNode("options", "hunger").getBoolean()) {
-					player.offer(Keys.FOOD_LEVEL, inventoryData.getFood());
-					player.offer(Keys.SATURATION, inventoryData.getSaturation());
+					player.offer(Keys.FOOD_LEVEL, inventoryPlayer.getFood());
+					player.offer(Keys.SATURATION, inventoryPlayer.getSaturation());
 				}
 
 				if (config.getNode("options", "experience").getBoolean()) {
-					player.offer(Keys.EXPERIENCE_LEVEL, inventoryData.getExpLevel());
-					player.offer(Keys.TOTAL_EXPERIENCE, inventoryData.getExperience());
+					player.offer(Keys.EXPERIENCE_LEVEL, inventoryPlayer.getExpLevel());
+					player.offer(Keys.TOTAL_EXPERIENCE, inventoryPlayer.getExperience());
 				}	
 			}
 		}).build(Main.getPlugin());
 
-		Map<Integer, ItemStack> grid = inventoryData.getGrid();
-		Map<Integer, ItemStack> hotbar = inventoryData.getHotbar();
-		Map<Integer, ItemStack> equipment = inventoryData.getEquipment();
+		Map<Integer, ItemStack> grid = inventoryPlayer.getGrid();
+		Map<Integer, ItemStack> hotbar = inventoryPlayer.getHotbar();
+		Map<Integer, ItemStack> equipment = inventoryPlayer.getEquipment();
 
 		int i = 0;
 		for (Inventory slot : inventory.slots()) {

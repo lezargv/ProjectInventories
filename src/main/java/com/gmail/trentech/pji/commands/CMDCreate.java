@@ -1,5 +1,7 @@
 package com.gmail.trentech.pji.commands;
 
+import java.util.Optional;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -11,9 +13,8 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.GamemodeSettings;
+import com.gmail.trentech.pji.service.data.InventoryData;
 import com.gmail.trentech.pji.service.settings.InventorySettings;
-import com.gmail.trentech.pji.service.settings.PermissionSettings;
 
 public class CMDCreate implements CommandExecutor {
 
@@ -27,47 +28,53 @@ public class CMDCreate implements CommandExecutor {
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
-		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
+
+		Optional<InventoryData> optionalInventoryData = inventorySettings.get(name);
 		
-		if (inventorySettings.exists(name)) {
+		if (optionalInventoryData.isPresent()) {
+			InventoryData inventoryData = optionalInventoryData.get();
+			
 			if (args.hasAny("permission")) {
 				String permission = args.<String>getOne("permission").get().toUpperCase();
 
-				permissionSettings.set(name, permission);
+				inventoryData.setPermission(permission);
 
 				src.sendMessage(Text.of(TextColors.DARK_GREEN, "Altered " + name + ", set permission to ", permission));
 			} else {
-				permissionSettings.remove(name);
+				inventoryData.removePermission();
 			}
 			
 			if (args.hasAny("gamemode")) {
 				GameMode gamemode = args.<GameMode>getOne("gamemode").get();
 
-				gamemodeSettings.set(name, gamemode);
+				inventoryData.setGamemode(gamemode);
 
 				src.sendMessage(Text.of(TextColors.DARK_GREEN, "Altered " + name + ", set gamemode to ", gamemode));
 			}else {
-				gamemodeSettings.remove(name);
+				inventoryData.removeGamemode();
 			}
+			
+			inventorySettings.save(inventoryData);
 			
 			return CommandResult.success();
 		}
 
-		inventorySettings.create(name);
+		InventoryData inventoryData = new InventoryData(name);
 
 		if (args.hasAny("permission")) {
 			String permission = args.<String>getOne("permission").get().toUpperCase();
 
-			permissionSettings.set(name, permission);
+			inventoryData.setPermission(permission);
 		}
 		
 		if (args.hasAny("gamemode")) {
 			GameMode gamemode = args.<GameMode>getOne("gamemode").get();
 
-			gamemodeSettings.set(name, gamemode);
+			inventoryData.setGamemode(gamemode);
 		}
 
+		inventorySettings.save(inventoryData);
+		
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Created new inventory ", name));
 
 		return CommandResult.success();

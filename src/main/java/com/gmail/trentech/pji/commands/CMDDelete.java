@@ -22,7 +22,7 @@ public class CMDDelete implements CommandExecutor {
 
 		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
 
-		if (!inventorySettings.exists(name)) {
+		if (!inventorySettings.get(name).isPresent()) {
 			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
 		}
 

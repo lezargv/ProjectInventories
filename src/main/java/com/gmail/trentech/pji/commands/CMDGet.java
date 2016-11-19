@@ -17,11 +17,11 @@ import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.service.pagination.PaginationList;
 import org.spongepowered.api.service.pagination.PaginationService;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.GamemodeSettings;
-import com.gmail.trentech.pji.service.settings.PermissionSettings;
+import com.gmail.trentech.pji.service.data.InventoryData;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
 import com.gmail.trentech.pji.service.settings.WorldSettings;
 
@@ -35,32 +35,40 @@ public class CMDGet implements CommandExecutor {
 		Player player = (Player) src;
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
-		
+
 		if (!args.hasAny("inv")) {
 			List<Text> list = new ArrayList<>();
 
 			for (Entry<String, Boolean> entry : worldSettings.all(player.getWorld().getProperties()).entrySet()) {
-				Text text = Text.of(TextColors.YELLOW, " - ", entry.getKey());
+				InventoryData inventoryData = inventoryService.getInventorySettings().get(entry.getKey()).get();
 
+				Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());
+				Text hover = Text.EMPTY;
+				
 				if (entry.getValue()) {
 					text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
 				} else {
-					Optional<String> optionalPermission = permissionSettings.get(entry.getKey());
+					Optional<String> optionalPermission = inventoryData.getPermission();
 
 					if (optionalPermission.isPresent()) {
-						text = Text.join(text, Text.of(TextColors.WHITE, " ", optionalPermission.get()));
+						hover = Text.of(TextColors.BLUE, "Permission: ", TextColors.WHITE, optionalPermission.get());
 					}
 				}
 
-				if (playerSettings.get(player).equals(entry.getKey())) {
-					text = Text.join(text, Text.of(TextColors.GREEN, " [Current]"));
+				Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
+
+				if (optionalGamemode.isPresent()) {
+					hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
 				}
 
-				list.add(text);
+				if(!hover.isEmpty()) {
+					list.add(Text.builder().onHover(TextActions.showText(hover)).append(text).build());
+				} else {
+					list.add(text);
+				}
 			}
 
 			if (src instanceof Player) {
@@ -81,29 +89,29 @@ public class CMDGet implements CommandExecutor {
 
 			return CommandResult.success();
 		}
-		String name = args.<String>getOne("inv").get().toUpperCase();
+		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
-		if (!worldSettings.contains(player.getWorld().getProperties(), name)) {
+		if (!worldSettings.contains(player.getWorld().getProperties(), inventoryData.getName())) {
 			throw new CommandException(Text.of(TextColors.RED, "This inventory is not assigned to this world"), false);
 		}
 
-		Optional<String> optionalPermission = permissionSettings.get(name);
+		Optional<String> optionalPermission = inventoryData.getPermission();
 
 		if (optionalPermission.isPresent() && !src.hasPermission(optionalPermission.get())) {
 			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
 		}
 
-		Optional<GameMode> optionalGamemode = gamemodeSettings.get(name);
+		Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 		if (optionalGamemode.isPresent() && !src.hasPermission("pji.override.gamemode")) {
 			player.offer(Keys.GAME_MODE, optionalGamemode.get());
 		}
 		
-		inventoryService.save(player, inventoryService.copy(player));
+		playerSettings.save(player, playerSettings.copy(player));
 
-		playerSettings.set(player, name, false);
+		playerSettings.set(player, inventoryData.getName(), false);
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory to ", name));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory to ", inventoryData.getName()));
 
 		return CommandResult.success();
 	}

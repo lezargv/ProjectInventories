@@ -1,4 +1,4 @@
-package com.gmail.trentech.pji.service;
+package com.gmail.trentech.pji.service.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
@@ -16,9 +16,9 @@ import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import com.gmail.trentech.pji.utils.DataSerializer;
+import com.gmail.trentech.pji.utils.ItemSerializer;
 
-public class InventoryData implements DataSerializable {
+public class InventoryPlayer implements DataSerializable {
 
 	private final static DataQuery NAME = of("name");
 	private final static DataQuery HOTBAR = of("hotbar");
@@ -42,7 +42,7 @@ public class InventoryData implements DataSerializable {
 	private int expLevel = 0;
 	private int experience = 0;
 
-	protected InventoryData(String name, Optional<ItemStack> offHand, Map<Integer, ItemStack> hotbar, Map<Integer, ItemStack> equipment, Map<Integer, ItemStack> grid, double health, int food, double saturation, int expLevel, int experience) {
+	protected InventoryPlayer(String name, Optional<ItemStack> offHand, Map<Integer, ItemStack> hotbar, Map<Integer, ItemStack> equipment, Map<Integer, ItemStack> grid, double health, int food, double saturation, int expLevel, int experience) {
 		this.name = name;
 		this.offHand = offHand;
 		this.hotbar = hotbar;
@@ -55,7 +55,7 @@ public class InventoryData implements DataSerializable {
 		this.experience = experience;
 	}
 
-	protected InventoryData(String name) {
+	public InventoryPlayer(String name) {
 		this.name = name;
 	}
 
@@ -157,58 +157,58 @@ public class InventoryData implements DataSerializable {
 		Map<String, String> hotbar = new HashMap<>();
 
 		for (Entry<Integer, ItemStack> entry : this.hotbar.entrySet()) {
-			hotbar.put(entry.getKey().toString(), DataSerializer.serializeItemStack(entry.getValue()));
+			hotbar.put(entry.getKey().toString(), ItemSerializer.serialize(entry.getValue()));
 		}
 
 		Map<String, String> grid = new HashMap<>();
 
 		for (Entry<Integer, ItemStack> entry : this.grid.entrySet()) {
-			grid.put(entry.getKey().toString(), DataSerializer.serializeItemStack(entry.getValue()));
+			grid.put(entry.getKey().toString(), ItemSerializer.serialize(entry.getValue()));
 		}
 
 		Map<String, String> equipment = new HashMap<>();
 
 		for (Entry<Integer, ItemStack> entry : this.equipment.entrySet()) {
-			equipment.put(entry.getKey().toString(), DataSerializer.serializeItemStack(entry.getValue()));
+			equipment.put(entry.getKey().toString(), ItemSerializer.serialize(entry.getValue()));
 		}
 
 		DataContainer container = new MemoryDataContainer().set(NAME, getName()).set(HOTBAR, hotbar).set(GRID, grid).set(EQUIPMENT, equipment).set(HEALTH, health).set(FOOD, food).set(SATURATION, saturation).set(EXP_LEVEL, expLevel).set(EXPERIENCE, experience);
 
 		if (this.offHand.isPresent()) {
-			container.set(OFF_HAND, DataSerializer.serializeItemStack(this.offHand.get()));
+			container.set(OFF_HAND, ItemSerializer.serialize(this.offHand.get()));
 		}
 
 		return container;
 	}
 
-	public static class Builder extends AbstractDataBuilder<InventoryData> {
+	public static class Builder extends AbstractDataBuilder<InventoryPlayer> {
 
 		public Builder() {
-			super(InventoryData.class, 1);
+			super(InventoryPlayer.class, 1);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
-		protected Optional<InventoryData> buildContent(DataView container) throws InvalidDataException {
+		protected Optional<InventoryPlayer> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(NAME, HOTBAR, GRID, EQUIPMENT, HEALTH, FOOD, SATURATION, EXP_LEVEL, EXPERIENCE)) {
 				String name = container.getString(NAME).get();
 
 				Map<Integer, ItemStack> hotbar = new HashMap<>();
 
 				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(HOTBAR).get()).entrySet()) {
-					hotbar.put(Integer.parseInt(entry.getKey()), DataSerializer.deserializeItemStack(entry.getValue()));
+					hotbar.put(Integer.parseInt(entry.getKey()), ItemSerializer.deserialize(entry.getValue()));
 				}
 
 				Map<Integer, ItemStack> grid = new HashMap<>();
 
 				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(GRID).get()).entrySet()) {
-					grid.put(Integer.parseInt(entry.getKey()), DataSerializer.deserializeItemStack(entry.getValue()));
+					grid.put(Integer.parseInt(entry.getKey()), ItemSerializer.deserialize(entry.getValue()));
 				}
 
 				Map<Integer, ItemStack> equipment = new HashMap<>();
 
 				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(EQUIPMENT).get()).entrySet()) {
-					equipment.put(Integer.parseInt(entry.getKey()), DataSerializer.deserializeItemStack(entry.getValue()));
+					equipment.put(Integer.parseInt(entry.getKey()), ItemSerializer.deserialize(entry.getValue()));
 				}
 
 				double health = container.getDouble(HEALTH).get();
@@ -219,12 +219,12 @@ public class InventoryData implements DataSerializable {
 				Optional<ItemStack> offHand = Optional.empty();
 
 				if (container.contains(OFF_HAND)) {
-					offHand = Optional.of(DataSerializer.deserializeItemStack(container.getString(OFF_HAND).get()));
+					offHand = Optional.of(ItemSerializer.deserialize(container.getString(OFF_HAND).get()));
 				}
 
-				InventoryData inventoryData = new InventoryData(name, offHand, hotbar, equipment, grid, health, food, saturation, expLevel, experience);
+				InventoryPlayer inventoryPlayer = new InventoryPlayer(name, offHand, hotbar, equipment, grid, health, food, saturation, expLevel, experience);
 
-				return Optional.of(inventoryData);
+				return Optional.of(inventoryPlayer);
 			}
 			return Optional.empty();
 		}

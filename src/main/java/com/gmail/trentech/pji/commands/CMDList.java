@@ -2,6 +2,7 @@ package com.gmail.trentech.pji.commands;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
@@ -19,9 +20,8 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.GamemodeSettings;
+import com.gmail.trentech.pji.service.data.InventoryData;
 import com.gmail.trentech.pji.service.settings.InventorySettings;
-import com.gmail.trentech.pji.service.settings.PermissionSettings;
 
 public class CMDList implements CommandExecutor {
 
@@ -31,20 +31,20 @@ public class CMDList implements CommandExecutor {
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
-		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
-		
-		for (String name : inventorySettings.all()) {
-			Text text = Text.of(TextColors.YELLOW, " - ", name);
+
+		for (Entry<String, InventoryData> entry : inventorySettings.all().entrySet()) {
+			InventoryData inventoryData = entry.getValue();
+			
+			Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());
 			Text hover = Text.EMPTY;
 			
-			Optional<String> optionalPermission = permissionSettings.get(name);
+			Optional<String> optionalPermission = inventoryData.getPermission();
 
 			if (optionalPermission.isPresent()) {
 				hover = Text.of(TextColors.BLUE, "Permission: ", TextColors.WHITE, optionalPermission.get());
 			}
 			
-			Optional<GameMode> optionalGamemode = gamemodeSettings.get(name);
+			Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 			if (optionalGamemode.isPresent()) {
 				hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));

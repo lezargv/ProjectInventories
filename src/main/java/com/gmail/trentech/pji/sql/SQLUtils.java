@@ -58,11 +58,7 @@ public abstract class SQLUtils {
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.PERMISSIONS") + " (Inventory TEXT, Permission TEXT)");
-
-			statement.executeUpdate();
-
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.GAMEMODE") + " (Inventory TEXT, Gamemode TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INVENTORIES") + " (Inventory TEXT, DATA TEXT)");
 
 			statement.executeUpdate();
 			

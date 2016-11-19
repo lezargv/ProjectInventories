@@ -21,8 +21,7 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.GamemodeSettings;
-import com.gmail.trentech.pji.service.settings.PermissionSettings;
+import com.gmail.trentech.pji.service.data.InventoryData;
 
 public class CMDInfo implements CommandExecutor {
 
@@ -63,30 +62,27 @@ public class CMDInfo implements CommandExecutor {
 	}
 
 	private List<Text> get(InventoryService inventoryService, WorldProperties properties) {
-		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
-		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
-
 		List<Text> list = new ArrayList<>();
 
 		list.add(Text.of(TextColors.GREEN, " ", properties.getWorldName(), ":"));
 		
 		for (Entry<String, Boolean> entry : inventoryService.getWorldSettings().all(properties).entrySet()) {
-			String name = entry.getKey();
+			InventoryData inventoryData = inventoryService.getInventorySettings().get(entry.getKey()).get();
 
-			Text text = Text.of(TextColors.YELLOW, " - ", name);
+			Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());
 			Text hover = Text.EMPTY;
 			
 			if (entry.getValue()) {
 				text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
 			} else {
-				Optional<String> optionalPermission = permissionSettings.get(name);
+				Optional<String> optionalPermission = inventoryData.getPermission();
 
 				if (optionalPermission.isPresent()) {
 					hover = Text.of(TextColors.BLUE, "Permission: ", TextColors.WHITE, optionalPermission.get());
 				}
 			}
 
-			Optional<GameMode> optionalGamemode = gamemodeSettings.get(name);
+			Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 			if (optionalGamemode.isPresent()) {
 				hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
@@ -96,8 +92,7 @@ public class CMDInfo implements CommandExecutor {
 				list.add(Text.builder().onHover(TextActions.showText(hover)).append(text).build());
 			} else {
 				list.add(text);
-			}			
-
+			}
 		}
 
 		return list;

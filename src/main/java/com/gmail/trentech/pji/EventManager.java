@@ -18,7 +18,8 @@ import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.GamemodeSettings;
+import com.gmail.trentech.pji.service.data.InventoryData;
+import com.gmail.trentech.pji.service.settings.InventorySettings;
 import com.gmail.trentech.pji.service.settings.PlayerSettings;
 import com.gmail.trentech.pji.service.settings.WorldSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
@@ -30,18 +31,18 @@ public class EventManager {
 		Sponge.getScheduler().createTaskBuilder().async().delayTicks(35).execute(t -> {
 			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 			
+			InventorySettings inventorySettings = inventoryService.getInventorySettings();
 			PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-			GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
 
-			String inventory = playerSettings.get(player);
+			InventoryData inventory = inventorySettings.get(playerSettings.getInventoryName(player)).get();
 			
-			Optional<GameMode> optionalGamemode = gamemodeSettings.get(inventory);
+			Optional<GameMode> optionalGamemode = inventory.getGamemode();
 
 			if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
 				player.offer(Keys.GAME_MODE, optionalGamemode.get());
 			}
 			
-			playerSettings.set(player, inventory, true);
+			playerSettings.set(player, inventory.getName(), true);
 		}).submit(Main.getPlugin());
 	}
 
@@ -49,7 +50,9 @@ public class EventManager {
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		
-		inventoryService.save(player, inventoryService.copy(player));
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+		
+		playerSettings.save(player, playerSettings.copy(player));
 	}
 
 	@Listener
@@ -67,7 +70,9 @@ public class EventManager {
 
 			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 			
-			inventoryService.save(player, inventoryService.copy(player));
+			PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+			
+			playerSettings.save(player, playerSettings.copy(player));
 		}
 	}
 
@@ -85,24 +90,24 @@ public class EventManager {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
-		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
-		
-		if (worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();		
+		InventorySettings inventorySettings = inventoryService.getInventorySettings();
+
+		if (worldSettings.contains(to, playerSettings.getInventoryName(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 
-		inventoryService.save(player, inventoryService.copy(player));
-
-		String inventory = worldSettings.getDefault(to);
+		playerSettings.save(player, playerSettings.copy(player));
 		
-		Optional<GameMode> optionalGamemode = gamemodeSettings.get(inventory);
+		InventoryData inventory = inventorySettings.get(worldSettings.getDefault(to)).get();
+
+		Optional<GameMode> optionalGamemode = inventory.getGamemode();
 
 		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
 			player.offer(Keys.GAME_MODE, optionalGamemode.get());
 		}
 
-		playerSettings.set(player, inventory, false);
+		playerSettings.set(player, inventory.getName(), false);
 	}
 
 	@Listener(order = Order.POST)
@@ -118,22 +123,22 @@ public class EventManager {
 		
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-		GamemodeSettings gamemodeSettings = inventoryService.getGamemodeSettings();
+		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 		
-		if (worldSettings.contains(to, playerSettings.get(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if (worldSettings.contains(to, playerSettings.getInventoryName(player)) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 
-		inventoryService.save(player, inventoryService.copy(player));
+		playerSettings.save(player, playerSettings.copy(player));
 
-		String inventory = worldSettings.getDefault(to);
+		InventoryData inventory = inventorySettings.get(worldSettings.getDefault(to)).get();
 		
-		Optional<GameMode> optionalGamemode = gamemodeSettings.get(inventory);
+		Optional<GameMode> optionalGamemode = inventory.getGamemode();
 
 		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
 			player.offer(Keys.GAME_MODE, optionalGamemode.get());
 		}
 		
-		playerSettings.set(player, inventory, false);
+		playerSettings.set(player, inventory.getName(), false);
 	}
 }

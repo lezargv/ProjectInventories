@@ -11,17 +11,16 @@ import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.service.InventoryService;
-import com.gmail.trentech.pji.service.settings.PermissionSettings;
+import com.gmail.trentech.pji.service.data.InventoryData;
 
 public class CMDAdd implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		WorldProperties properties = args.<WorldProperties>getOne("world").get();
-		String name = args.<String>getOne("inv").get().toUpperCase();
+		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
-		PermissionSettings permissionSettings = inventoryService.getPermissionSettings();
 
 		boolean isDefault = false;
 
@@ -29,13 +28,13 @@ public class CMDAdd implements CommandExecutor {
 			isDefault = args.<Boolean>getOne("true|false").get();
 		}
 
-		if (isDefault && permissionSettings.get(name).isPresent()) {
-			src.sendMessage(Text.of(TextColors.RED, name, "WARNING: Permission will be ignored when changing worlds, while inventory is set to default"));
+		if (isDefault && inventoryData.getPermission().isPresent()) {
+			src.sendMessage(Text.of(TextColors.RED, inventoryData.getName(), "WARNING: Permission will be ignored when changing worlds, while inventory is set to default"));
 		}
 
-		inventoryService.getWorldSettings().add(properties, name, isDefault);
+		inventoryService.getWorldSettings().add(properties, inventoryData.getName(), isDefault);
 
-		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Added inventory " + name + " to ", properties.getWorldName()));
+		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Added inventory " + inventoryData.getName() + " to ", properties.getWorldName()));
 
 		return CommandResult.success();
 	}

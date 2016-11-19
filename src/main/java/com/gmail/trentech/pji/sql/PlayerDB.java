@@ -1,5 +1,10 @@
 package com.gmail.trentech.pji.sql;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,10 +13,15 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.entity.living.player.Player;
 
-import com.gmail.trentech.pji.service.InventoryData;
-import com.gmail.trentech.pji.utils.DataSerializer;
+import com.gmail.trentech.pji.service.data.InventoryPlayer;
+
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class PlayerDB extends SQLUtils {
 
@@ -133,7 +143,7 @@ public class PlayerDB extends SQLUtils {
 
 	public static class Data {
 
-		public static Optional<InventoryData> get(Player player, String inventory) {
+		public static Optional<InventoryPlayer> get(Player player, String inventory) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
@@ -143,11 +153,11 @@ public class PlayerDB extends SQLUtils {
 
 				while (result.next()) {
 					if (result.getString("UUID").equals(player.getUniqueId().toString())) {
-						InventoryData inventoryData = DataSerializer.deserializeInventoryData(result.getString("Inventory"));
+						InventoryPlayer inventoryPlayer = deserialize(result.getString("Inventory"));
 
 						connection.close();
 
-						return Optional.of(inventoryData);
+						return Optional.of(inventoryPlayer);
 					}
 				}
 
@@ -182,14 +192,14 @@ public class PlayerDB extends SQLUtils {
 			return false;
 		}
 
-		public static void create(Player player, InventoryData inventoryData) {
+		public static void create(Player player, InventoryPlayer inventoryPlayer) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + inventoryData.getName()) + " (UUID, Inventory) VALUES (?, ?)");
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + inventoryPlayer.getName()) + " (UUID, Inventory) VALUES (?, ?)");
 
 				statement.setString(1, player.getUniqueId().toString());
-				statement.setString(2, DataSerializer.serializeInventoryData(inventoryData));
+				statement.setString(2, serialize(inventoryPlayer));
 
 				statement.executeUpdate();
 
@@ -199,14 +209,14 @@ public class PlayerDB extends SQLUtils {
 			}
 		}
 
-		public static void update(Player player, InventoryData inventoryData) {
+		public static void update(Player player, InventoryPlayer inventoryPlayer) {
 			try {
 				Connection connection = getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + inventoryData.getName()) + " SET Inventory = ? WHERE UUID = ?");
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + inventoryPlayer.getName()) + " SET Inventory = ? WHERE UUID = ?");
 
 				statement.setString(2, player.getUniqueId().toString());
-				statement.setString(1, DataSerializer.serializeInventoryData(inventoryData));
+				statement.setString(1, serialize(inventoryPlayer));
 
 				statement.executeUpdate();
 
@@ -214,6 +224,31 @@ public class PlayerDB extends SQLUtils {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		private static String serialize(InventoryPlayer inventoryData) {
+			ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventoryData.toContainer());
+			StringWriter stringWriter = new StringWriter();
+			try {
+				HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return stringWriter.toString();
+		}
+
+		private static InventoryPlayer deserialize(String item) {
+			ConfigurationNode node = null;
+			try {
+				node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
+
+			return Sponge.getDataManager().deserialize(InventoryPlayer.class, dataView).get();
 		}
 	}
 }
