@@ -1,10 +1,13 @@
 package com.gmail.trentech.pji;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
@@ -32,6 +35,12 @@ public class EventManager {
 
 			InventoryData inventoryData = inventorySettings.get(playerSettings.getInventoryName(player)).get();
 
+			Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
+
+			if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
+				player.offer(Keys.GAME_MODE, optionalGamemode.get());
+			}
+			
 			playerSettings.set(player, inventoryData, true);
 		}).submit(Main.getPlugin());
 	}
@@ -91,6 +100,12 @@ public class EventManager {
 		
 		InventoryData inventoryData = inventorySettings.get(worldSettings.get(to).getDefault()).get();
 
+		Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
+
+		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
+			player.offer(Keys.GAME_MODE, optionalGamemode.get());
+		}
+		
 		playerSettings.set(player, inventoryData, false);
 	}
 
@@ -117,6 +132,12 @@ public class EventManager {
 
 		InventoryData inventoryData = inventorySettings.get(worldSettings.get(to).getDefault()).get();
 
+		Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
+
+		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
+			player.offer(Keys.GAME_MODE, optionalGamemode.get());
+		}
+		
 		playerSettings.set(player, inventoryData, false);
 	}
 }

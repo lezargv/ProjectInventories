@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
@@ -178,12 +177,6 @@ public class PlayerSettings {
 			}
 
 			save(player, copy(player));
-		}
-		
-		Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
-
-		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
-			player.offer(Keys.GAME_MODE, optionalGamemode.get());
 		}
 	}
 }

@@ -85,7 +85,10 @@ public class CMDInfo implements CommandExecutor {
 			Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 			if (optionalGamemode.isPresent()) {
-				hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
+				if(!hover.isEmpty()) {
+					hover = Text.join(hover, Text.NEW_LINE);
+				}
+				hover = Text.join(hover, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
 			}
 
 			if(!hover.isEmpty()) {

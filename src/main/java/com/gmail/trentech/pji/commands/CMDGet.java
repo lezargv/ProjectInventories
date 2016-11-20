@@ -11,6 +11,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.service.pagination.PaginationList;
@@ -67,7 +68,10 @@ public class CMDGet implements CommandExecutor {
 				Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 				if (optionalGamemode.isPresent()) {
-					hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
+					if(!hover.isEmpty()) {
+						hover = Text.join(hover, Text.NEW_LINE);
+					}
+					hover = Text.join(hover, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
 				}
 
 				if(!hover.isEmpty()) {
@@ -107,6 +111,12 @@ public class CMDGet implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, "You do not have permission to get this inventory"), false);
 		}
 
+		Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
+
+		if (optionalGamemode.isPresent() && !player.hasPermission("pji.override.gamemode")) {
+			player.offer(Keys.GAME_MODE, optionalGamemode.get());
+		}
+		
 		playerSettings.save(player, playerSettings.copy(player));
 
 		playerSettings.set(player, inventoryData, false);
