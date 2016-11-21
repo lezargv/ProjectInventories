@@ -25,7 +25,7 @@ public class CommandHelp {
 					.setUsage(usageInv)
 					.addExample("/inventory delete nether");
 			
-			Help invList = new Help("inventory list", "list", "List all inventories")
+			Help invList = new Help("inventory list", "list", "List all inventories. Hover over to see permission and gamemode assignments if any.")
 					.setPermission("pji.cmd.inventory.list");
 			
 			Help invGet = new Help("inventory get", "get", "Changes players current inventory")
@@ -41,17 +41,21 @@ public class CommandHelp {
 					.setUsage(usageSee)
 					.addExample("/inventory get nether");
 			
-			Usage usageSet = new Usage(Argument.of("<world>", "Specifies the targeted world"))
-					.addArgument(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
-				
-			Help invAdd = new Help("inventory add", "add", "Adds an inventory to the specified world or altered already assigned")
+			Usage usageAdd = new Usage(Argument.of("<world>", "Specifies the targeted world"))
+					.addArgument(Argument.of("<inv>", "Specifies the name of the targeted inventory"))
+					.addArgument(Argument.of("[true|false]", "Set whether or not this inventory is the default for specified world"));
+			
+			Help invAdd = new Help("inventory add", "add", "Adds an inventory to the specified world or alters already assigned")
 					.setPermission("pji.cmd.inventory.add")
-					.setUsage(usageSet)
+					.setUsage(usageAdd)
 					.addExample("/inventory add DIM-1 nether");
 
+			Usage usageRemove = new Usage(Argument.of("<world>", "Specifies the targeted world"))
+					.addArgument(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
+			
 			Help invRemove = new Help("inventory remove", "remove", "Removes an inventory from the specified world")
 					.setPermission("pji.cmd.inventory.remove")
-					.setUsage(usageSet)
+					.setUsage(usageRemove)
 					.addExample("/inventory remove DIM-1 nether");
 			
 			Usage usageWorld = new Usage(Argument.of("[world]", "Specifies the targeted world"));
