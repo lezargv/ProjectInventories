@@ -106,6 +106,12 @@ public class CMDSee implements CommandExecutor {
 					if (boots.isPresent()) {
 						slot.set(boots.get());
 					}
+				} else if(i - 36 == 4) {
+					Optional<ItemStack> offHand = playerInventoryData.getOffHand();
+					
+					if(offHand.isPresent()) {
+						slot.set(offHand.get());
+					}
 				} else {
 					slot.set(ItemStack.of(ItemTypes.BARRIER, 1));
 				}

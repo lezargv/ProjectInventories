@@ -2,6 +2,10 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,6 +19,11 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+
+import com.google.common.reflect.TypeToken;
+
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class WorldData implements DataSerializable {
 
@@ -109,6 +118,32 @@ public class WorldData implements DataSerializable {
 				return Optional.of(worldData);
 			}
 			return Optional.empty();
+		}
+	}
+
+	public static String serialize(WorldData worldData) {
+		try {
+			StringWriter sink = new StringWriter();
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
+			ConfigurationNode node = loader.createEmptyNode();
+			node.setValue(TypeToken.of(WorldData.class), worldData);
+			loader.save(node);
+			return sink.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static WorldData deserialize(String item) {
+		try {
+			StringReader source = new StringReader(item);
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
+			ConfigurationNode node = loader.load();
+			return node.getValue(TypeToken.of(WorldData.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
 		}
 	}
 }

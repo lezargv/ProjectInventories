@@ -2,6 +2,10 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,6 +21,10 @@ import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.gmail.trentech.pji.utils.ItemSerializer;
+import com.google.common.reflect.TypeToken;
+
+import ninja.leaping.configurate.ConfigurationNode;
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class PlayerInventoryData implements DataSerializable {
 
@@ -334,5 +342,29 @@ public class PlayerInventoryData implements DataSerializable {
 		}
 	}
 
+	public static String serialize(PlayerInventoryData playerInventoryData) {
+		try {
+			StringWriter sink = new StringWriter();
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
+			ConfigurationNode node = loader.createEmptyNode();
+			node.setValue(TypeToken.of(PlayerInventoryData.class), playerInventoryData);
+			loader.save(node);
+			return sink.toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
+	public static PlayerInventoryData deserialize(String item) {
+		try {
+			StringReader source = new StringReader(item);
+			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
+			ConfigurationNode node = loader.load();
+			return node.getValue(TypeToken.of(PlayerInventoryData.class));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 }

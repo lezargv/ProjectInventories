@@ -1,10 +1,5 @@
 package com.gmail.trentech.pji.sql;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,16 +7,10 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.scheduler.Task;
 
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.InventoryData;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class InventoryDB extends InitDB {
 
@@ -36,7 +25,7 @@ public class InventoryDB extends InitDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				map.put(result.getString("Name"), deserialize(result.getString("Data")));
+				map.put(result.getString("Name"), InventoryData.deserialize(result.getString("Data")));
 			}
 
 			connection.close();
@@ -61,7 +50,7 @@ public class InventoryDB extends InitDB {
 
 					connection.close();
 
-					return Optional.of(deserialize(data));
+					return Optional.of(InventoryData.deserialize(data));
 				}
 			}
 
@@ -113,7 +102,7 @@ public class InventoryDB extends InitDB {
 
 			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
 
-			statement.setString(2, serialize(inventoryData));
+			statement.setString(2, InventoryData.serialize(inventoryData));
 			statement.setString(1, inventoryData.getName());
 
 			statement.executeUpdate();
@@ -137,7 +126,7 @@ public class InventoryDB extends InitDB {
 
 			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INVENTORIES") + " SET Data = ? WHERE Name = ?");
 
-			statement.setString(1, serialize(inventoryData));
+			statement.setString(1, InventoryData.serialize(inventoryData));
 			statement.setString(2, inventoryData.getName());
 
 			statement.executeUpdate();
@@ -147,29 +136,5 @@ public class InventoryDB extends InitDB {
 			e.printStackTrace();
 		}
 	}
-	
-	private static String serialize(InventoryData inventoryData) {
-		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(inventoryData.toContainer());
-		StringWriter stringWriter = new StringWriter();
-		try {
-			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		return stringWriter.toString();
-	}
-
-	private static InventoryData deserialize(String item) {
-		ConfigurationNode node = null;
-		try {
-			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
-
-		return Sponge.getDataManager().deserialize(InventoryData.class, dataView).get();
-	}
 }

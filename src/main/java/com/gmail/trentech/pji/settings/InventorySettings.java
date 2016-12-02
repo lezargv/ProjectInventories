@@ -74,7 +74,7 @@ public class InventorySettings {
 					if (playerData.getInventoryName().equals(inventory)) {
 						playerSettings.set(player, inventorySettings.get(worldData.getDefault()).get(), false);
 
-						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
+						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory been permenently deleted by an admin. Changing to default inventory"));
 					}
 				});
 				

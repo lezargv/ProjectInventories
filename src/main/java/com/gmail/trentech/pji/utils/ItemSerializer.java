@@ -39,5 +39,4 @@ public class ItemSerializer {
 			return null;
 		}
 	}
-
 }

@@ -1,10 +1,5 @@
 package com.gmail.trentech.pji.sql;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,16 +8,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.persistence.DataTranslators;
 import org.spongepowered.api.scheduler.Task;
 
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.WorldData;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class WorldDB extends InitDB {
 
@@ -37,7 +26,7 @@ public class WorldDB extends InitDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				map.put(UUID.fromString(result.getString("UUID")), deserialize(result.getString("Data")));
+				map.put(UUID.fromString(result.getString("UUID")), WorldData.deserialize(result.getString("Data")));
 			}
 
 			connection.close();
@@ -58,7 +47,7 @@ public class WorldDB extends InitDB {
 
 			while (result.next()) {
 				if(uuid.equals(UUID.fromString(result.getString("UUID")))) {
-					WorldData worldData = deserialize(result.getString("Data"));
+					WorldData worldData = WorldData.deserialize(result.getString("Data"));
 
 					if (worldData.getInventories().isEmpty()) {
 						worldData.add("DEFAULT", true);
@@ -112,7 +101,7 @@ public class WorldDB extends InitDB {
 				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
 
 				statement.setString(1, worldData.getUniqueId().toString());
-				statement.setString(2, serialize(worldData));
+				statement.setString(2, WorldData.serialize(worldData));
 
 				statement.executeUpdate();
 
@@ -131,7 +120,7 @@ public class WorldDB extends InitDB {
 				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.WORLDS") + " SET Data = ? WHERE UUID = ?");
 
 				statement.setString(2, worldData.getUniqueId().toString());
-				statement.setString(1, serialize(worldData));
+				statement.setString(1, WorldData.serialize(worldData));
 
 				statement.executeUpdate();
 
@@ -142,28 +131,5 @@ public class WorldDB extends InitDB {
 		}).submit(Main.getPlugin());
 	}
 	
-	private static String serialize(WorldData worldData) {
-		ConfigurationNode node = DataTranslators.CONFIGURATION_NODE.translate(worldData.toContainer());
-		StringWriter stringWriter = new StringWriter();
-		try {
-			HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(stringWriter)).build().save(node);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
-		return stringWriter.toString();
-	}
-
-	private static WorldData deserialize(String item) {
-		ConfigurationNode node = null;
-		try {
-			node = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(new StringReader(item))).build().load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		DataView dataView = DataTranslators.CONFIGURATION_NODE.translate(node);
-
-		return Sponge.getDataManager().deserialize(WorldData.class, dataView).get();
-	}
 }

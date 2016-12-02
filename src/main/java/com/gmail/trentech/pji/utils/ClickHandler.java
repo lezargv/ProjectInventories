@@ -57,7 +57,7 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				} else {
 					playerInventoryData.removeHotbar(i - 27);
 				}
-			} else {
+			} else if (i < 40) {
 				Optional<ItemStack> optionalItem = slot.peek();
 
 				if (optionalItem.isPresent()) {
@@ -65,6 +65,10 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				} else {
 					playerInventoryData.removeEquipment(i - 36);
 				}
+			} else if(i == 40) {
+				Optional<ItemStack> optionalItem = slot.peek();
+
+				playerInventoryData.setOffHand(optionalItem);
 			}
 
 			i++;
