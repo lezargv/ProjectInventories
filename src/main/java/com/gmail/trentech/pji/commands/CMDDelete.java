@@ -1,6 +1,5 @@
 package com.gmail.trentech.pji.commands;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
@@ -11,28 +10,21 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
-import com.gmail.trentech.pji.InventoryService;
-import com.gmail.trentech.pji.settings.InventorySettings;
+import com.gmail.trentech.pji.data.InventoryData;
 
 public class CMDDelete implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
-		String name = args.<String>getOne("inv").get().toUpperCase();
+		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
-		InventorySettings inventorySettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getInventorySettings();
-
-		if (!inventorySettings.get(name).isPresent()) {
-			throw new CommandException(Text.of(TextColors.RED, name, " does not exist"), false);
-		}
-
-		if (name.equalsIgnoreCase("DEFAULT")) {
-			throw new CommandException(Text.of(TextColors.RED, name, " inventory be altered or deleted"), false);
+		if (inventoryData.getName().equalsIgnoreCase("DEFAULT")) {
+			throw new CommandException(Text.of(TextColors.RED, inventoryData.getName(), " inventory be altered or deleted"), false);
 		}
 
 		src.sendMessage(Text.builder().color(TextColors.RED).append(Text.of(TextColors.RED, "[WARNING] ", TextColors.YELLOW, "This will delete players inventories and cannot be undone. Confirm? ")).onClick(TextActions.runCommand("/pji:inventory delete yes")).append(Text.of(TextColors.DARK_PURPLE, TextStyles.UNDERLINE, "/inventory delete yes")).build());
 
-		CMDYes.confirm.put(src, name);
+		CMDYes.confirm.put(src, inventoryData.getName());
 
 		return CommandResult.success();
 	}

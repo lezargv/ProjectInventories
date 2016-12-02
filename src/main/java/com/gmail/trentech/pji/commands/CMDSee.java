@@ -25,7 +25,7 @@ import org.spongepowered.api.text.format.TextColors;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.InventoryData;
-import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.settings.PlayerSettings;
 import com.gmail.trentech.pji.utils.ClickHandler;
 
@@ -46,30 +46,30 @@ public class CMDSee implements CommandExecutor {
 
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 
-		PlayerData playerData;
+		PlayerInventoryData playerInventoryData;
 
-		if (playerSettings.getInventoryName(target).equals(inventoryData.getName())) {
-			playerData = playerSettings.copy(target);
-			playerSettings.save(target, playerData);
+		if (playerSettings.getPlayerData(target).getInventoryName().equals(inventoryData.getName())) {
+			playerInventoryData = playerSettings.copy(target);
+			playerSettings.save(target, playerInventoryData);
 		} else {
-			Optional<PlayerData> optionalPlayerData = playerSettings.get(target, inventoryData.getName());
+			Optional<PlayerInventoryData> optionalPlayerInventoryData = playerSettings.get(target, inventoryData.getName());
 
-			if (optionalPlayerData.isPresent()) {
-				playerData = optionalPlayerData.get();
+			if (optionalPlayerInventoryData.isPresent()) {
+				playerInventoryData = optionalPlayerInventoryData.get();
 			} else {
-				playerData = playerSettings.empty(inventoryData.getName());
-				playerSettings.save(target, playerData);
+				playerInventoryData = playerSettings.empty(inventoryData.getName());
+				playerSettings.save(target, playerInventoryData);
 			}
 		}
 
 		Inventory inventory = Inventory.builder().of(InventoryArchetypes.DOUBLE_CHEST)
 				.property(InventoryDimension.PROPERTY_NAM, new InventoryDimension(9, 5))
 				.property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(Text.of(target.getName())))
-				.listener(ClickInventoryEvent.class, new ClickHandler(target, playerData, playerSettings))
+				.listener(ClickInventoryEvent.class, new ClickHandler(target, playerInventoryData, playerSettings))
 				.build(Main.getPlugin());
 
-		Map<Integer, ItemStack> grid = playerData.getGrid();
-		Map<Integer, ItemStack> hotbar = playerData.getHotbar();
+		Map<Integer, ItemStack> grid = playerInventoryData.getGrid();
+		Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
 
 		int i = 0;
 		for (Inventory slot : inventory.slots()) {
@@ -83,25 +83,25 @@ public class CMDSee implements CommandExecutor {
 				}
 			} else {
 				if (i - 36 == 0) {
-					Optional<ItemStack> helmet = playerData.getHelmet();
+					Optional<ItemStack> helmet = playerInventoryData.getHelmet();
 
 					if (helmet.isPresent()) {
 						slot.set(helmet.get());
 					}
 				} else if(i - 36 == 1) {
-					Optional<ItemStack> chestPlate = playerData.getChestPlate();
+					Optional<ItemStack> chestPlate = playerInventoryData.getChestPlate();
 
 					if (chestPlate.isPresent()) {
 						slot.set(chestPlate.get());
 					}
 				} else if(i - 36 == 2) {
-					Optional<ItemStack> leggings = playerData.getLeggings();
+					Optional<ItemStack> leggings = playerInventoryData.getLeggings();
 
 					if (leggings.isPresent()) {
 						slot.set(leggings.get());
 					}
 				} else if(i - 36 == 3) {
-					Optional<ItemStack> boots = playerData.getBoots();
+					Optional<ItemStack> boots = playerInventoryData.getBoots();
 
 					if (boots.isPresent()) {
 						slot.set(boots.get());

@@ -17,7 +17,9 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import com.gmail.trentech.pji.commands.CommandManager;
 import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.data.KitData;
 import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.data.WorldData;
 import com.gmail.trentech.pji.sql.InitDB;
 import com.gmail.trentech.pji.utils.CommandHelp;
@@ -58,8 +60,12 @@ public class Main {
 		ConfigManager.init();
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
+		
 		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
+		
+		Sponge.getDataManager().registerBuilder(PlayerInventoryData.class, new PlayerInventoryData.Builder());
 		Sponge.getDataManager().registerBuilder(PlayerData.class, new PlayerData.Builder());
+		Sponge.getDataManager().registerBuilder(KitData.class, new KitData.Builder());
 		Sponge.getDataManager().registerBuilder(InventoryData.class, new InventoryData.Builder());
 		Sponge.getDataManager().registerBuilder(WorldData.class, new WorldData.Builder());
 		

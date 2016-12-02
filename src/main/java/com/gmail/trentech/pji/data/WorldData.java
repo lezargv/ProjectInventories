@@ -55,7 +55,9 @@ public class WorldData implements DataSerializable {
 	}
 
 	public void remove(String inventory) {
-		inventories.remove(inventory);
+		if(contains(inventory)) {
+			inventories.remove(inventory);
+		}
 	}
 
 	public boolean contains(String inventory) {

@@ -1,19 +1,21 @@
 package com.gmail.trentech.pji.settings;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.data.WorldData;
 import com.gmail.trentech.pji.sql.InventoryDB;
+import com.gmail.trentech.pji.sql.PlayerDB;
 
 public class InventorySettings {
 
@@ -23,6 +25,10 @@ public class InventorySettings {
 		this.inventoryService = inventoryService;
 	}
 
+	public InventoryService getInventoryService() {
+		return inventoryService;
+	}
+	
 	public HashMap<String, InventoryData> all() {
 		return InventoryDB.all();
 	}
@@ -43,30 +49,41 @@ public class InventorySettings {
 		for (WorldProperties properties : Sponge.getServer().getAllWorldProperties()) {
 			WorldSettings worldSettings = inventoryService.getWorldSettings();
 
-			worldSettings.get(properties).remove(inventory);
+			WorldData worldData = worldSettings.get(properties);
+			
+			if(worldData.contains(inventory)) {
+				if(worldData.getDefault().equalsIgnoreCase(inventory)) {
+					worldData.add("DEFAULT", true);
+				}
+				
+				worldData.remove(inventory);
+				
+				if(worldData.getInventories().isEmpty()) {
+					worldData.add("DEFAULT", true);
+				}
+			}		
 
-			Sponge.getServer().getWorld(properties.getWorldName()).ifPresent(world -> {
-				Predicate<Entity> filter = new Predicate<Entity>() {
+			PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+			InventorySettings inventorySettings = inventoryService.getInventorySettings();
+			
+			for (Entry<UUID, PlayerData> entry : PlayerDB.all().entrySet()) {
+				UUID uuid = entry.getKey();
+				PlayerData playerData = entry.getValue();
 
-					@Override
-					public boolean test(Entity entity) {
-						return entity instanceof Player;
-					}
-				};
-
-				PlayerSettings playerSettings = inventoryService.getPlayerSettings();
-				InventoryData inventoryData = inventoryService.getInventorySettings().get(worldSettings.get(properties).getDefault()).get();
-
-				for (Entity entity : world.getEntities(filter)) {
-					Player player = (Player) entity;
-
-					if (playerSettings.getInventoryName(player).equals(inventory)) {
-						playerSettings.set(player, inventoryData, false);
+				Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
+					if (playerData.getInventoryName().equals(inventory)) {
+						playerSettings.set(player, inventorySettings.get(worldData.getDefault()).get(), false);
 
 						player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
 					}
-				}
-			});
+				});
+				
+				PlayerData playerData2 = PlayerDB.get(uuid);
+				playerData2.remove(inventory);
+				PlayerDB.save(uuid, playerData2);
+			}
+			
+			worldSettings.save(worldData);
 		}
 
 		InventoryDB.remove(inventory);

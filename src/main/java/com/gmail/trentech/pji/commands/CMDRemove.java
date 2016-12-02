@@ -1,5 +1,8 @@
 package com.gmail.trentech.pji.commands;
 
+import java.util.UUID;
+import java.util.Map.Entry;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
@@ -12,8 +15,12 @@ import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.settings.InventorySettings;
+import com.gmail.trentech.pji.settings.PlayerSettings;
 import com.gmail.trentech.pji.settings.WorldSettings;
+import com.gmail.trentech.pji.sql.PlayerDB;
 
 public class CMDRemove implements CommandExecutor {
 
@@ -22,7 +29,9 @@ public class CMDRemove implements CommandExecutor {
 		WorldProperties properties = args.<WorldProperties>getOne("world").get();
 		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
-		WorldSettings worldSettings = Sponge.getServiceManager().provideUnchecked(InventoryService.class).getWorldSettings();
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		
+		WorldSettings worldSettings = inventoryService.getWorldSettings();
 		WorldData worldData = worldSettings.get(properties);
 		
 		if (!worldData.contains(inventoryData.getName())) {
@@ -33,7 +42,27 @@ public class CMDRemove implements CommandExecutor {
 			throw new CommandException(Text.of(TextColors.RED, "World must contain at least one inventory. Add another inventory before removing ", inventoryData.getName(), false));
 		}
 
+		if(worldData.getDefault().equalsIgnoreCase(inventoryData.getName())) {
+			throw new CommandException(Text.of(TextColors.RED, "Cannot remove the default inventory. Set another inventory as default before removing this inventory", false));
+		}
+
 		worldData.remove(inventoryData.getName());
+
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+		InventorySettings inventorySettings = inventoryService.getInventorySettings();
+		
+		for (Entry<UUID, PlayerData> entry : PlayerDB.all().entrySet()) {
+			UUID uuid = entry.getKey();
+			PlayerData playerData = entry.getValue();
+
+			Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
+				if (playerData.getInventoryName().equals(inventoryData.getName())) {
+					playerSettings.set(player, inventorySettings.get(worldData.getDefault()).get(), false);
+
+					player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
+				}
+			});
+		}
 
 		worldSettings.save(worldData);
 		

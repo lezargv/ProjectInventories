@@ -21,6 +21,12 @@ public class CommandManager {
 		    .executor(new CMDGet())
 		    .build();
 	
+	public CommandSpec cmdKit = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.kit")    
+		    .arguments(new InventoryElement(Text.of("inv")))
+		    .executor(new CMDKit())
+		    .build();
+	
 	public CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
 		    .arguments(GenericArguments.string(Text.of("inv")), GenericArguments.flags()
@@ -68,6 +74,7 @@ public class CommandManager {
 			.permission("pji.cmd.inventory")
 			.child(cmdSee, "see", "s")
 			.child(cmdGet, "get", "g")
+			.child(cmdKit, "kit", "k")
 			.child(cmdCreate, "create", "c")
 			.child(cmdDelete, "delete", "d")
 			.child(cmdList, "list", "ls")

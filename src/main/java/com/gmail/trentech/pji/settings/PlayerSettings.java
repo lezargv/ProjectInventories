@@ -13,7 +13,9 @@ import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
+import com.gmail.trentech.pji.data.KitData;
 import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.sql.PlayerDB;
 import com.gmail.trentech.pji.utils.ConfigManager;
 
@@ -27,20 +29,24 @@ public class PlayerSettings {
 		this.inventoryService = inventoryService;
 	}
 
-	public String getInventoryName(Player player) {
-		return PlayerDB.get(player);
+	public InventoryService getInventoryService() {
+		return inventoryService;
+	}
+
+	public PlayerData getPlayerData(Player player) {
+		return PlayerDB.get(player.getUniqueId());
 	}
 	
-	public Optional<PlayerData> get(Player player, String inventory) {
+	public Optional<PlayerInventoryData> get(Player player, String inventory) {
 		return PlayerDB.Data.get(player, inventory);
 	}
 	
-	public PlayerData empty(String name) {
-		return new PlayerData(name);
+	public PlayerInventoryData empty(String name) {
+		return new PlayerInventoryData(name);
 	}
 	
-	public PlayerData copy(Player player) {
-		PlayerData playerData = new PlayerData(getInventoryName(player));
+	public PlayerInventoryData copy(Player player) {
+		PlayerInventoryData playerInventoryData = new PlayerInventoryData(getPlayerData(player).getInventoryName());
 
 		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
 
@@ -51,7 +57,7 @@ public class PlayerSettings {
 			Optional<ItemStack> peek = slot.peek();
 
 			if (peek.isPresent()) {
-				playerData.addHotbar(i, peek.get());
+				playerInventoryData.addHotbar(i, peek.get());
 			}
 			i++;
 		}
@@ -63,114 +69,67 @@ public class PlayerSettings {
 			Optional<ItemStack> peek = slot.peek();
 
 			if (peek.isPresent()) {
-				playerData.addGrid(i, peek.get());
+				playerInventoryData.addGrid(i, peek.get());
 			}
 			i++;
 		}
 
-		playerData.setOffHand(player.getItemInHand(HandTypes.OFF_HAND));
-		playerData.setHelmet(player.getHelmet());
-		playerData.setChestPlate(player.getChestplate());
-		playerData.setLeggings(player.getLeggings());
-		playerData.setBoots(player.getBoots());	
-		playerData.setHealth(player.get(Keys.HEALTH).get());
-		playerData.setFood(player.get(Keys.FOOD_LEVEL).get());
-		playerData.setSaturation(player.get(Keys.SATURATION).get());
-		playerData.setExpLevel(player.get(Keys.EXPERIENCE_LEVEL).get());
-		playerData.setExperience(player.get(Keys.TOTAL_EXPERIENCE).get());
+		playerInventoryData.setOffHand(player.getItemInHand(HandTypes.OFF_HAND));
+		playerInventoryData.setHelmet(player.getHelmet());
+		playerInventoryData.setChestPlate(player.getChestplate());
+		playerInventoryData.setLeggings(player.getLeggings());
+		playerInventoryData.setBoots(player.getBoots());	
+		playerInventoryData.setHealth(player.get(Keys.HEALTH).get());
+		playerInventoryData.setFood(player.get(Keys.FOOD_LEVEL).get());
+		playerInventoryData.setSaturation(player.get(Keys.SATURATION).get());
+		playerInventoryData.setExpLevel(player.get(Keys.EXPERIENCE_LEVEL).get());
+		playerInventoryData.setExperience(player.get(Keys.TOTAL_EXPERIENCE).get());
 		
-		return playerData;
+		return playerInventoryData;
 	}
 
-	public void save(Player player, PlayerData playerData) {
-		if (PlayerDB.Data.exists(player, playerData.getName())) {
-			PlayerDB.Data.update(player, playerData);
+	public void save(Player player, PlayerInventoryData playerInventoryData) {
+		if (PlayerDB.Data.exists(player, playerInventoryData.getName())) {
+			PlayerDB.Data.update(player, playerInventoryData);
 		} else {
-			PlayerDB.Data.create(player, playerData);
+			PlayerDB.Data.create(player, playerInventoryData);
 		}
 	}
 
 	public void set(Player player, InventoryData inventoryData, boolean login) {
-		PlayerDB.save(player, inventoryData.getName());
+		PlayerData playerData = getPlayerData(player);
 
-		Optional<PlayerData> optionalPlayerData = get(player, inventoryData.getName());
-
-		if (optionalPlayerData.isPresent()) {
-			PlayerData playerData = optionalPlayerData.get();
+		if(!playerData.contains(inventoryData.getName())) {
+			Optional<KitData> optionalKitData = inventoryData.getKitData();
 			
-			player.getInventory().clear();
-
-			PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
-
-			Map<Integer, ItemStack> hotbar = playerData.getHotbar();
-
-			if (!hotbar.isEmpty()) {
-				int i = 0;
-				for (Inventory slot : inv.getHotbar().slots()) {
-					if (hotbar.containsKey(i)) {
-						slot.set(hotbar.get(i));
-					}
-					i++;
-				}
+			if(optionalKitData.isPresent()) {
+				playerData.setInventoryName(inventoryData.getName());
+				PlayerDB.save(player.getUniqueId(), playerData);
+				set(player, playerData, optionalKitData.get());
+				return;
 			}
+		}
+		
+		playerData.setInventoryName(inventoryData.getName());
+		PlayerDB.save(player.getUniqueId(), playerData);
+		set(player, playerData, login);
+	}
+	
+	private void set(Player player, PlayerData playerData, KitData kitData) {
+		PlayerInventoryData playerInventoryData = new PlayerInventoryData(playerData.getInventoryName(), kitData);
 
-			Map<Integer, ItemStack> grid = playerData.getGrid();
+		save(player, playerInventoryData);
 
-			if (!grid.isEmpty()) {
-				int i = 0;
-				for (Inventory slot : inv.getMain().slots()) {
-					if (grid.containsKey(i)) {
-						slot.set(grid.get(i));
-					}
-					i++;
-				}
-			}
+		set(player, playerInventoryData);
+	}
+	
+	private void set(Player player, PlayerData playerData, boolean login) {
+		Optional<PlayerInventoryData> optionalPlayerInventoryData = get(player, playerData.getInventoryName());
 
-			Optional<ItemStack> helmet = playerData.getHelmet();
-
-			if (helmet.isPresent()) {
-				player.setHelmet(helmet.get());
-			}
-
-			Optional<ItemStack> chestPlate = playerData.getChestPlate();
-
-			if (chestPlate.isPresent()) {
-				player.setChestplate(chestPlate.get());
-			}
+		if (optionalPlayerInventoryData.isPresent()) {
+			PlayerInventoryData playerInventoryData = optionalPlayerInventoryData.get();
 			
-			Optional<ItemStack> leggings = playerData.getLeggings();
-
-			if (leggings.isPresent()) {
-				player.setLeggings(leggings.get());
-			}
-			
-			Optional<ItemStack> boots = playerData.getBoots();
-
-			if (boots.isPresent()) {
-				player.setBoots(boots.get());
-			}
-			
-			Optional<ItemStack> offHand = playerData.getOffHand();
-
-			if (offHand.isPresent()) {
-				player.setItemInHand(HandTypes.OFF_HAND, offHand.get());
-			}
-
-			ConfigurationNode config = ConfigManager.get().getConfig();
-
-			if (config.getNode("options", "health").getBoolean()) {
-				player.offer(Keys.HEALTH, playerData.getHealth());
-			}
-
-			if (config.getNode("options", "hunger").getBoolean()) {
-				player.offer(Keys.FOOD_LEVEL, playerData.getFood());
-				player.offer(Keys.SATURATION, playerData.getSaturation());
-			}
-
-			if (config.getNode("options", "experience").getBoolean()) {
-				player.offer(Keys.EXPERIENCE_LEVEL, playerData.getExpLevel());
-				player.offer(Keys.TOTAL_EXPERIENCE, playerData.getExperience());
-			}	
+			set(player, playerInventoryData);
 		} else {
 			if (!login) {
 				player.getInventory().clear();
@@ -178,5 +137,81 @@ public class PlayerSettings {
 
 			save(player, copy(player));
 		}
+	}
+	
+	private void set(Player player, PlayerInventoryData playerInventoryData) {
+		player.getInventory().clear();
+
+		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
+
+		Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
+
+		if (!hotbar.isEmpty()) {
+			int i = 0;
+			for (Inventory slot : inv.getHotbar().slots()) {
+				if (hotbar.containsKey(i)) {
+					slot.set(hotbar.get(i));
+				}
+				i++;
+			}
+		}
+
+		Map<Integer, ItemStack> grid = playerInventoryData.getGrid();
+
+		if (!grid.isEmpty()) {
+			int i = 0;
+			for (Inventory slot : inv.getMain().slots()) {
+				if (grid.containsKey(i)) {
+					slot.set(grid.get(i));
+				}
+				i++;
+			}
+		}
+
+		Optional<ItemStack> helmet = playerInventoryData.getHelmet();
+
+		if (helmet.isPresent()) {
+			player.setHelmet(helmet.get());
+		}
+
+		Optional<ItemStack> chestPlate = playerInventoryData.getChestPlate();
+
+		if (chestPlate.isPresent()) {
+			player.setChestplate(chestPlate.get());
+		}
+		
+		Optional<ItemStack> leggings = playerInventoryData.getLeggings();
+
+		if (leggings.isPresent()) {
+			player.setLeggings(leggings.get());
+		}
+		
+		Optional<ItemStack> boots = playerInventoryData.getBoots();
+
+		if (boots.isPresent()) {
+			player.setBoots(boots.get());
+		}
+		
+		Optional<ItemStack> offHand = playerInventoryData.getOffHand();
+
+		if (offHand.isPresent()) {
+			player.setItemInHand(HandTypes.OFF_HAND, offHand.get());
+		}
+
+		ConfigurationNode config = ConfigManager.get().getConfig();
+
+		if (config.getNode("options", "health").getBoolean()) {
+			player.offer(Keys.HEALTH, playerInventoryData.getHealth());
+		}
+
+		if (config.getNode("options", "hunger").getBoolean()) {
+			player.offer(Keys.FOOD_LEVEL, playerInventoryData.getFood());
+			player.offer(Keys.SATURATION, playerInventoryData.getSaturation());
+		}
+
+		if (config.getNode("options", "experience").getBoolean()) {
+			player.offer(Keys.EXPERIENCE_LEVEL, playerInventoryData.getExpLevel());
+			player.offer(Keys.TOTAL_EXPERIENCE, playerInventoryData.getExperience());
+		}	
 	}
 }

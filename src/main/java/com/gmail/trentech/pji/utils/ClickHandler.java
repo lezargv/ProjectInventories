@@ -14,7 +14,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
-import com.gmail.trentech.pji.data.PlayerData;
+import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.settings.PlayerSettings;
 
 import ninja.leaping.configurate.ConfigurationNode;
@@ -22,12 +22,12 @@ import ninja.leaping.configurate.ConfigurationNode;
 public class ClickHandler implements Consumer<ClickInventoryEvent> {
 
 	private Player target;
-	private PlayerData playerData;
+	private PlayerInventoryData playerInventoryData;
 	private PlayerSettings playerSettings;
 	
-	public ClickHandler(Player target, PlayerData playerData, PlayerSettings playerSettings) {
+	public ClickHandler(Player target, PlayerInventoryData playerInventoryData, PlayerSettings playerSettings) {
 		this.target = target;
-		this.playerData = playerData;
+		this.playerInventoryData = playerInventoryData;
 		this.playerSettings = playerSettings;
 	}
 	
@@ -45,38 +45,38 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				Optional<ItemStack> optionalItem = slot.peek();
 
 				if (optionalItem.isPresent()) {
-					playerData.addGrid(i, optionalItem.get());
+					playerInventoryData.addGrid(i, optionalItem.get());
 				} else {
-					playerData.removeGrid(i);
+					playerInventoryData.removeGrid(i);
 				}
 			} else if (i < 36) {
 				Optional<ItemStack> optionalItem = slot.peek();
 
 				if (optionalItem.isPresent()) {
-					playerData.addHotbar(i - 27, optionalItem.get());
+					playerInventoryData.addHotbar(i - 27, optionalItem.get());
 				} else {
-					playerData.removeHotbar(i - 27);
+					playerInventoryData.removeHotbar(i - 27);
 				}
 			} else {
 				Optional<ItemStack> optionalItem = slot.peek();
 
 				if (optionalItem.isPresent()) {
-					playerData.addEquipment(i - 36, optionalItem.get());
+					playerInventoryData.addEquipment(i - 36, optionalItem.get());
 				} else {
-					playerData.removeEquipment(i - 36);
+					playerInventoryData.removeEquipment(i - 36);
 				}
 			}
 
 			i++;
 		}
-		playerSettings.save(target, playerData);
+		playerSettings.save(target, playerInventoryData);
 
-		if (playerSettings.getInventoryName(target).equals(playerData.getName())) {
+		if (playerSettings.getPlayerData(target).getInventoryName().equals(playerInventoryData.getName())) {
 			target.getInventory().clear();
 
 			PlayerInventory inv = target.getInventory().query(PlayerInventory.class);
 
-			Map<Integer, ItemStack> hotbar = playerData.getHotbar();
+			Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
 
 			if (!hotbar.isEmpty()) {
 				i = 0;
@@ -88,7 +88,7 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				}
 			}
 
-			Map<Integer, ItemStack> grid = playerData.getGrid();
+			Map<Integer, ItemStack> grid = playerInventoryData.getGrid();
 
 			if (!grid.isEmpty()) {
 				i = 0;
@@ -100,31 +100,31 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				}
 			}
 
-			Optional<ItemStack> helmet = playerData.getHelmet();
+			Optional<ItemStack> helmet = playerInventoryData.getHelmet();
 
 			if (helmet.isPresent()) {
 				target.setHelmet(helmet.get());
 			}
 
-			Optional<ItemStack> chestPlate = playerData.getChestPlate();
+			Optional<ItemStack> chestPlate = playerInventoryData.getChestPlate();
 
 			if (chestPlate.isPresent()) {
 				target.setChestplate(chestPlate.get());
 			}
 			
-			Optional<ItemStack> leggings = playerData.getLeggings();
+			Optional<ItemStack> leggings = playerInventoryData.getLeggings();
 
 			if (leggings.isPresent()) {
 				target.setLeggings(leggings.get());
 			}
 			
-			Optional<ItemStack> boots = playerData.getBoots();
+			Optional<ItemStack> boots = playerInventoryData.getBoots();
 
 			if (boots.isPresent()) {
 				target.setBoots(boots.get());
 			}
 
-			Optional<ItemStack> offHand = playerData.getOffHand();
+			Optional<ItemStack> offHand = playerInventoryData.getOffHand();
 
 			if (offHand.isPresent()) {
 				target.setItemInHand(HandTypes.OFF_HAND, offHand.get());
@@ -133,17 +133,17 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 			ConfigurationNode config = ConfigManager.get().getConfig();
 
 			if (config.getNode("options", "health").getBoolean()) {
-				target.offer(Keys.HEALTH, playerData.getHealth());
+				target.offer(Keys.HEALTH, playerInventoryData.getHealth());
 			}
 
 			if (config.getNode("options", "hunger").getBoolean()) {
-				target.offer(Keys.FOOD_LEVEL, playerData.getFood());
-				target.offer(Keys.SATURATION, playerData.getSaturation());
+				target.offer(Keys.FOOD_LEVEL, playerInventoryData.getFood());
+				target.offer(Keys.SATURATION, playerInventoryData.getSaturation());
 			}
 
 			if (config.getNode("options", "experience").getBoolean()) {
-				target.offer(Keys.EXPERIENCE_LEVEL, playerData.getExpLevel());
-				target.offer(Keys.TOTAL_EXPERIENCE, playerData.getExperience());
+				target.offer(Keys.EXPERIENCE_LEVEL, playerInventoryData.getExpLevel());
+				target.offer(Keys.TOTAL_EXPERIENCE, playerInventoryData.getExperience());
 			}	
 		}
 	}

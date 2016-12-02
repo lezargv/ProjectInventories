@@ -36,7 +36,7 @@ public class InventoryDB extends InitDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				map.put(result.getString("Inventory"), deserialize(result.getString("Data")));
+				map.put(result.getString("Name"), deserialize(result.getString("Data")));
 			}
 
 			connection.close();
@@ -56,7 +56,7 @@ public class InventoryDB extends InitDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				if (result.getString("Inventory").equalsIgnoreCase(inventory)) {
+				if (result.getString("Name").equalsIgnoreCase(inventory)) {
 					String data = result.getString("Data");
 
 					connection.close();
@@ -88,7 +88,7 @@ public class InventoryDB extends InitDB {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + getPrefix("PJI.INVENTORIES") + " WHERE Inventory = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + getPrefix("PJI.INVENTORIES") + " WHERE Name = ?");
 
 			statement.setString(1, inventory);
 
@@ -111,14 +111,14 @@ public class InventoryDB extends InitDB {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INVENTORIES") + " (Inventory, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
 
 			statement.setString(2, serialize(inventoryData));
 			statement.setString(1, inventoryData.getName());
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INV." + inventoryData.getName()) + " (UUID TEXT, Inventory TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INV." + inventoryData.getName()) + " (UUID TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 				
@@ -135,7 +135,7 @@ public class InventoryDB extends InitDB {
 		try {
 			Connection connection = getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INVENTORIES") + " SET Data = ? WHERE Inventory = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INVENTORIES") + " SET Data = ? WHERE Name = ?");
 
 			statement.setString(1, serialize(inventoryData));
 			statement.setString(2, inventoryData.getName());

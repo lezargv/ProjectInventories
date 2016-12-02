@@ -54,11 +54,11 @@ public abstract class InitDB {
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.PLAYERS") + " (UUID TEXT, Inventory TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.PLAYERS") + " (UUID TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INVENTORIES") + " (Inventory TEXT, Data TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INVENTORIES") + " (Name TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 			

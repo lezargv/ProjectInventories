@@ -26,6 +26,28 @@ import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class WorldDB extends InitDB {
 
+	public static HashMap<UUID, WorldData> all() {
+		HashMap<UUID, WorldData> map = new HashMap<>();
+
+		try {
+			Connection connection = getDataSource().getConnection();
+
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.WORLDS"));
+
+			ResultSet result = statement.executeQuery();
+
+			while (result.next()) {
+				map.put(UUID.fromString(result.getString("UUID")), deserialize(result.getString("Data")));
+			}
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return map;
+	}
+	
 	public static WorldData get(UUID uuid) {
 		try {
 			Connection connection = getDataSource().getConnection();

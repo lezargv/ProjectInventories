@@ -61,7 +61,7 @@ public class CMDGet implements CommandExecutor {
 					}
 				}
 
-				if(inventoryService.getPlayerSettings().getInventoryName(player).equalsIgnoreCase(inventoryData.getName())) {
+				if(inventoryService.getPlayerSettings().getPlayerData(player).getInventoryName().equalsIgnoreCase(inventoryData.getName())) {
 					text = Text.join(text, Text.of(TextColors.GREEN, " [Current]"));
 				}
 				
@@ -119,7 +119,7 @@ public class CMDGet implements CommandExecutor {
 		
 		playerSettings.save(player, playerSettings.copy(player));
 
-		playerSettings.set(player, inventoryData, false);
+		playerSettings.set(player, inventoryData, false);	
 
 		src.sendMessage(Text.of(TextColors.DARK_GREEN, "Set inventory to ", inventoryData.getName()));
 

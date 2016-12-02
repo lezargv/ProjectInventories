@@ -16,14 +16,19 @@ public class CommandHelp {
 			Help invCreate = new Help("inventory create", "create", "Create a new inventory or edit existing")
 					.setPermission("pji.cmd.inventory.create")
 					.setUsage(usageCreate)
-					.addExample("/inventory create nether");
+					.addExample("/inventory create tools");
 		
 			Usage usageInv = new Usage(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
 			
 			Help invDelete = new Help("inventory delete", "delete", "Delete an existing inventory. WARNING: This cannot be undone.")
 					.setPermission("pji.cmd.inventory.delete")
 					.setUsage(usageInv)
-					.addExample("/inventory delete nether");
+					.addExample("/inventory delete creative");
+			
+			Help invKit = new Help("inventory kit", "kit", "Sets a pre-defined inventory the first time player equips.")
+					.setPermission("pji.cmd.inventory.kit")
+					.setUsage(usageInv)
+					.addExample("/inventory kit tools");
 			
 			Help invList = new Help("inventory list", "list", "List all inventories. Hover over to see permission and gamemode assignments if any.")
 					.setPermission("pji.cmd.inventory.list");
@@ -69,6 +74,7 @@ public class CommandHelp {
 			Help inv = new Help("inventory", "inventory", "Base Project Inventories command")
 					.setPermission("pji.cmd.inventory")
 					.addChild(invList)
+					.addChild(invKit)
 					.addChild(invDelete)
 					.addChild(invCreate)
 					.addChild(invGet)
