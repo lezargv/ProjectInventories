@@ -55,10 +55,6 @@ public class InventoryElement extends CommandElement {
 					list.add(inv);
 				}
 			}
-		} else {
-			for (Entry<String, InventoryData> entry : inventorySettings.all().entrySet()) {
-				list.add(entry.getKey());
-			}
 		}
 
 		return list;
