@@ -92,7 +92,7 @@ public class EventManager {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();		
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 
-		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get().getConfig().getNode("options", "default-on-world-change").getBoolean()) {
 			return;
 		}
 

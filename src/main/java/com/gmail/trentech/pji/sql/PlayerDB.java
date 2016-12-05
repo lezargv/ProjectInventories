@@ -19,9 +19,6 @@ import com.gmail.trentech.pji.data.PlayerInventoryData;
 public class PlayerDB extends InitDB {
 
 	public static HashMap<UUID, PlayerData> all() {
-		Task.builder().async().execute(c -> {
-			
-		}).submit(Main.getPlugin());
 		HashMap<UUID, PlayerData> map = new HashMap<>();
 
 		try {
@@ -46,6 +43,30 @@ public class PlayerDB extends InitDB {
 		return map;
 	}
 
+	public static boolean exists(UUID uuid) {
+		try {
+			Connection connection = getDataSource().getConnection();
+
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.PLAYERS"));
+
+			ResultSet result = statement.executeQuery();
+
+			while (result.next()) {
+				if (result.getString("UUID").equalsIgnoreCase(uuid.toString())) {
+					connection.close();
+
+					return true;
+				}
+			}
+
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+	}
+	
 	public static PlayerData get(UUID uuid) {
 		try {
 			Connection connection = getDataSource().getConnection();
@@ -55,7 +76,7 @@ public class PlayerDB extends InitDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				if (result.getString("UUID").equals(uuid.toString())) {
+				if (result.getString("UUID").equalsIgnoreCase(uuid.toString())) {
 					PlayerData playerData = PlayerData.deserialize(result.getString("Data"));
 					
 					connection.close();
@@ -77,7 +98,7 @@ public class PlayerDB extends InitDB {
 	}
 
 	public static void save(UUID uuid, PlayerData playerData) {
-		if (all().containsKey(uuid)) {
+		if (exists(uuid)) {
 			update(uuid, playerData);
 		} else {
 			create(uuid, playerData);

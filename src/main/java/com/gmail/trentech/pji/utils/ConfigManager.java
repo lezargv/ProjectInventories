@@ -63,8 +63,8 @@ public class ConfigManager {
 			if (config.getNode("options", "potion-effects").isVirtual()) {
 				config.getNode("options", "potion-effects").setValue(true).setComment("Enable inventory specific potion effects");
 			}			
-			if (config.getNode("options", "default_on_world_change").isVirtual()) {
-				config.getNode("options", "default_on_world_change").setValue(false).setComment("Always set inventory to world default when entering");
+			if (config.getNode("options", "default-on-world-change").isVirtual()) {
+				config.getNode("options", "default-on-world-change").setValue(false).setComment("Always set inventory to world default when entering");
 			}
 			if (config.getNode("settings", "sql").isVirtual()) {
 				config.getNode("settings", "sql", "enable").setValue(false);
