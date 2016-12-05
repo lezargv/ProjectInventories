@@ -16,6 +16,7 @@ import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.MemoryDataContainer;
+import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -41,6 +42,7 @@ public class PlayerInventoryData implements DataSerializable {
 	private final static DataQuery SATURATION = of("saturation");
 	private final static DataQuery EXP_LEVEL = of("xplevel");
 	private final static DataQuery EXPERIENCE = of("experience");
+	private final static DataQuery POTION_EFFECTS = of("potioneffects");
 	
 	private String name;	
 	private Optional<ItemStack> offHand = Optional.empty();
@@ -55,8 +57,9 @@ public class PlayerInventoryData implements DataSerializable {
 	private double saturation = 20.0;
 	private int expLevel = 0;
 	private int experience = 0;
-
-	protected PlayerInventoryData(String name, Optional<ItemStack> offHand, Optional<ItemStack> helmet, Optional<ItemStack> chestPlate, Optional<ItemStack> leggings, Optional<ItemStack> boots, Map<Integer, ItemStack> hotbar, Map<Integer, ItemStack> grid, double health, int food, double saturation, int expLevel, int experience) {
+	private Optional<PotionEffectData> potionEffects = Optional.empty();
+	
+	protected PlayerInventoryData(String name, Optional<ItemStack> offHand, Optional<ItemStack> helmet, Optional<ItemStack> chestPlate, Optional<ItemStack> leggings, Optional<ItemStack> boots, Map<Integer, ItemStack> hotbar, Map<Integer, ItemStack> grid, double health, int food, double saturation, int expLevel, int experience, Optional<PotionEffectData> potionEffects) {
 		this.name = name;
 		this.offHand = offHand;
 		this.hotbar = hotbar;
@@ -70,6 +73,7 @@ public class PlayerInventoryData implements DataSerializable {
 		this.saturation = saturation;
 		this.expLevel = expLevel;
 		this.experience = experience;
+		this.potionEffects = potionEffects;
 	}
 
 	public PlayerInventoryData(String name) {
@@ -137,6 +141,10 @@ public class PlayerInventoryData implements DataSerializable {
 
 	public int getExperience() {
 		return this.experience;
+	}
+	
+	public Optional<PotionEffectData> getPotionEffects() {
+		return potionEffects;
 	}
 	
 	public void setOffHand(Optional<ItemStack> itemStack) {
@@ -219,6 +227,10 @@ public class PlayerInventoryData implements DataSerializable {
 		this.experience = experience;
 	}
 
+	public void setPotionEffects(Optional<PotionEffectData> potionEffects) {
+		this.potionEffects = potionEffects;
+	}
+	
 	@Override
 	public int getContentVersion() {
 		return 1;
@@ -268,6 +280,10 @@ public class PlayerInventoryData implements DataSerializable {
 			container.set(GRID, grid);
 		}
 
+		if(this.potionEffects.isPresent()) {
+			container.set(POTION_EFFECTS, this.potionEffects.get());
+		}
+		
 		return container.set(HEALTH, health).set(FOOD, food).set(SATURATION, saturation).set(EXP_LEVEL, expLevel).set(EXPERIENCE, experience);
 	}
 
@@ -329,13 +345,19 @@ public class PlayerInventoryData implements DataSerializable {
 					}
 				}
 
+				Optional<PotionEffectData> potionEffects = Optional.empty();
+				
+				if(container.contains(POTION_EFFECTS)) {
+					potionEffects = Optional.of(container.getSerializable(POTION_EFFECTS, PotionEffectData.class).get());
+				}
+				
 				double health = container.getDouble(HEALTH).get();
 				int food = container.getInt(FOOD).get();
 				double saturation = container.getDouble(SATURATION).get();
 				int expLevel = container.getInt(EXP_LEVEL).get();
 				int experience = container.getInt(EXPERIENCE).get();
 
-				return Optional.of(new PlayerInventoryData(name, offHand, helmet, chestPlate, leggings, boots, hotbar, grid, health, food, saturation, expLevel, experience));
+				return Optional.of(new PlayerInventoryData(name, offHand, helmet, chestPlate, leggings, boots, hotbar, grid, health, food, saturation, expLevel, experience, potionEffects));
 			}
 			
 			return Optional.empty();

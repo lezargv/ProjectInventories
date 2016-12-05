@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -84,6 +85,7 @@ public class PlayerSettings {
 		playerInventoryData.setSaturation(player.get(Keys.SATURATION).get());
 		playerInventoryData.setExpLevel(player.get(Keys.EXPERIENCE_LEVEL).get());
 		playerInventoryData.setExperience(player.get(Keys.TOTAL_EXPERIENCE).get());
+		playerInventoryData.setPotionEffects(player.get(PotionEffectData.class));
 		
 		return playerInventoryData;
 	}
@@ -212,6 +214,16 @@ public class PlayerSettings {
 		if (config.getNode("options", "experience").getBoolean()) {
 			player.offer(Keys.EXPERIENCE_LEVEL, playerInventoryData.getExpLevel());
 			player.offer(Keys.TOTAL_EXPERIENCE, playerInventoryData.getExperience());
+		}
+		
+		if (config.getNode("options", "potion-effects").getBoolean()) {
+			Optional<PotionEffectData> potionEffects = playerInventoryData.getPotionEffects();
+			
+			if(potionEffects.isPresent()) {
+				player.offer(potionEffects.get());
+			} else {
+				player.remove(PotionEffectData.class);
+			}
 		}	
 	}
 }
