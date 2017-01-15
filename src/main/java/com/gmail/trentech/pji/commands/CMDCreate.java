@@ -10,8 +10,10 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.gmail.trentech.helpme.help.Help;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.settings.InventorySettings;
@@ -20,6 +22,10 @@ public class CMDCreate implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+		if (!args.hasAny("inv")) {
+			Help help = Help.get("inventory create").get();
+			throw new CommandException(Text.builder().onClick(TextActions.executeCallback(help.execute())).append(help.getUsageText()).build(), false);
+		}
 		String name = args.<String>getOne("inv").get().toUpperCase();
 
 		if (name.equalsIgnoreCase("DEFAULT")) {

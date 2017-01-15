@@ -10,12 +10,17 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import com.gmail.trentech.helpme.help.Help;
 import com.gmail.trentech.pji.data.InventoryData;
 
 public class CMDDelete implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+		if (!args.hasAny("inv")) {
+			Help help = Help.get("inventory delete").get();
+			throw new CommandException(Text.builder().onClick(TextActions.executeCallback(help.execute())).append(help.getUsageText()).build(), false);
+		}
 		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
 		if (inventoryData.getName().equalsIgnoreCase("DEFAULT")) {
