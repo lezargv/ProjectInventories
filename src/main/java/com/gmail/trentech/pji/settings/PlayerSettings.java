@@ -92,9 +92,9 @@ public class PlayerSettings {
 
 	public void save(Player player, PlayerInventoryData playerInventoryData) {
 		if (PlayerDB.Data.exists(player, playerInventoryData.getName())) {
-			PlayerDB.Data.update(player, playerInventoryData);
+			PlayerDB.Data.update(player.getUniqueId(), playerInventoryData);
 		} else {
-			PlayerDB.Data.create(player, playerInventoryData);
+			PlayerDB.Data.create(player.getUniqueId(), playerInventoryData);
 		}
 	}
 

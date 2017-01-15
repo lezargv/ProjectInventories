@@ -15,6 +15,7 @@ import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEv
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
 import org.spongepowered.api.event.world.SaveWorldEvent;
+import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.storage.WorldProperties;
 
 import com.gmail.trentech.pji.data.InventoryData;
@@ -23,11 +24,21 @@ import com.gmail.trentech.pji.settings.PlayerSettings;
 import com.gmail.trentech.pji.settings.WorldSettings;
 import com.gmail.trentech.pji.utils.ConfigManager;
 
+import ninja.leaping.configurate.ConfigurationNode;
+
 public class EventManager {
 
 	@Listener(order = Order.POST)
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
-		Sponge.getScheduler().createTaskBuilder().async().delayTicks(35).execute(t -> {
+		long delay = 0;
+		
+		ConfigurationNode config = ConfigManager.get().getConfig();
+		
+		if(config.getNode("settings", "sql", "enable").getBoolean()) {
+			delay = config.getNode("settings", "sql", "login-delay").getLong();
+		}
+		
+		Task.builder().async().delayTicks(delay).execute(t -> {
 			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 			
 			InventorySettings inventorySettings = inventoryService.getInventorySettings();
@@ -52,6 +63,8 @@ public class EventManager {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		
 		playerSettings.save(player, playerSettings.copy(player));
+
+		player.getInventory().clear();
 	}
 
 	@Listener

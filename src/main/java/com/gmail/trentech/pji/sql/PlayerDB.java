@@ -211,14 +211,14 @@ public class PlayerDB extends InitDB {
 			return false;
 		}
 
-		public static void create(Player player, PlayerInventoryData playerInventoryData) {
-			Task.builder().async().execute(c -> {
+		public static void create(UUID uuid, PlayerInventoryData playerInventoryData) {
+			//Task.builder().async().execute(c -> {
 				try {
 					Connection connection = getDataSource().getConnection();
 
 					PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + playerInventoryData.getName()) + " (UUID, Data) VALUES (?, ?)");
 
-					statement.setString(1, player.getUniqueId().toString());
+					statement.setString(1, uuid.toString());
 					statement.setString(2, PlayerInventoryData.serialize(playerInventoryData));
 
 					statement.executeUpdate();
@@ -227,30 +227,26 @@ public class PlayerDB extends InitDB {
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			}).submit(Main.getPlugin());
-
+			//}).submit(Main.getPlugin());
 		}
 
-		public static void update(Player player, PlayerInventoryData playerInventoryData) {
-			Task.builder().async().execute(c -> {
+		public static void update(UUID uuid, PlayerInventoryData playerInventoryData) {
+			//Task.builder().async().execute(c -> {
 				try {
 					Connection connection = getDataSource().getConnection();
 
 					PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + playerInventoryData.getName()) + " SET Data = ? WHERE UUID = ?");
 
-					statement.setString(2, player.getUniqueId().toString());
+					statement.setString(2, uuid.toString());
 					statement.setString(1, PlayerInventoryData.serialize(playerInventoryData));
 
 					statement.executeUpdate();
-
+					
 					connection.close();
 				} catch (SQLException e) {
 					e.printStackTrace();
 				}
-			}).submit(Main.getPlugin());
-
+			//}).submit(Main.getPlugin());
 		}
-		
-
 	}
 }

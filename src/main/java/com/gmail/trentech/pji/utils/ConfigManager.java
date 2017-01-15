@@ -72,6 +72,7 @@ public class ConfigManager {
 				config.getNode("settings", "sql", "url").setValue("localhost:3306/database");
 				config.getNode("settings", "sql", "username").setValue("root");
 				config.getNode("settings", "sql", "password").setValue("password");
+				config.getNode("settings", "sql", "login-delay").setValue(35).setComment("Sets delay in ticks the server will wait to set player inventory on login. Change this is de-sync issues occur with Bungee servers");
 			}
 		}
 
