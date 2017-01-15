@@ -11,7 +11,7 @@ public class CommandManager {
 
 	public CommandSpec cmdSee = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.see")    
-		    .arguments(GenericArguments.player(Text.of("player")), new InventoryElement(Text.of("inv")))
+		    .arguments(GenericArguments.optional(GenericArguments.player(Text.of("player"))), GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDSee())
 		    .build();
 	
@@ -23,13 +23,13 @@ public class CommandManager {
 	
 	public CommandSpec cmdKit = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.kit")    
-		    .arguments(new InventoryElement(Text.of("inv")))
+		    .arguments(GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDKit())
 		    .build();
 	
 	public CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
-		    .arguments(GenericArguments.string(Text.of("inv")), GenericArguments.flags()
+		    .arguments(GenericArguments.optional(GenericArguments.string(Text.of("inv"))), GenericArguments.flags()
 		    		.valueFlag(GenericArguments.string(Text.of("permission")), "p")
 		    		.valueFlag(GenericArguments.catalogedElement(Text.of("gamemode"), GameMode.class), "g").buildWith(GenericArguments.none()))
 		    .executor(new CMDCreate())
@@ -42,7 +42,7 @@ public class CommandManager {
 	
 	public CommandSpec cmdDelete = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.delete")
-		    .arguments(new InventoryElement(Text.of("inv")))
+		    .arguments(GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .child(cmdYes, "yes", "y")
 		    .executor(new CMDDelete())
 		    .build();
@@ -54,13 +54,13 @@ public class CommandManager {
 	
 	public CommandSpec cmdAdd = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.add")
-		    .arguments(GenericArguments.world(Text.of("world")), new InventoryElement(Text.of("inv")), GenericArguments.optional(GenericArguments.bool(Text.of("true|false"))))
+		    .arguments(GenericArguments.optional(GenericArguments.world(Text.of("world"))), GenericArguments.optional(new InventoryElement(Text.of("inv"))), GenericArguments.optional(GenericArguments.bool(Text.of("true|false"))))
 		    .executor(new CMDAdd())
 		    .build();
 
 	public CommandSpec cmdRemove = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.remove")
-		    .arguments(GenericArguments.world(Text.of("world")), new InventoryElement(Text.of("inv")))
+		    .arguments(GenericArguments.optional(GenericArguments.world(Text.of("world"))), GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDRemove())
 		    .build();
 	

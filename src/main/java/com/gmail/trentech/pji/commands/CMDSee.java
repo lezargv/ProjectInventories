@@ -20,8 +20,10 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.property.InventoryDimension;
 import org.spongepowered.api.item.inventory.property.InventoryTitle;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.gmail.trentech.helpme.help.Help;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.InventoryData;
@@ -38,8 +40,16 @@ public class CMDSee implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
+		if (!args.hasAny("player")) {
+			Help help = Help.get("inventory see").get();
+			throw new CommandException(Text.builder().onClick(TextActions.executeCallback(help.execute())).append(help.getUsageText()).build(), false);
+		}
 		Player target = args.<Player>getOne("player").get();
 
+		if (!args.hasAny("inv")) {
+			Help help = Help.get("inventory see").get();
+			throw new CommandException(Text.builder().onClick(TextActions.executeCallback(help.execute())).append(help.getUsageText()).build(), false);
+		}
 		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);

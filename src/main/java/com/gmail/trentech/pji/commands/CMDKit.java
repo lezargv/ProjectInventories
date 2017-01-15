@@ -8,8 +8,10 @@ import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
+import com.gmail.trentech.helpme.help.Help;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.data.KitData;
@@ -23,6 +25,10 @@ public class CMDKit implements CommandExecutor {
 		}
 		Player player = (Player) src;
 
+		if (!args.hasAny("inv")) {
+			Help help = Help.get("inventory kit").get();
+			throw new CommandException(Text.builder().onClick(TextActions.executeCallback(help.execute())).append(help.getUsageText()).build(), false);
+		}
 		InventoryData inventoryData = args.<InventoryData>getOne("inv").get();
 		
 		inventoryData.setKitData(new KitData(player));
