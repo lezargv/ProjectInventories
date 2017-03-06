@@ -14,6 +14,8 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
+import com.gmail.trentech.pjc.core.ConfigManager;
+import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.settings.PlayerSettings;
 
@@ -134,7 +136,7 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				target.setItemInHand(HandTypes.OFF_HAND, offHand.get());
 			}
 
-			ConfigurationNode config = ConfigManager.get().getConfig();
+			ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 
 			if (config.getNode("options", "health").getBoolean()) {
 				target.offer(Keys.HEALTH, playerInventoryData.getHealth());

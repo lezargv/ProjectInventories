@@ -21,7 +21,7 @@ import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.inventory.ItemStack;
 
-import com.gmail.trentech.pji.utils.ItemSerializer;
+import com.gmail.trentech.pjc.core.ItemSerializer;
 import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;

@@ -25,7 +25,7 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
-import com.gmail.trentech.pji.utils.ItemSerializer;
+import com.gmail.trentech.pjc.core.ItemSerializer;
 import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;

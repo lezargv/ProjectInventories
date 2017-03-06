@@ -12,13 +12,14 @@ import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 
+import com.gmail.trentech.pjc.core.ConfigManager;
 import com.gmail.trentech.pji.InventoryService;
+import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.data.KitData;
 import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.sql.PlayerDB;
-import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -200,7 +201,7 @@ public class PlayerSettings {
 			player.setItemInHand(HandTypes.OFF_HAND, offHand.get());
 		}
 
-		ConfigurationNode config = ConfigManager.get().getConfig();
+		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 
 		if (config.getNode("options", "health").getBoolean()) {
 			player.offer(Keys.HEALTH, playerInventoryData.getHealth());

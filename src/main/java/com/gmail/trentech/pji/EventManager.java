@@ -18,11 +18,11 @@ import org.spongepowered.api.event.world.SaveWorldEvent;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import com.gmail.trentech.pjc.core.ConfigManager;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.settings.InventorySettings;
 import com.gmail.trentech.pji.settings.PlayerSettings;
 import com.gmail.trentech.pji.settings.WorldSettings;
-import com.gmail.trentech.pji.utils.ConfigManager;
 
 import ninja.leaping.configurate.ConfigurationNode;
 
@@ -32,7 +32,7 @@ public class EventManager {
 	public void ClientConnectionEventJoin(ClientConnectionEvent.Join event, @Getter("getTargetEntity") Player player) {
 		long delay = 0;
 		
-		ConfigurationNode config = ConfigManager.get().getConfig();
+		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 		
 		if(config.getNode("settings", "sql", "enable").getBoolean()) {
 			delay = config.getNode("settings", "sql", "login-delay").getLong();
@@ -105,7 +105,7 @@ public class EventManager {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();		
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 
-		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get().getConfig().getNode("options", "default-on-world-change").getBoolean()) {
+		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get(Main.getPlugin()).getConfig().getNode("options", "default-on-world-change").getBoolean()) {
 			return;
 		}
 
@@ -137,7 +137,7 @@ public class EventManager {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 		
-		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get().getConfig().getNode("options", "default_on_world_change").getBoolean()) {
+		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get(Main.getPlugin()).getConfig().getNode("options", "default_on_world_change").getBoolean()) {
 			return;
 		}
 

@@ -13,7 +13,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.helpme.help.Help;
+import com.gmail.trentech.pjc.help.Help;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.settings.InventorySettings;

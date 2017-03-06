@@ -21,16 +21,15 @@ import com.gmail.trentech.pji.data.KitData;
 import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.init.Common;
 import com.gmail.trentech.pji.sql.InitDB;
-import com.gmail.trentech.pji.utils.CommandHelp;
-import com.gmail.trentech.pji.utils.ConfigManager;
 import com.gmail.trentech.pji.utils.Resource;
 import com.google.inject.Inject;
 
 import me.flibio.updatifier.Updatifier;
 
 @Updatifier(repoName = Resource.NAME, repoOwner = Resource.AUTHOR, version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "helpme", version = "0.2.3", optional = false) })
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "pjc", optional = false) })
 public class Main {
 
 	@Inject
@@ -57,7 +56,7 @@ public class Main {
 
 	@Listener
 	public void onInitializationEvent(GameInitializationEvent event) {
-		ConfigManager.init();
+		Common.initConfig();
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
 		
@@ -71,7 +70,7 @@ public class Main {
 		
 		InitDB.createSettings();
 
-		CommandHelp.init();
+		Common.initHelp();
 
 		Sponge.getServiceManager().setProvider(getPlugin(), InventoryService.class, new InventoryService());
 
@@ -80,7 +79,7 @@ public class Main {
 
 	@Listener
 	public void onReloadEvent(GameReloadEvent event) {
-		ConfigManager.init();
+		Common.initConfig();
 	}
 
 	public Logger getLog() {

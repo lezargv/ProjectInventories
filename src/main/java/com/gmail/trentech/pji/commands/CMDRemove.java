@@ -1,7 +1,7 @@
 package com.gmail.trentech.pji.commands;
 
-import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
@@ -14,7 +14,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
-import com.gmail.trentech.helpme.help.Help;
+import com.gmail.trentech.pjc.help.Help;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.data.PlayerData;
