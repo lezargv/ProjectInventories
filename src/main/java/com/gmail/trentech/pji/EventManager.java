@@ -140,6 +140,12 @@ public class EventManager {
 	
 	@Listener(order = Order.PRE)
 	public void onClientConnectionEventDisconnect(ClientConnectionEvent.Disconnect event, @Getter("getTargetEntity") Player player) {
+		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+		
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+		
+		playerSettings.save(player, playerSettings.copy(player));
+		
 		Task.builder().async().delayTicks(40).execute(t -> {
 			player.getInventory().clear();
 		}).submit(Main.getPlugin());
