@@ -60,6 +60,14 @@ public class Common {
 				.setUsage(usageInv)
 				.addExample("/inventory delete creative");
 		
+		Usage usagePlayer = new Usage(Argument.of("[player]", "Specifies the player you want to clear inventory of"));
+		
+		Help invClear = new Help("inventory clear", "clear", "Deletes all items in players inv. WARNING: This cannot be undone.")
+				.setPermission("pji.cmd.inventory.clear")
+				.setUsage(usagePlayer)
+				.addExample("/inventory clear")
+				.addExample("/inventory clear Notch");
+		
 		Help invKit = new Help("inventory kit", "kit", "Sets a pre-defined inventory the first time player equips.")
 				.setPermission("pji.cmd.inventory.kit")
 				.setUsage(usageInv)
@@ -112,6 +120,7 @@ public class Common {
 				.addChild(invKit)
 				.addChild(invDelete)
 				.addChild(invCreate)
+				.addChild(invClear)
 				.addChild(invGet)
 				.addChild(invSee)
 				.addChild(invRemove)

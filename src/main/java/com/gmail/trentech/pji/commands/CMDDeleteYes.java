@@ -14,7 +14,7 @@ import org.spongepowered.api.text.format.TextColors;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.settings.InventorySettings;
 
-public class CMDYes implements CommandExecutor {
+public class CMDDeleteYes implements CommandExecutor {
 
 	protected static HashMap<CommandSource, String> confirm = new HashMap<>();
 

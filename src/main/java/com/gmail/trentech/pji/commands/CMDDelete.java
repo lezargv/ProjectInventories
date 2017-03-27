@@ -29,7 +29,7 @@ public class CMDDelete implements CommandExecutor {
 
 		src.sendMessage(Text.builder().color(TextColors.RED).append(Text.of(TextColors.RED, "[WARNING] ", TextColors.YELLOW, "This will delete players inventories and cannot be undone. Confirm? ")).onClick(TextActions.runCommand("/pji:inventory delete yes")).append(Text.of(TextColors.DARK_PURPLE, TextStyles.UNDERLINE, "/inventory delete yes")).build());
 
-		CMDYes.confirm.put(src, inventoryData.getName());
+		CMDDeleteYes.confirm.put(src, inventoryData.getName());
 
 		return CommandResult.success();
 	}

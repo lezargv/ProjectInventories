@@ -35,15 +35,27 @@ public class CommandManager {
 		    .executor(new CMDCreate())
 		    .build();
 	
-	public CommandSpec cmdYes = CommandSpec.builder()
+	public CommandSpec cmdClearYes = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.clear")
+		    .executor(new CMDClearYes())
+		    .build();
+	
+	public CommandSpec cmdClear = CommandSpec.builder()
+		    .permission("pji.cmd.inventory.clear")
+		    .arguments(GenericArguments.optional(GenericArguments.player(Text.of("player"))))
+		    .child(cmdClearYes, "yes", "y")
+		    .executor(new CMDClear())
+		    .build();
+	
+	public CommandSpec cmdDeleteYes = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.delete")
-		    .executor(new CMDYes())
+		    .executor(new CMDDeleteYes())
 		    .build();
 	
 	public CommandSpec cmdDelete = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.delete")
 		    .arguments(GenericArguments.optional(new InventoryElement(Text.of("inv"))))
-		    .child(cmdYes, "yes", "y")
+		    .child(cmdDeleteYes, "yes", "y")
 		    .executor(new CMDDelete())
 		    .build();
 
@@ -76,6 +88,7 @@ public class CommandManager {
 			.child(cmdGet, "get", "g")
 			.child(cmdKit, "kit", "k")
 			.child(cmdCreate, "create", "c")
+			.child(cmdClear, "clear", "cl")
 			.child(cmdDelete, "delete", "d")
 			.child(cmdList, "list", "ls")
 			.child(cmdRemove, "remove", "rm")
