@@ -7,20 +7,20 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 
-import org.spongepowered.api.scheduler.Task;
-
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.InventoryData;
 
-public class InventoryDB extends InitDB {
+public class InventoryDB {
 
 	public static HashMap<String, InventoryData> all() {
 		HashMap<String, InventoryData> map = new HashMap<>();
-
+		
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INVENTORIES"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.INVENTORIES"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -38,9 +38,10 @@ public class InventoryDB extends InitDB {
 
 	public static Optional<InventoryData> get(String inventory) {
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INVENTORIES"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.INVENTORIES"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -71,19 +72,17 @@ public class InventoryDB extends InitDB {
 	}
 
 	public static void remove(String inventory) {
-		Task.builder().async().execute(c -> {
-			
-		}).submit(Main.getPlugin());
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + getPrefix("PJI.INVENTORIES") + " WHERE Name = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + sqlManager.getPrefix("PJI.INVENTORIES") + " WHERE Name = ?");
 
 			statement.setString(1, inventory);
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("DROP TABLE " + getPrefix("PJI.INV." + inventory));
+			statement = connection.prepareStatement("DROP TABLE " + sqlManager.getPrefix("PJI.INV." + inventory));
 
 			statement.executeUpdate();
 			
@@ -94,20 +93,18 @@ public class InventoryDB extends InitDB {
 	}
 
 	public static void create(InventoryData inventoryData) {
-		Task.builder().async().execute(c -> {
-			
-		}).submit(Main.getPlugin());
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
 
 			statement.setString(2, InventoryData.serialize(inventoryData));
 			statement.setString(1, inventoryData.getName());
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + getPrefix("PJI.INV." + inventoryData.getName()) + " (UUID TEXT, Data TEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.INV." + inventoryData.getName()) + " (UUID TEXT, Data TEXT)");
 
 			statement.executeUpdate();
 				
@@ -118,13 +115,11 @@ public class InventoryDB extends InitDB {
 	}
 
 	public static void update(InventoryData inventoryData) {
-		Task.builder().async().execute(c -> {
-			
-		}).submit(Main.getPlugin());
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INVENTORIES") + " SET Data = ? WHERE Name = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.INVENTORIES") + " SET Data = ? WHERE Name = ?");
 
 			statement.setString(1, InventoryData.serialize(inventoryData));
 			statement.setString(2, inventoryData.getName());
@@ -136,5 +131,4 @@ public class InventoryDB extends InitDB {
 			e.printStackTrace();
 		}
 	}
-
 }

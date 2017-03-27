@@ -22,7 +22,6 @@ import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.data.WorldData;
 import com.gmail.trentech.pji.init.Common;
-import com.gmail.trentech.pji.sql.InitDB;
 import com.gmail.trentech.pji.utils.Resource;
 import com.google.inject.Inject;
 
@@ -67,9 +66,8 @@ public class Main {
 		Sponge.getDataManager().registerBuilder(KitData.class, new KitData.Builder());
 		Sponge.getDataManager().registerBuilder(InventoryData.class, new InventoryData.Builder());
 		Sponge.getDataManager().registerBuilder(WorldData.class, new WorldData.Builder());
-		
-		InitDB.createSettings();
 
+		Common.initData();
 		Common.initHelp();
 
 		Sponge.getServiceManager().setProvider(getPlugin(), InventoryService.class, new InventoryService());

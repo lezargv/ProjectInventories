@@ -10,21 +10,22 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.scheduler.Task;
 
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 
-public class PlayerDB extends InitDB {
+public class PlayerDB {
 
 	public static HashMap<UUID, PlayerData> all() {
 		HashMap<UUID, PlayerData> map = new HashMap<>();
 
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.PLAYERS"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.PLAYERS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -45,9 +46,10 @@ public class PlayerDB extends InitDB {
 
 	public static boolean exists(UUID uuid) {
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.PLAYERS"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.PLAYERS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -69,9 +71,10 @@ public class PlayerDB extends InitDB {
 	
 	public static PlayerData get(UUID uuid) {
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.PLAYERS"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.PLAYERS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -106,67 +109,65 @@ public class PlayerDB extends InitDB {
 	}
 
 	public static void remove(UUID uuid) {
-		Task.builder().async().execute(c -> {
-			try {
-				Connection connection = getDataSource().getConnection();
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
 
-				statement.setString(1, uuid.toString());
-				statement.executeUpdate();
+			statement.setString(1, uuid.toString());
+			statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}).submit(Main.getPlugin());
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void create(UUID uuid, PlayerData playerData) {
-		Task.builder().async().execute(c -> {
-			try {
-				Connection connection = getDataSource().getConnection();
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.PLAYERS") + " (UUID, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID, Data) VALUES (?, ?)");
 
-				statement.setString(1, uuid.toString());
-				statement.setString(2, PlayerData.serialize(playerData));
+			statement.setString(1, uuid.toString());
+			statement.setString(2, PlayerData.serialize(playerData));
 
-				statement.executeUpdate();
+			statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}).submit(Main.getPlugin());
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void update(UUID uuid, PlayerData playerData) {
-		Task.builder().async().execute(c -> {
-			try {
-				Connection connection = getDataSource().getConnection();
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.PLAYERS") + " SET Data = ? WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.PLAYERS") + " SET Data = ? WHERE UUID = ?");
 
-				statement.setString(2, uuid.toString());
-				statement.setString(1, PlayerData.serialize(playerData));
+			statement.setString(2, uuid.toString());
+			statement.setString(1, PlayerData.serialize(playerData));
 
-				statement.executeUpdate();
+			statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}).submit(Main.getPlugin());
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static class Data {
 
 		public static Optional<PlayerInventoryData> get(Player player, String inventory) {
 			try {
-				Connection connection = getDataSource().getConnection();
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + inventory));
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.INV." + inventory));
 
 				ResultSet result = statement.executeQuery();
 
@@ -190,9 +191,10 @@ public class PlayerDB extends InitDB {
 
 		public static boolean exists(Player player, String name) {
 			try {
-				Connection connection = getDataSource().getConnection();
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.INV." + name));
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.INV." + name));
 
 				ResultSet result = statement.executeQuery();
 
@@ -212,41 +214,39 @@ public class PlayerDB extends InitDB {
 		}
 
 		public static void create(UUID uuid, PlayerInventoryData playerInventoryData) {
-			//Task.builder().async().execute(c -> {
-				try {
-					Connection connection = getDataSource().getConnection();
+			try {
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-					PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.INV." + playerInventoryData.getName()) + " (UUID, Data) VALUES (?, ?)");
+				PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.INV." + playerInventoryData.getName()) + " (UUID, Data) VALUES (?, ?)");
 
-					statement.setString(1, uuid.toString());
-					statement.setString(2, PlayerInventoryData.serialize(playerInventoryData));
+				statement.setString(1, uuid.toString());
+				statement.setString(2, PlayerInventoryData.serialize(playerInventoryData));
 
-					statement.executeUpdate();
+				statement.executeUpdate();
 
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			//}).submit(Main.getPlugin());
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		public static void update(UUID uuid, PlayerInventoryData playerInventoryData) {
-			//Task.builder().async().execute(c -> {
-				try {
-					Connection connection = getDataSource().getConnection();
+			try {
+				SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+				Connection connection = sqlManager.getDataSource().getConnection();
 
-					PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.INV." + playerInventoryData.getName()) + " SET Data = ? WHERE UUID = ?");
+				PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.INV." + playerInventoryData.getName()) + " SET Data = ? WHERE UUID = ?");
 
-					statement.setString(2, uuid.toString());
-					statement.setString(1, PlayerInventoryData.serialize(playerInventoryData));
+				statement.setString(2, uuid.toString());
+				statement.setString(1, PlayerInventoryData.serialize(playerInventoryData));
 
-					statement.executeUpdate();
-					
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			//}).submit(Main.getPlugin());
+				statement.executeUpdate();
+				
+				connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

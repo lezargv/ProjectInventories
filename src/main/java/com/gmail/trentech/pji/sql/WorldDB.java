@@ -8,20 +8,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.spongepowered.api.scheduler.Task;
-
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pji.Main;
 import com.gmail.trentech.pji.data.WorldData;
 
-public class WorldDB extends InitDB {
+public class WorldDB {
 
 	public static HashMap<UUID, WorldData> all() {
 		HashMap<UUID, WorldData> map = new HashMap<>();
 
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.WORLDS"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.WORLDS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -39,9 +39,10 @@ public class WorldDB extends InitDB {
 	
 	public static WorldData get(UUID uuid) {
 		try {
-			Connection connection = getDataSource().getConnection();
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + getPrefix("PJI.WORLDS"));
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + sqlManager.getPrefix("PJI.WORLDS"));
 
 			ResultSet result = statement.executeQuery();
 
@@ -77,59 +78,54 @@ public class WorldDB extends InitDB {
 	}
 
 	public static void remove(WorldData worldData) {
-		Task.builder().async().execute(c -> {
-			try {
-				Connection connection = getDataSource().getConnection();
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("DELETE from " + getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
 
-				statement.setString(1, worldData.getUniqueId().toString());
-				statement.executeUpdate();
+			statement.setString(1, worldData.getUniqueId().toString());
+			statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}).submit(Main.getPlugin());
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void create(WorldData worldData) {
-		Task.builder().async().execute(c -> {
-			try {
-				Connection connection = getDataSource().getConnection();
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("INSERT into " + getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
 
-				statement.setString(1, worldData.getUniqueId().toString());
-				statement.setString(2, WorldData.serialize(worldData));
+			statement.setString(1, worldData.getUniqueId().toString());
+			statement.setString(2, WorldData.serialize(worldData));
 
-				statement.executeUpdate();
+			statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}).submit(Main.getPlugin());
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void update(WorldData worldData) {
-		Task.builder().async().execute(c -> {
-			try {
-				Connection connection = getDataSource().getConnection();
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
 
-				PreparedStatement statement = connection.prepareStatement("UPDATE " + getPrefix("PJI.WORLDS") + " SET Data = ? WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.WORLDS") + " SET Data = ? WHERE UUID = ?");
 
-				statement.setString(2, worldData.getUniqueId().toString());
-				statement.setString(1, WorldData.serialize(worldData));
+			statement.setString(2, worldData.getUniqueId().toString());
+			statement.setString(1, WorldData.serialize(worldData));
 
-				statement.executeUpdate();
+			statement.executeUpdate();
 
-				connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}).submit(Main.getPlugin());
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
-	
-
 }

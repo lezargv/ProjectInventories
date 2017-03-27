@@ -1,6 +1,11 @@
 package com.gmail.trentech.pji.init;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
 import com.gmail.trentech.pjc.core.ConfigManager;
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pjc.help.Argument;
 import com.gmail.trentech.pjc.help.Help;
 import com.gmail.trentech.pjc.help.Usage;
@@ -13,6 +18,30 @@ public class Common {
 	public static void init() {
 		initConfig();
 		initHelp();
+		initData();
+	}
+	
+	public static void initData() {
+		try {
+			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
+			Connection connection = sqlManager.getDataSource().getConnection();
+
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID TEXT, Data TEXT)");
+
+			statement.executeUpdate();
+
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID TEXT, Data TEXT)");
+
+			statement.executeUpdate();
+
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name TEXT, Data TEXT)");
+
+			statement.executeUpdate();
+			
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void initHelp() {
@@ -112,11 +141,6 @@ public class Common {
 			config.getNode("options", "default-on-world-change").setValue(false).setComment("Always set inventory to world default when entering");
 		}
 		if (config.getNode("settings", "sql").isVirtual()) {
-			config.getNode("settings", "sql", "enable").setValue(false);
-			config.getNode("settings", "sql", "prefix").setValue("NONE");
-			config.getNode("settings", "sql", "url").setValue("localhost:3306/database");
-			config.getNode("settings", "sql", "username").setValue("root");
-			config.getNode("settings", "sql", "password").setValue("password");
 			config.getNode("settings", "sql", "login-delay").setValue(35).setComment("Sets delay in ticks the server will wait to set player inventory on login. Change this is de-sync issues occur with Bungee servers");
 		}
 		
