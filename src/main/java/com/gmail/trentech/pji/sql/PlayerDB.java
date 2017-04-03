@@ -37,6 +37,8 @@ public class PlayerDB {
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -56,12 +58,16 @@ public class PlayerDB {
 			while (result.next()) {
 				if (result.getString("UUID").equalsIgnoreCase(uuid.toString())) {
 					connection.close();
-
+					statement.close();
+					result.close();
+					
 					return true;
 				}
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -83,7 +89,9 @@ public class PlayerDB {
 					PlayerData playerData = PlayerData.deserialize(result.getString("Data"));
 					
 					connection.close();
-
+					statement.close();
+					result.close();
+					
 					return playerData;
 				}
 			}
@@ -119,6 +127,7 @@ public class PlayerDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -137,6 +146,7 @@ public class PlayerDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -155,6 +165,7 @@ public class PlayerDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -182,6 +193,8 @@ public class PlayerDB {
 				}
 
 				connection.close();
+				statement.close();
+				result.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -201,11 +214,16 @@ public class PlayerDB {
 				while (result.next()) {
 					if (result.getString("UUID").equalsIgnoreCase(player.getUniqueId().toString())) {
 						connection.close();
+						statement.close();
+						result.close();
+						
 						return true;
 					}
 				}
 
 				connection.close();
+				statement.close();
+				result.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -226,6 +244,7 @@ public class PlayerDB {
 				statement.executeUpdate();
 
 				connection.close();
+				statement.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -244,6 +263,7 @@ public class PlayerDB {
 				statement.executeUpdate();
 				
 				connection.close();
+				statement.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

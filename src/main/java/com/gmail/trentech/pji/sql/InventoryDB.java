@@ -15,7 +15,7 @@ public class InventoryDB {
 
 	public static HashMap<String, InventoryData> all() {
 		HashMap<String, InventoryData> map = new HashMap<>();
-		
+
 		try {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
@@ -29,6 +29,8 @@ public class InventoryDB {
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -50,12 +52,16 @@ public class InventoryDB {
 					String data = result.getString("Data");
 
 					connection.close();
-
+					statement.close();
+					result.close();
+					
 					return Optional.of(InventoryData.deserialize(data));
 				}
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -87,6 +93,7 @@ public class InventoryDB {
 			statement.executeUpdate();
 			
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -109,6 +116,7 @@ public class InventoryDB {
 			statement.executeUpdate();
 				
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -127,6 +135,7 @@ public class InventoryDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -30,6 +30,8 @@ public class WorldDB {
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -57,12 +59,16 @@ public class WorldDB {
 					}
 					
 					connection.close();
+					statement.close();
+					result.close();
 					
 					return worldData;
 				}
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -88,6 +94,7 @@ public class WorldDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -106,6 +113,7 @@ public class WorldDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -124,6 +132,7 @@ public class WorldDB {
 			statement.executeUpdate();
 
 			connection.close();
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
