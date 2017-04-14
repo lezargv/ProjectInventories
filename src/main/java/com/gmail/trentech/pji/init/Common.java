@@ -34,6 +34,10 @@ public class Common {
 
 			statement.executeUpdate();
 
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.CHESTS") + " (UUID TEXT, Data TEXT)");
+
+			statement.executeUpdate();
+			
 			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name TEXT, Data TEXT)");
 
 			statement.executeUpdate();
@@ -148,6 +152,9 @@ public class Common {
 		}			
 		if (config.getNode("options", "default-on-world-change").isVirtual()) {
 			config.getNode("options", "default-on-world-change").setValue(false).setComment("Always set inventory to world default when entering");
+		}
+		if (config.getNode("options", "per-world-enderchests").isVirtual()) {
+			config.getNode("options", "per-world-enderchests").setValue(false).setComment("Seperate ender chest inventory for each world");
 		}
 		if (config.getNode("settings", "sql").isVirtual()) {
 			config.getNode("settings", "sql", "login-delay").setValue(35).setComment("Sets delay in ticks the server will wait to set player inventory on login. Change this is de-sync issues occur with Bungee servers");

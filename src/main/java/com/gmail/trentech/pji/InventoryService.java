@@ -1,5 +1,6 @@
 package com.gmail.trentech.pji;
 
+import com.gmail.trentech.pji.settings.ChestSettings;
 import com.gmail.trentech.pji.settings.InventorySettings;
 import com.gmail.trentech.pji.settings.PlayerSettings;
 import com.gmail.trentech.pji.settings.WorldSettings;
@@ -18,4 +19,8 @@ public class InventoryService {
 		return new InventorySettings(this);
 	}
 
+	public ChestSettings getChestSettings() {
+		return new ChestSettings(this);
+	}
+	
 }

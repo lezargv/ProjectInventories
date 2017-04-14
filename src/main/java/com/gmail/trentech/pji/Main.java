@@ -3,6 +3,7 @@ package com.gmail.trentech.pji;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -15,9 +16,12 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
+import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pji.commands.CommandManager;
+import com.gmail.trentech.pji.data.EnderChestData;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.data.KitData;
+import com.gmail.trentech.pji.data.PlayerChestData;
 import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.data.WorldData;
@@ -51,15 +55,27 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+
 	}
 
 	@Listener
 	public void onInitializationEvent(GameInitializationEvent event) {
+		try {
+			SQLManager.get(Main.getPlugin()).getDataSource();
+		} catch (SQLException e) {
+			getLog().error("Could not connect to database");
+			return;
+		}
+
 		Common.initConfig();
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
 		
 		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
+		
+		Sponge.getDataManager().registerBuilder(EnderChestData.class, new EnderChestData.Builder());
+		Sponge.getDataManager().registerBuilder(PlayerChestData.class, new PlayerChestData.Builder());
 		
 		Sponge.getDataManager().registerBuilder(PlayerInventoryData.class, new PlayerInventoryData.Builder());
 		Sponge.getDataManager().registerBuilder(PlayerData.class, new PlayerData.Builder());
