@@ -3,7 +3,6 @@ package com.gmail.trentech.pji;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
@@ -16,7 +15,6 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import com.gmail.trentech.pjc.core.SQLManager;
 import com.gmail.trentech.pji.commands.CommandManager;
 import com.gmail.trentech.pji.data.EnderChestData;
 import com.gmail.trentech.pji.data.InventoryData;
@@ -61,13 +59,6 @@ public class Main {
 
 	@Listener
 	public void onInitializationEvent(GameInitializationEvent event) {
-		try {
-			SQLManager.get(Main.getPlugin()).getDataSource();
-		} catch (SQLException e) {
-			getLog().error("Could not connect to database");
-			return;
-		}
-
 		Common.initConfig();
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());

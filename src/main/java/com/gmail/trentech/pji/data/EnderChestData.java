@@ -22,6 +22,7 @@ import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.inventory.ItemStack;
 
 import com.gmail.trentech.pjc.core.ItemSerializer;
+import com.gmail.trentech.pji.Main;
 import com.google.common.reflect.TypeToken;
 
 import ninja.leaping.configurate.ConfigurationNode;
@@ -80,7 +81,14 @@ public class EnderChestData implements DataSerializable {
 			Map<String, String> inventory = new HashMap<>();
 
 			for (Entry<Integer, ItemStack> entry : this.inventory.entrySet()) {
-				inventory.put(entry.getKey().toString(), ItemSerializer.serialize(entry.getValue()));
+				Optional<String> optionalItem = ItemSerializer.serialize(entry.getValue());
+				
+				if(!optionalItem.isPresent()) {
+					Main.instance().getLog().error("Could not serialize " + entry.getValue().getItem().getId());
+					
+					continue;
+				}		
+				inventory.put(entry.getKey().toString(), optionalItem.get());
 			}
 			
 			container.set(INVENTORY, inventory);
@@ -106,7 +114,14 @@ public class EnderChestData implements DataSerializable {
 
 				if (container.contains(INVENTORY)) {
 					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(INVENTORY).get()).entrySet()) {
-						inventory.put(Integer.parseInt(entry.getKey()), ItemSerializer.deserialize(entry.getValue()));
+						Optional<ItemStack> optionalItemStack = ItemSerializer.deserialize(entry.getValue());
+						
+						if(!optionalItemStack.isPresent()) {
+							Main.instance().getLog().error("Could not deserialize item in slot " + Integer.parseInt(entry.getKey()));
+							
+							continue;
+						}					
+						inventory.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
 					}
 				}
 
