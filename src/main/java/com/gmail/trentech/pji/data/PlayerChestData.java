@@ -16,7 +16,6 @@ import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 
@@ -65,7 +64,7 @@ public class PlayerChestData implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		DataContainer container = new MemoryDataContainer().set(PLAYER_UUID, getPlayerUuid().toString());
+		DataContainer container = DataContainer.createNew().set(PLAYER_UUID, getPlayerUuid().toString());
 
 		if(!this.chests.isEmpty()) {
 			Map<String, String> chests = new HashMap<>();

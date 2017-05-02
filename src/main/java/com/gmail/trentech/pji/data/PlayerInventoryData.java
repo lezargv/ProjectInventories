@@ -15,7 +15,6 @@ import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
@@ -239,7 +238,7 @@ public class PlayerInventoryData implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		DataContainer container = new MemoryDataContainer().set(NAME, getName());
+		DataContainer container = DataContainer.createNew().set(NAME, getName());
 
 		if (this.offHand.isPresent()) {
 			container.set(OFF_HAND, ItemSerializer.serialize(this.offHand.get()));
