@@ -1,1 +1,2 @@
 checkout scm
+gradlew build
