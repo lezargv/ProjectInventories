@@ -1,14 +1,12 @@
 package com.gmail.trentech.pji.commands;
 
-import java.util.Map.Entry;
-import java.util.UUID;
-
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.command.CommandException;
 import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
+import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
@@ -62,18 +60,17 @@ public class CMDRemove implements CommandExecutor {
 		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 		
-		for (Entry<UUID, PlayerData> entry : PlayerDB.all().entrySet()) {
-			UUID uuid = entry.getKey();
-			PlayerData playerData = entry.getValue();
-
-			Sponge.getServer().getPlayer(uuid).ifPresent(player -> {
+		Sponge.getServer().getWorld(properties.getWorldName()).ifPresent(world -> {
+			for(Player player : world.getPlayers()) {
+				PlayerData playerData = PlayerDB.get(player.getUniqueId());
+				
 				if (playerData.getInventoryName().equals(inventoryData.getName())) {
 					playerSettings.set(player, inventorySettings.get(worldData.getDefault()).get(), false);
 
 					player.sendMessage(Text.of(TextColors.RED, "[PJI] ", TextColors.YELLOW, "The inventory for this world has been removed by an admin. Changing to default inventory"));
 				}
-			});
-		}
+			}
+		});
 
 		worldSettings.save(worldData);
 		
