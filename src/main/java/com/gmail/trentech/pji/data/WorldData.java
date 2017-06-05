@@ -16,6 +16,7 @@ import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 
@@ -83,7 +84,7 @@ public class WorldData implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		DataContainer container = DataContainer.createNew().set(NAME, getUniqueId().toString());
+		DataContainer container = new MemoryDataContainer().set(NAME, getUniqueId().toString());
 
 		Map<String, String> inventories = new HashMap<>();
 

@@ -16,6 +16,7 @@ import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.MemoryDataContainer;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -74,7 +75,7 @@ public class EnderChestData implements DataSerializable {
 
 	@Override
 	public DataContainer toContainer() {
-		DataContainer container = DataContainer.createNew().set(PLAYER_UUID, getPlayerUuid().toString()).set(WORLD_UUID, getWorldUuid().toString());
+		DataContainer container = new MemoryDataContainer().set(PLAYER_UUID, getPlayerUuid().toString()).set(WORLD_UUID, getWorldUuid().toString());
 
 		if(!this.inventory.isEmpty()) {
 			Map<String, String> inventory = new HashMap<>();
