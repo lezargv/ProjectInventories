@@ -15,7 +15,6 @@ import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
-import com.gmail.trentech.pji.commands.CommandManager;
 import com.gmail.trentech.pji.data.EnderChestData;
 import com.gmail.trentech.pji.data.InventoryData;
 import com.gmail.trentech.pji.data.KitData;
@@ -23,6 +22,7 @@ import com.gmail.trentech.pji.data.PlayerChestData;
 import com.gmail.trentech.pji.data.PlayerData;
 import com.gmail.trentech.pji.data.PlayerInventoryData;
 import com.gmail.trentech.pji.data.WorldData;
+import com.gmail.trentech.pji.init.Commands;
 import com.gmail.trentech.pji.init.Common;
 import com.gmail.trentech.pji.utils.Resource;
 import com.google.inject.Inject;
@@ -63,7 +63,7 @@ public class Main {
 
 		Sponge.getEventManager().registerListeners(this, new EventManager());
 		
-		Sponge.getCommandManager().register(this, new CommandManager().cmdInventory, "inventory", "inv");
+		Sponge.getCommandManager().register(this, new Commands().cmdInventory, "inventory", "inv");
 		
 		Sponge.getDataManager().registerBuilder(EnderChestData.class, new EnderChestData.Builder());
 		Sponge.getDataManager().registerBuilder(PlayerChestData.class, new PlayerChestData.Builder());
