@@ -15,10 +15,14 @@ import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.manipulator.mutable.PotionEffectData;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pjc.core.ItemSerializer;
 import com.gmail.trentech.pji.Main;
@@ -241,23 +245,43 @@ public class PlayerInventoryData implements DataSerializable {
 		DataContainer container = DataContainer.createNew().set(NAME, getName());
 
 		if (this.offHand.isPresent()) {
-			container.set(OFF_HAND, ItemSerializer.serialize(this.offHand.get()));
+			try {
+				container.set(OFF_HAND, ItemSerializer.serialize(this.offHand.get()));
+			} catch (Exception e) {				
+				Main.instance().getLog().error("Could not serialize " + this.offHand.get().getItem().getId());
+			}
 		}
 		
 		if (this.helmet.isPresent()) {
-			container.set(HELMET, ItemSerializer.serialize(this.helmet.get()));
+			try {
+				container.set(HELMET, ItemSerializer.serialize(this.helmet.get()));
+			} catch (Exception e) {				
+				Main.instance().getLog().error("Could not serialize " + this.helmet.get().getItem().getId());
+			}			
 		}
 		
 		if (this.chestPlate.isPresent()) {
-			container.set(CHEST_PLATE, ItemSerializer.serialize(this.chestPlate.get()));
+			try {
+				container.set(CHEST_PLATE, ItemSerializer.serialize(this.chestPlate.get()));
+			} catch (Exception e) {				
+				Main.instance().getLog().error("Could not serialize " + this.chestPlate.get().getItem().getId());
+			}
 		}
 		
 		if (this.leggings.isPresent()) {
-			container.set(LEGGINGS, ItemSerializer.serialize(this.leggings.get()));
+			try {
+				container.set(LEGGINGS, ItemSerializer.serialize(this.leggings.get()));
+			} catch (Exception e) {				
+				Main.instance().getLog().error("Could not serialize " + this.leggings.get().getItem().getId());
+			}
 		}
 		
 		if (this.boots.isPresent()) {
-			container.set(BOOTS, ItemSerializer.serialize(this.boots.get()));
+			try {
+				container.set(BOOTS, ItemSerializer.serialize(this.boots.get()));
+			} catch (Exception e) {				
+				Main.instance().getLog().error("Could not serialize " + this.boots.get().getItem().getId());
+			}
 		}
 		
 		if(!this.hotbar.isEmpty()) {
@@ -311,16 +335,19 @@ public class PlayerInventoryData implements DataSerializable {
 		@Override
 		protected Optional<PlayerInventoryData> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(NAME, HEALTH, FOOD, SATURATION, EXP_LEVEL, EXPERIENCE)) {
+				ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.BARRIER).add(Keys.DISPLAY_NAME, Text.of(TextColors.RED, "Could not deserialize item")).build();
+				
 				String name = container.getString(NAME).get();
 				
 				Optional<ItemStack> offHand = Optional.empty();
-
+				
 				if (container.contains(OFF_HAND)) {
 					Optional<ItemStack> optionalItemStack = ItemSerializer.deserialize(container.getString(OFF_HAND).get());
 					
 					if(optionalItemStack.isPresent()) {
 						offHand = Optional.of(optionalItemStack.get());
 					} else {
+						offHand = Optional.of(itemStack);
 						Main.instance().getLog().error("Could not deserialize item in off hand");
 					}
 				}
@@ -333,6 +360,7 @@ public class PlayerInventoryData implements DataSerializable {
 					if(optionalItemStack.isPresent()) {
 						helmet = Optional.of(optionalItemStack.get());
 					} else {
+						helmet = Optional.of(itemStack);
 						Main.instance().getLog().error("Could not deserialize item in helmet slot");
 					}		
 				}
@@ -345,6 +373,7 @@ public class PlayerInventoryData implements DataSerializable {
 					if(optionalItemStack.isPresent()) {
 						chestPlate = Optional.of(optionalItemStack.get());
 					} else {
+						chestPlate = Optional.of(itemStack);
 						Main.instance().getLog().error("Could not deserialize item in chest plate slot");
 					}			
 				}
@@ -357,6 +386,7 @@ public class PlayerInventoryData implements DataSerializable {
 					if(optionalItemStack.isPresent()) {
 						leggings = Optional.of(optionalItemStack.get());
 					} else {
+						leggings = Optional.of(itemStack);
 						Main.instance().getLog().error("Could not deserialize item in leggings slot");
 					}
 				}
@@ -369,6 +399,7 @@ public class PlayerInventoryData implements DataSerializable {
 					if(optionalItemStack.isPresent()) {
 						boots = Optional.of(optionalItemStack.get());
 					} else {
+						boots = Optional.of(itemStack);
 						Main.instance().getLog().error("Could not deserialize item in boots slot");
 					}		
 				}
@@ -379,12 +410,12 @@ public class PlayerInventoryData implements DataSerializable {
 					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(HOTBAR).get()).entrySet()) {
 						Optional<ItemStack> optionalItemStack = ItemSerializer.deserialize(entry.getValue());
 						
-						if(!optionalItemStack.isPresent()) {
+						if(optionalItemStack.isPresent()) {
+							hotbar.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+						} else {
+							hotbar.put(Integer.parseInt(entry.getKey()), itemStack);
 							Main.instance().getLog().error("Could not deserialize item in hotbar slot " + Integer.parseInt(entry.getKey()));
-							
-							continue;
-						}				
-						hotbar.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+						}						
 					}
 				}
 
@@ -394,12 +425,12 @@ public class PlayerInventoryData implements DataSerializable {
 					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(GRID).get()).entrySet()) {
 						Optional<ItemStack> optionalItemStack = ItemSerializer.deserialize(entry.getValue());
 						
-						if(!optionalItemStack.isPresent()) {
-							Main.instance().getLog().error("Could not deserialize item in slot " + Integer.parseInt(entry.getKey()));
-							
-							continue;
-						}				
-						grid.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+						if(optionalItemStack.isPresent()) {
+							grid.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+						} else {
+							grid.put(Integer.parseInt(entry.getKey()), itemStack);
+							Main.instance().getLog().error("Could not deserialize item in hotbar slot " + Integer.parseInt(entry.getKey()));
+						}
 					}
 				}
 
