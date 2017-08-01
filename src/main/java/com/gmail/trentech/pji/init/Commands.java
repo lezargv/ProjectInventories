@@ -1,6 +1,5 @@
 package com.gmail.trentech.pji.init;
 
-import org.spongepowered.api.command.args.CommandElement;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
@@ -23,11 +22,11 @@ import com.gmail.trentech.pji.commands.elements.InventoryElement;
 
 public class Commands {
 
-	private CommandElement element = GenericArguments.flags().flag("help").setAcceptsArbitraryLongFlags(true).buildWith(GenericArguments.none());
+	//private CommandElement element = GenericArguments.flags().flag("help").setAcceptsArbitraryLongFlags(true).buildWith(GenericArguments.none());
 	
 	private CommandSpec cmdSee = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.see")    
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(GenericArguments.player(Text.of("player"))), 
 		    		GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDSee())
@@ -35,21 +34,21 @@ public class Commands {
 	
 	private CommandSpec cmdGet = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.get")    
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDGet())
 		    .build();
 	
 	private CommandSpec cmdKit = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.kit")    
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDKit())
 		    .build();
 	
 	private CommandSpec cmdCreate = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.create")    
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(GenericArguments.string(Text.of("inv"))), 
 		    		GenericArguments.flags().valueFlag(GenericArguments.string(Text.of("permission")), "p")
 		    		.valueFlag(GenericArguments.catalogedElement(Text.of("gamemode"), GameMode.class), "g").buildWith(GenericArguments.none()))
@@ -63,7 +62,7 @@ public class Commands {
 	
 	private CommandSpec cmdClear = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.clear")
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(GenericArguments.player(Text.of("player"))))
 		    .child(cmdClearYes, "yes", "y")
 		    .executor(new CMDClear())
@@ -76,7 +75,7 @@ public class Commands {
 	
 	private CommandSpec cmdDelete = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.delete")
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .child(cmdDeleteYes, "yes", "y")
 		    .executor(new CMDDelete())
@@ -84,13 +83,13 @@ public class Commands {
 
 	private CommandSpec cmdList = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.list")
-		    .arguments(element)
+		    //.arguments(element)
 		    .executor(new CMDList())
 		    .build();
 	
 	private CommandSpec cmdAdd = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.add")
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(GenericArguments.world(Text.of("world"))), 
 		    		GenericArguments.optional(new InventoryElement(Text.of("inv"))), 
 		    		GenericArguments.optional(GenericArguments.bool(Text.of("true|false"))))
@@ -99,7 +98,7 @@ public class Commands {
 
 	private CommandSpec cmdRemove = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.remove")
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(GenericArguments.world(Text.of("world"))), 
 		    		GenericArguments.optional(new InventoryElement(Text.of("inv"))))
 		    .executor(new CMDRemove())
@@ -107,7 +106,7 @@ public class Commands {
 	
 	private CommandSpec cmdInfo = CommandSpec.builder()
 		    .permission("pji.cmd.inventory.info")
-		    .arguments(element,
+		    .arguments(//element,
 		    		GenericArguments.optional(GenericArguments.world(Text.of("world"))))
 		    .executor(new CMDInfo())
 		    .build();
