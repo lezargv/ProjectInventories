@@ -87,7 +87,7 @@ public class EnderChestData implements DataSerializable {
 				Optional<String> optionalItem = ItemSerializer.serialize(entry.getValue());
 				
 				if(!optionalItem.isPresent()) {
-					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
+					Main.instance().getLog().error("Could not serialize " + entry.getValue().getItem().getId());
 					
 					continue;
 				}		

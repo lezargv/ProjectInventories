@@ -198,7 +198,7 @@ public class KitData implements DataSerializable {
 			try {
 				container.set(OFF_HAND, ItemSerializer.serialize(this.offHand.get()));
 			} catch (Exception e) {				
-				Main.instance().getLog().error("Could not serialize " + this.offHand.get().getType().getId());
+				Main.instance().getLog().error("Could not serialize " + this.offHand.get().getItem().getId());
 			}
 		}
 		
@@ -206,7 +206,7 @@ public class KitData implements DataSerializable {
 			try {
 				container.set(HELMET, ItemSerializer.serialize(this.helmet.get()));
 			} catch (Exception e) {				
-				Main.instance().getLog().error("Could not serialize " + this.helmet.get().getType().getId());
+				Main.instance().getLog().error("Could not serialize " + this.helmet.get().getItem().getId());
 			}			
 		}
 		
@@ -214,7 +214,7 @@ public class KitData implements DataSerializable {
 			try {
 				container.set(CHEST_PLATE, ItemSerializer.serialize(this.chestPlate.get()));
 			} catch (Exception e) {				
-				Main.instance().getLog().error("Could not serialize " + this.chestPlate.get().getType().getId());
+				Main.instance().getLog().error("Could not serialize " + this.chestPlate.get().getItem().getId());
 			}
 		}
 		
@@ -222,7 +222,7 @@ public class KitData implements DataSerializable {
 			try {
 				container.set(LEGGINGS, ItemSerializer.serialize(this.leggings.get()));
 			} catch (Exception e) {				
-				Main.instance().getLog().error("Could not serialize " + this.leggings.get().getType().getId());
+				Main.instance().getLog().error("Could not serialize " + this.leggings.get().getItem().getId());
 			}
 		}
 		
@@ -230,7 +230,7 @@ public class KitData implements DataSerializable {
 			try {
 				container.set(BOOTS, ItemSerializer.serialize(this.boots.get()));
 			} catch (Exception e) {				
-				Main.instance().getLog().error("Could not serialize " + this.boots.get().getType().getId());
+				Main.instance().getLog().error("Could not serialize " + this.boots.get().getItem().getId());
 			}
 		}
 		
@@ -241,7 +241,7 @@ public class KitData implements DataSerializable {
 				Optional<String> optionalItem = ItemSerializer.serialize(entry.getValue());
 				
 				if(!optionalItem.isPresent()) {
-					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
+					Main.instance().getLog().error("Could not serialize " + entry.getValue().getItem().getId());
 					
 					continue;
 				}
@@ -259,7 +259,7 @@ public class KitData implements DataSerializable {
 				Optional<String> optionalItem = ItemSerializer.serialize(entry.getValue());
 				
 				if(!optionalItem.isPresent()) {
-					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
+					Main.instance().getLog().error("Could not serialize " + entry.getValue().getItem().getId());
 					
 					continue;
 				}
