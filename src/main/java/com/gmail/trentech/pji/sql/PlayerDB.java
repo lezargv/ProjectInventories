@@ -121,7 +121,7 @@ public class PlayerDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + sqlManager.getPrefix("PJI.PLAYERS") + " WHERE UUID = ?");
 
 			statement.setString(1, uuid.toString());
 			statement.executeUpdate();
@@ -138,7 +138,7 @@ public class PlayerDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID, Data) VALUES (?, ?)");
 
 			statement.setString(1, uuid.toString());
 			statement.setString(2, PlayerData.serialize(playerData));
