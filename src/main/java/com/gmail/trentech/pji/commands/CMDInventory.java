@@ -15,7 +15,7 @@ public class CMDInventory implements CommandExecutor {
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
 		Help.executeList(src, Help.get("inventory").get().getChildren());
-		src.sendMessage(Text.of(TextColors.YELLOW, "inventory <command> --help"));
+		src.sendMessage(Text.of(TextColors.YELLOW, " /helpme inventory <rawCommand>"));
 		return CommandResult.success();
 	}
 
