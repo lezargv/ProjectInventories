@@ -88,7 +88,7 @@ public class WorldDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + sqlManager.getPrefix("PJI.WORLDS") + " WHERE UUID = ?");
 
 			statement.setString(1, worldData.getUniqueId().toString());
 			statement.executeUpdate();
@@ -105,7 +105,7 @@ public class WorldDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
 
 			statement.setString(1, worldData.getUniqueId().toString());
 			statement.setString(2, WorldData.serialize(worldData));

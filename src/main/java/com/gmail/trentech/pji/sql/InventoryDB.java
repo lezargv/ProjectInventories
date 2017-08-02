@@ -104,7 +104,7 @@ public class InventoryDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
 
 			statement.setString(2, InventoryData.serialize(inventoryData));
 			statement.setString(1, inventoryData.getName());

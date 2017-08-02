@@ -245,41 +245,51 @@ public class PlayerInventoryData implements DataSerializable {
 		DataContainer container = DataContainer.createNew().set(NAME, getName());
 
 		if (this.offHand.isPresent()) {
-			try {
-				container.set(OFF_HAND, ItemSerializer.serialize(this.offHand.get()));
-			} catch (Exception e) {				
+			Optional<String> optionalItem = ItemSerializer.serialize(this.offHand.get());
+			
+			if(optionalItem.isPresent()) {
+				container.set(OFF_HAND, optionalItem.get());
+			} else {
 				Main.instance().getLog().error("Could not serialize " + this.offHand.get().getItem().getId());
 			}
 		}
-		
+
 		if (this.helmet.isPresent()) {
-			try {
-				container.set(HELMET, ItemSerializer.serialize(this.helmet.get()));
-			} catch (Exception e) {				
+			Optional<String> optionalItem = ItemSerializer.serialize(this.helmet.get());
+			
+			if(optionalItem.isPresent()) {
+				container.set(HELMET, optionalItem.get());
+			} else {
 				Main.instance().getLog().error("Could not serialize " + this.helmet.get().getItem().getId());
-			}			
+			}
 		}
-		
+
 		if (this.chestPlate.isPresent()) {
-			try {
-				container.set(CHEST_PLATE, ItemSerializer.serialize(this.chestPlate.get()));
-			} catch (Exception e) {				
+			Optional<String> optionalItem = ItemSerializer.serialize(this.chestPlate.get());
+			
+			if(optionalItem.isPresent()) {
+				container.set(CHEST_PLATE, optionalItem.get());
+			} else {
 				Main.instance().getLog().error("Could not serialize " + this.chestPlate.get().getItem().getId());
 			}
 		}
-		
+
 		if (this.leggings.isPresent()) {
-			try {
-				container.set(LEGGINGS, ItemSerializer.serialize(this.leggings.get()));
-			} catch (Exception e) {				
+			Optional<String> optionalItem = ItemSerializer.serialize(this.leggings.get());
+			
+			if(optionalItem.isPresent()) {
+				container.set(LEGGINGS, optionalItem.get());
+			} else {
 				Main.instance().getLog().error("Could not serialize " + this.leggings.get().getItem().getId());
 			}
 		}
-		
+
 		if (this.boots.isPresent()) {
-			try {
-				container.set(BOOTS, ItemSerializer.serialize(this.boots.get()));
-			} catch (Exception e) {				
+			Optional<String> optionalItem = ItemSerializer.serialize(this.boots.get());
+			
+			if(optionalItem.isPresent()) {
+				container.set(BOOTS, optionalItem.get());
+			} else {
 				Main.instance().getLog().error("Could not serialize " + this.boots.get().getItem().getId());
 			}
 		}
