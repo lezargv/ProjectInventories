@@ -11,10 +11,19 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.text.format.TextStyles;
 
+import com.gmail.trentech.pjc.help.Help;
+
 public class CMDClear implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+		Help help = Help.get("inventory clear").get();
+		
+		if (args.hasAny("help")) {			
+			help.execute(src);
+			return CommandResult.empty();
+		}
+		
 		Player player;
 		
 		if (!args.hasAny("player")) {

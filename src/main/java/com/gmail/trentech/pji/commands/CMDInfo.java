@@ -20,6 +20,7 @@ import org.spongepowered.api.text.action.TextActions;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.storage.WorldProperties;
 
+import com.gmail.trentech.pjc.help.Help;
 import com.gmail.trentech.pji.InventoryService;
 import com.gmail.trentech.pji.data.InventoryData;
 
@@ -27,6 +28,13 @@ public class CMDInfo implements CommandExecutor {
 
 	@Override
 	public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
+		Help help = Help.get("inventory info").get();
+		
+		if (args.hasAny("help")) {			
+			help.execute(src);
+			return CommandResult.empty();
+		}
+		
 		List<Text> list = new ArrayList<>();
 
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);

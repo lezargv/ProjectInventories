@@ -17,9 +17,13 @@ import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.MemoryDataContainer;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 
 import com.gmail.trentech.pjc.core.ItemSerializer;
 import com.gmail.trentech.pji.Main;
@@ -107,6 +111,8 @@ public class EnderChestData implements DataSerializable {
 		@Override
 		protected Optional<EnderChestData> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(PLAYER_UUID, WORLD_UUID)) {
+				ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.BARRIER).add(Keys.DISPLAY_NAME, Text.of(TextColors.RED, "Could not deserialize item")).build();
+				
 				UUID playerUuid = UUID.fromString(container.getString(PLAYER_UUID).get());
 				UUID worldUuid = UUID.fromString(container.getString(WORLD_UUID).get());
 
@@ -116,6 +122,12 @@ public class EnderChestData implements DataSerializable {
 					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(INVENTORY).get()).entrySet()) {
 						Optional<ItemStack> optionalItemStack = ItemSerializer.deserialize(entry.getValue());
 						
+						if(optionalItemStack.isPresent()) {
+							inventory.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+						} else {
+							inventory.put(Integer.parseInt(entry.getKey()), itemStack);
+							Main.instance().getLog().error("Could not deserialize item in hotbar slot " + Integer.parseInt(entry.getKey()));
+						}
 						if(!optionalItemStack.isPresent()) {
 							Main.instance().getLog().error("Could not deserialize item in slot " + Integer.parseInt(entry.getKey()));
 							

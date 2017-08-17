@@ -117,7 +117,7 @@ public class ChestDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("DELETE from " + sqlManager.getPrefix("PJI.CHESTS") + " WHERE UUID = ?");
+			PreparedStatement statement = connection.prepareStatement("DELETE FROM " + sqlManager.getPrefix("PJI.CHESTS") + " WHERE UUID = ?");
 
 			statement.setString(1, uuid.toString());
 			statement.executeUpdate();
@@ -134,7 +134,7 @@ public class ChestDB {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.CHESTS") + " (UUID, Data) VALUES (?, ?)");
+			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.CHESTS") + " (UUID, Data) VALUES (?, ?)");
 
 			statement.setString(1, uuid.toString());
 			statement.setString(2, PlayerChestData.serialize(playerChestData));
