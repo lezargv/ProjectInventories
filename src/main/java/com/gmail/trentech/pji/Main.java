@@ -27,10 +27,7 @@ import com.gmail.trentech.pji.init.Common;
 import com.gmail.trentech.pji.utils.Resource;
 import com.google.inject.Inject;
 
-import me.flibio.updatifier.Updatifier;
-
-@Updatifier(repoName = Resource.NAME, repoOwner = Resource.AUTHOR, version = Resource.VERSION)
-@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "Updatifier", optional = true), @Dependency(id = "pjc", optional = false) })
+@Plugin(id = Resource.ID, name = Resource.NAME, version = Resource.VERSION, description = Resource.DESCRIPTION, authors = Resource.AUTHOR, url = Resource.URL, dependencies = { @Dependency(id = "pjc", optional = false) })
 public class Main {
 
 	@Inject
@@ -53,8 +50,6 @@ public class Main {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
 	}
 
 	@Listener
