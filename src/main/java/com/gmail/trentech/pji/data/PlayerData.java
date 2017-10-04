@@ -2,25 +2,19 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
-
-import com.google.common.reflect.TypeToken;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class PlayerData implements DataSerializable {
 
@@ -74,13 +68,7 @@ public class PlayerData implements DataSerializable {
 		DataContainer container = DataContainer.createNew().set(INVENTORY, inventory);
 
 		if(!this.inventories.isEmpty()) {
-			List<String> inventories = new ArrayList<>();
-
-			for (String inventory : this.inventories) {
-				inventories.add(inventory);
-			}
-
-			container.set(INVENTORIES, inventories);
+			container.set(INVENTORIES, this.inventories);
 		}
 
 		return container;
@@ -100,9 +88,7 @@ public class PlayerData implements DataSerializable {
 				List<String> inventories = new ArrayList<>();
 
 				if (container.contains(INVENTORIES)) {
-					for (String inv : container.getStringList(INVENTORIES).get()) {
-						inventories.add(inv);
-					}
+					inventories = container.getStringList(INVENTORIES).get();
 				}
 
 				return Optional.of(new PlayerData(inventory, inventories));
@@ -114,25 +100,17 @@ public class PlayerData implements DataSerializable {
 	
 	public static String serialize(PlayerData playerData) {
 		try {
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(PlayerData.class), playerData);
-			loader.save(node);
-			return sink.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return DataFormats.JSON.write(playerData.toContainer());
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}
 
 	public static PlayerData deserialize(String item) {
 		try {
-			StringReader source = new StringReader(item);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return node.getValue(TypeToken.of(PlayerData.class));
-		} catch (Exception e) {
+			return Sponge.getDataManager().deserialize(PlayerData.class, DataFormats.JSON.read(item)).get();
+		} catch (InvalidDataException | IOException e) {
 			e.printStackTrace();
 			return null;
 		}

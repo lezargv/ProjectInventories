@@ -2,27 +2,21 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
-
-import com.google.common.reflect.TypeToken;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class WorldData implements DataSerializable {
 
@@ -85,13 +79,7 @@ public class WorldData implements DataSerializable {
 	public DataContainer toContainer() {
 		DataContainer container = DataContainer.createNew().set(NAME, getUniqueId().toString());
 
-		Map<String, String> inventories = new HashMap<>();
-
-		for (Entry<String, Boolean> entry : this.inventories.entrySet()) {
-			inventories.put(entry.getKey().toString(), entry.getValue().toString());
-		}
-
-		return container.set(INVENTORIES, inventories);
+		return container.set(INVENTORIES, this.inventories);
 	}
 
 	public static class Builder extends AbstractDataBuilder<WorldData> {
@@ -107,9 +95,10 @@ public class WorldData implements DataSerializable {
 				UUID uuid = UUID.fromString(container.getString(NAME).get());
 				
 				Map<String, Boolean> inventories = new HashMap<>();
-
-				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(INVENTORIES).get()).entrySet()) {
-					inventories.put(entry.getKey(), Boolean.valueOf(entry.getValue()));
+				
+				
+				if(container.contains(INVENTORIES)) {
+					inventories = (Map<String, Boolean>) container.getMap(INVENTORIES).get();
 				}
 
 				WorldData worldData = new WorldData(uuid, inventories);
@@ -122,25 +111,17 @@ public class WorldData implements DataSerializable {
 
 	public static String serialize(WorldData worldData) {
 		try {
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(WorldData.class), worldData);
-			loader.save(node);
-			return sink.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return DataFormats.JSON.write(worldData.toContainer());
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}
 
 	public static WorldData deserialize(String item) {
 		try {
-			StringReader source = new StringReader(item);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return node.getValue(TypeToken.of(WorldData.class));
-		} catch (Exception e) {
+			return Sponge.getDataManager().deserialize(WorldData.class, DataFormats.JSON.read(item)).get();
+		} catch (InvalidDataException | IOException e) {
 			e.printStackTrace();
 			return null;
 		}

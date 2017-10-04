@@ -2,10 +2,7 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.Optional;
 
 import org.spongepowered.api.Sponge;
@@ -14,13 +11,9 @@ import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.entity.living.player.gamemode.GameMode;
-
-import com.google.common.reflect.TypeToken;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class InventoryData implements DataSerializable {
 
@@ -99,7 +92,7 @@ public class InventoryData implements DataSerializable {
 		}
 
 		if (this.kitData.isPresent()) {
-			container.set(KIT, KitData.serialize(this.kitData.get()));
+			container.set(KIT, this.kitData.get());
 		}
 		
 		return container;
@@ -128,7 +121,7 @@ public class InventoryData implements DataSerializable {
 				}
 
 				if (container.contains(KIT)) {
-					kitData = Optional.of(KitData.deserialize(container.getString(KIT).get()));
+					kitData = container.getSerializable(KIT, KitData.class);
 				}
 				
 				return Optional.of(new InventoryData(name, permission, gamemode, kitData));
@@ -140,25 +133,17 @@ public class InventoryData implements DataSerializable {
 
 	public static String serialize(InventoryData inventoryData) {
 		try {
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(InventoryData.class), inventoryData);
-			loader.save(node);
-			return sink.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return DataFormats.JSON.write(inventoryData.toContainer());
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}
 
 	public static InventoryData deserialize(String item) {
 		try {
-			StringReader source = new StringReader(item);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return node.getValue(TypeToken.of(InventoryData.class));
-		} catch (Exception e) {
+			return Sponge.getDataManager().deserialize(InventoryData.class, DataFormats.JSON.read(item)).get();
+		} catch (InvalidDataException | IOException e) {
 			e.printStackTrace();
 			return null;
 		}

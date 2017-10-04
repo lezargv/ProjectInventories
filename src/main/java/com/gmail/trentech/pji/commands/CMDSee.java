@@ -10,8 +10,6 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.item.inventory.ClickInventoryEvent;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
@@ -135,7 +133,7 @@ public class CMDSee implements CommandExecutor {
 			i++;
 		}
 
-		player.openInventory(inventory, Cause.of(NamedCause.simulated(player)));
+		player.openInventory(inventory);
 
 		return CommandResult.success();
 	}

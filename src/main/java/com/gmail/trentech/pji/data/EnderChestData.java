@@ -2,34 +2,29 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import com.gmail.trentech.pjc.core.ItemSerializer;
+//import com.gmail.trentech.pjc.core.ItemSerializer;
 import com.gmail.trentech.pji.Main;
-import com.google.common.reflect.TypeToken;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 
 public class EnderChestData implements DataSerializable {
 
@@ -84,14 +79,13 @@ public class EnderChestData implements DataSerializable {
 			Map<String, String> inventory = new HashMap<>();
 
 			for (Entry<Integer, ItemStack> entry : this.inventory.entrySet()) {
-				Optional<String> optionalItem = ItemSerializer.serialize(entry.getValue());
-				
-				if(!optionalItem.isPresent()) {
+				try {
+					inventory.put(entry.getKey().toString(), DataFormats.JSON.write(entry.getValue().toContainer()));
+				} catch (IOException e) {
 					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
-					
+					e.printStackTrace();
 					continue;
-				}		
-				inventory.put(entry.getKey().toString(), optionalItem.get());
+				}
 			}
 			
 			container.set(INVENTORY, inventory);
@@ -119,20 +113,16 @@ public class EnderChestData implements DataSerializable {
 
 				if (container.contains(INVENTORY)) {
 					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(INVENTORY).get()).entrySet()) {
-						Optional<ItemStack> optionalItemStack = ItemSerializer.deserialize(entry.getValue());
-						
-						if(optionalItemStack.isPresent()) {
-							inventory.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
-						} else {
-							inventory.put(Integer.parseInt(entry.getKey()), itemStack);
-							Main.instance().getLog().error("Could not deserialize item in hotbar slot " + Integer.parseInt(entry.getKey()));
-						}
-						if(!optionalItemStack.isPresent()) {
-							Main.instance().getLog().error("Could not deserialize item in slot " + Integer.parseInt(entry.getKey()));
+						try {
+							Optional<ItemStack> optionalItemStack = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(entry.getValue()));
 							
-							continue;
-						}					
-						inventory.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+							if(optionalItemStack.isPresent()) {
+								inventory.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
+							}
+						} catch (IOException e) {
+							inventory.put(Integer.parseInt(entry.getKey()), itemStack);
+							Main.instance().getLog().error("Could not deserialize item in inventory slot " + Integer.parseInt(entry.getKey()));
+						}
 					}
 				}
 
@@ -140,32 +130,6 @@ public class EnderChestData implements DataSerializable {
 			}
 			
 			return Optional.empty();
-		}
-	}
-
-	public static String serialize(EnderChestData enderChestData) {
-		try {
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(EnderChestData.class), enderChestData);
-			loader.save(node);
-			return sink.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public static EnderChestData deserialize(String item) {
-		try {
-			StringReader source = new StringReader(item);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return node.getValue(TypeToken.of(EnderChestData.class));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
 		}
 	}
 }

@@ -2,27 +2,23 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
+import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 
-import com.google.common.reflect.TypeToken;
-
-import ninja.leaping.configurate.ConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
+import com.gmail.trentech.pji.Main;
 
 public class PlayerChestData implements DataSerializable {
 
@@ -70,7 +66,13 @@ public class PlayerChestData implements DataSerializable {
 			Map<String, String> chests = new HashMap<>();
 
 			for (Entry<UUID, EnderChestData> entry : this.chests.entrySet()) {
-				chests.put(entry.getKey().toString(), EnderChestData.serialize(entry.getValue()));
+				try {
+					chests.put(entry.getKey().toString(), DataFormats.JSON.write(entry.getValue().toContainer()));
+				} catch (IOException e) {
+					Main.instance().getLog().error("Could not serialize EnderChestData");
+					e.printStackTrace();
+					continue;
+				}
 			}
 			
 			container.set(CHESTS, chests);
@@ -91,11 +93,19 @@ public class PlayerChestData implements DataSerializable {
 			if (container.contains(PLAYER_UUID)) {
 				UUID playerUuid = UUID.fromString(container.getString(PLAYER_UUID).get());
 
-				HashMap<UUID, EnderChestData> chests = new HashMap<>();
+				Map<UUID, EnderChestData> chests = new HashMap<>();
 
 				if (container.contains(CHESTS)) {
 					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(CHESTS).get()).entrySet()) {
-						chests.put(UUID.fromString(entry.getKey()), EnderChestData.deserialize(entry.getValue()));
+						try {
+							Optional<EnderChestData> optionalEnderChestData = Sponge.getDataManager().deserialize(EnderChestData.class, DataFormats.JSON.read(entry.getValue()));
+							
+							if(optionalEnderChestData.isPresent()) {
+								chests.put(UUID.fromString(entry.getKey()), optionalEnderChestData.get());
+							}
+						} catch (IOException e) {
+							Main.instance().getLog().error("Could not deserialize PlayerChestData");
+						}
 					}
 				}
 
@@ -108,25 +118,17 @@ public class PlayerChestData implements DataSerializable {
 
 	public static String serialize(PlayerChestData playerChestData) {
 		try {
-			StringWriter sink = new StringWriter();
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSink(() -> new BufferedWriter(sink)).build();
-			ConfigurationNode node = loader.createEmptyNode();
-			node.setValue(TypeToken.of(PlayerChestData.class), playerChestData);
-			loader.save(node);
-			return sink.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
+			return DataFormats.JSON.write(playerChestData.toContainer());
+		} catch (IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}
 
 	public static PlayerChestData deserialize(String item) {
 		try {
-			StringReader source = new StringReader(item);
-			HoconConfigurationLoader loader = HoconConfigurationLoader.builder().setSource(() -> new BufferedReader(source)).build();
-			ConfigurationNode node = loader.load();
-			return node.getValue(TypeToken.of(PlayerChestData.class));
-		} catch (Exception e) {
+			return Sponge.getDataManager().deserialize(PlayerChestData.class, DataFormats.JSON.read(item)).get();
+		} catch (InvalidDataException | IOException e) {
 			e.printStackTrace();
 			return null;
 		}

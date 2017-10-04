@@ -18,8 +18,6 @@ import org.spongepowered.api.entity.living.player.gamemode.GameMode;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
-import org.spongepowered.api.event.cause.Cause;
-import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
@@ -140,7 +138,7 @@ public class EventManager {
 			i++;
 		}
 
-		player.openInventory(inventory, Cause.of(NamedCause.simulated(player)));
+		player.openInventory(inventory);
 	}
 	
 	@Listener(order = Order.POST)
