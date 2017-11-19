@@ -98,7 +98,7 @@ public class WorldData implements DataSerializable {
 				
 				
 				if(container.contains(INVENTORIES)) {
-					inventories = (Map<String, Boolean>) container.getMap(INVENTORIES).get();
+					inventories.putAll((Map<String, Boolean>) container.getMap(INVENTORIES).get());
 				}
 
 				WorldData worldData = new WorldData(uuid, inventories);
