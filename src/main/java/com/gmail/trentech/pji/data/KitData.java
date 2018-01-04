@@ -24,6 +24,7 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
@@ -59,7 +60,7 @@ public class KitData implements DataSerializable {
 	}
 
 	public KitData(Player player) {
-		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
+		PlayerInventory inv = player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
 
 		int i = 0;
 		for (Inventory item : inv.getHotbar().slots()) {

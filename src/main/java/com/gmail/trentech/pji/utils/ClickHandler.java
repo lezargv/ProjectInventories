@@ -12,6 +12,7 @@ import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 import org.spongepowered.api.item.inventory.transaction.SlotTransaction;
 
 import com.gmail.trentech.pjc.core.ConfigManager;
@@ -80,8 +81,8 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 		if (playerSettings.getPlayerData(target).getInventoryName().equals(playerInventoryData.getName())) {
 			target.getInventory().clear();
 
-			PlayerInventory inv = target.getInventory().query(PlayerInventory.class);
-
+			PlayerInventory inv = target.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
+			
 			Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
 
 			if (!hotbar.isEmpty()) {

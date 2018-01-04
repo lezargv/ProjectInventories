@@ -11,6 +11,7 @@ import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
+import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
 
 import com.gmail.trentech.pjc.core.ConfigManager;
 import com.gmail.trentech.pji.InventoryService;
@@ -50,7 +51,7 @@ public class PlayerSettings {
 	public PlayerInventoryData copy(Player player) {
 		PlayerInventoryData playerInventoryData = new PlayerInventoryData(getPlayerData(player).getInventoryName());
 
-		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
+		PlayerInventory inv = player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
 
 		int i = 0;
 		for (Inventory item : inv.getHotbar().slots()) {
@@ -145,7 +146,7 @@ public class PlayerSettings {
 	private void set(Player player, PlayerInventoryData playerInventoryData) {
 		player.getInventory().clear();
 
-		PlayerInventory inv = player.getInventory().query(PlayerInventory.class);
+		PlayerInventory inv = player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
 
 		Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
 
