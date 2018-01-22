@@ -50,12 +50,13 @@ public class Common {
 	
 	public static void initHelp() {
 		Usage usageCreate = new Usage(Argument.of("<inv>", "Specifies the name of the targeted inventory"))
-				.addArgument(Argument.of("[permission]", "Adds a permission node to inventory"));
-				
+				.addArgument(Argument.of("[-p <permission>]", "Adds a permission node to inventory"))
+				.addArgument(Argument.of("[-g <gamemode>]", "Sets a gamemode type when inventory is active."));
+		
 		Help invCreate = new Help("inventory create", "create", "Create a new inventory or edit existing")
 				.setPermission("pji.cmd.inventory.create")
 				.setUsage(usageCreate)
-				.addExample("/inventory create tools");
+				.addExample("/inventory create tools -p my.permission.node -g ");
 	
 		Usage usageInv = new Usage(Argument.of("<inv>", "Specifies the name of the targeted inventory"));
 		
