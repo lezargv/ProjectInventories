@@ -56,7 +56,7 @@ public class EventManager {
 
 	private static List<UUID> list = new ArrayList<>();
 
-	@Listener
+	@Listener(order = Order.PRE)
 	public void onInteractBlockEvent(InteractBlockEvent.Secondary event, @Root Player player) {
 		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 
@@ -137,7 +137,7 @@ public class EventManager {
 			}
 			i++;
 		}
-
+		event.setCancelled(true);
 		player.openInventory(inventory);
 	}
 	
