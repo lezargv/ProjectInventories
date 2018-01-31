@@ -2,34 +2,26 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
-import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
 import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.Inventory;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.item.inventory.Slot;
 import org.spongepowered.api.item.inventory.entity.PlayerInventory;
 import org.spongepowered.api.item.inventory.query.QueryOperationTypes;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
-//import com.gmail.trentech.pjc.core.ItemSerializer;
-import com.gmail.trentech.pji.Main;
 
 public class KitData implements DataSerializable {
 
@@ -40,7 +32,9 @@ public class KitData implements DataSerializable {
 	private final static DataQuery BOOTS = of("boots");
 	private final static DataQuery HOTBAR = of("hotbar");
 	private final static DataQuery GRID = of("grid");
-
+	private final static DataQuery SLOT_POSITION = of("slot_position");
+	private final static DataQuery ITEM_STACK = of("item_stack");
+	
 	private Optional<ItemStack> offHand = Optional.empty();
 	private Optional<ItemStack> helmet = Optional.empty();
 	private Optional<ItemStack> chestPlate = Optional.empty();
@@ -191,82 +185,45 @@ public class KitData implements DataSerializable {
 		DataContainer container = DataContainer.createNew();
 
 		if (this.offHand.isPresent()) {
-			try {
-				container.set(OFF_HAND, DataFormats.JSON.write(this.offHand.get().toContainer()));
-			} catch (IOException e) {
-				Main.instance().getLog().error("Could not serialize " + this.offHand.get().getType().getId());
-				e.printStackTrace();
-			}
+			container.set(OFF_HAND, this.offHand.get().toContainer());
 		}
 
 		if (this.helmet.isPresent()) {
-			try {
-				container.set(HELMET, DataFormats.JSON.write(this.helmet.get().toContainer()));
-			} catch (IOException e) {
-				Main.instance().getLog().error("Could not serialize " + this.helmet.get().getType().getId());
-				e.printStackTrace();
-			}
+			container.set(HELMET, this.helmet.get().toContainer());
 		}
 
 		if (this.chestPlate.isPresent()) {
-			try {
-				container.set(CHEST_PLATE, DataFormats.JSON.write(this.chestPlate.get().toContainer()));
-			} catch (IOException e) {
-				Main.instance().getLog().error("Could not serialize " + this.chestPlate.get().getType().getId());
-				e.printStackTrace();
-			}
+			container.set(CHEST_PLATE, this.chestPlate.get().toContainer());
 		}
 
 		if (this.leggings.isPresent()) {
-			try {
-				container.set(LEGGINGS, DataFormats.JSON.write(this.leggings.get().toContainer()));
-			} catch (IOException e) {
-				Main.instance().getLog().error("Could not serialize " + this.leggings.get().getType().getId());
-				e.printStackTrace();
-			}
+			container.set(LEGGINGS, this.leggings.get().toContainer());
 		}
 
 		if (this.boots.isPresent()) {
-			try {
-				container.set(BOOTS, DataFormats.JSON.write(this.boots.get().toContainer()));
-			} catch (IOException e) {
-				Main.instance().getLog().error("Could not serialize " + this.boots.get().getType().getId());
-				e.printStackTrace();
-			}
+			container.set(BOOTS, this.boots.get().toContainer());
 		}
 		
 		if(!this.hotbar.isEmpty()) {
-			Map<String, String> hotbar = new HashMap<>();
+			List<DataView> hotbarData = new LinkedList<>();
 
-			for (Entry<Integer, ItemStack> entry : this.hotbar.entrySet()) {
-				try {
-					hotbar.put(entry.getKey().toString(), DataFormats.JSON.write(entry.getValue().toContainer()));
-				} catch (IOException e) {
-					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
-					e.printStackTrace();
-					continue;
-				}
+			for (Entry<Integer, ItemStack> entry : hotbar.entrySet()) {
+				hotbarData.add(DataContainer.createNew().set(SLOT_POSITION, entry.getKey()).set(ITEM_STACK, entry.getValue().toContainer()));
 			}
 			
-			container.set(HOTBAR, hotbar);
+			container.set(HOTBAR, hotbarData);
 		}
 
 		if(!this.grid.isEmpty()) {
-			Map<String, String> grid = new HashMap<>();
+			List<DataView> gridData = new LinkedList<>();
 
-			for (Entry<Integer, ItemStack> entry : this.grid.entrySet()) {
-				try {
-					grid.put(entry.getKey().toString(), DataFormats.JSON.write(entry.getValue().toContainer()));
-				} catch (IOException e) {
-					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
-					e.printStackTrace();
-					continue;
-				}
+			for (Entry<Integer, ItemStack> entry : grid.entrySet()) {
+				gridData.add(DataContainer.createNew().set(SLOT_POSITION, entry.getKey()).set(ITEM_STACK, entry.getValue().toContainer()));
 			}
-			
-			container.set(GRID, grid);
-		}
 
+			container.set(GRID, gridData);
+		}
+		
 		return container;
 	}
 
@@ -276,119 +233,55 @@ public class KitData implements DataSerializable {
 			super(KitData.class, 1);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		protected Optional<KitData> buildContent(DataView container) throws InvalidDataException {
-			ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.BARRIER).add(Keys.DISPLAY_NAME, Text.of(TextColors.RED, "Could not deserialize item")).build();
-
 			Optional<ItemStack> offHand = Optional.empty();
 
 			if (container.contains(OFF_HAND)) {
-				try {
-					offHand = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(container.getString(OFF_HAND).get()));
-				} catch (IOException e) {
-					offHand = Optional.of(itemStack);
-					Main.instance().getLog().error("Could not deserialize item in off hand");
-				}			
+				offHand = Optional.of(ItemStack.builder().fromContainer(container.getView(OFF_HAND).get()).build());
 			}
 			
 			Optional<ItemStack> helmet = Optional.empty();
 
 			if (container.contains(HELMET)) {
-				try {
-					helmet = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(container.getString(HELMET).get()));
-				} catch (IOException e) {
-					helmet = Optional.of(itemStack);
-					Main.instance().getLog().error("Could not deserialize item in helmet slot");
-				}	
+				helmet = Optional.of(ItemStack.builder().fromContainer(container.getView(HELMET).get()).build());
 			}
 			
 			Optional<ItemStack> chestPlate = Optional.empty();
 
 			if (container.contains(CHEST_PLATE)) {
-				try {
-					chestPlate = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(container.getString(CHEST_PLATE).get()));
-				} catch (IOException e) {
-					chestPlate = Optional.of(itemStack);
-					Main.instance().getLog().error("Could not deserialize item in chest plate slot");
-				}		
+				chestPlate = Optional.of(ItemStack.builder().fromContainer(container.getView(CHEST_PLATE).get()).build());
 			}
 			
 			Optional<ItemStack> leggings = Optional.empty();
 
 			if (container.contains(LEGGINGS)) {
-				try {
-					leggings = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(container.getString(LEGGINGS).get()));
-				} catch (IOException e) {
-					leggings = Optional.of(itemStack);
-					Main.instance().getLog().error("Could not deserialize item in leggings slot");
-				}
+				leggings = Optional.of(ItemStack.builder().fromContainer(container.getView(LEGGINGS).get()).build());
 			}
 			
 			Optional<ItemStack> boots = Optional.empty();
 
 			if (container.contains(BOOTS)) {
-				try {
-					boots = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(container.getString(BOOTS).get()));
-				} catch (IOException e) {
-					boots = Optional.of(itemStack);
-					Main.instance().getLog().error("Could not deserialize item in boots slot");
-				}	
+				boots = Optional.of(ItemStack.builder().fromContainer(container.getView(BOOTS).get()).build());
 			}
 
 			Map<Integer, ItemStack> hotbar = new HashMap<>();
 
 			if (container.contains(HOTBAR)) {
-				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(HOTBAR).get()).entrySet()) {
-					try {
-						Optional<ItemStack> optionalItemStack = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(entry.getValue()));
-						
-						if(optionalItemStack.isPresent()) {
-							hotbar.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
-						}
-					} catch (IOException e) {
-						hotbar.put(Integer.parseInt(entry.getKey()), itemStack);
-						Main.instance().getLog().error("Could not deserialize item in hotbar slot " + Integer.parseInt(entry.getKey()));
-					}
+				for (DataView data : container.getViewList(HOTBAR).get()) {
+					hotbar.put(data.getInt(SLOT_POSITION).get(), ItemStack.builder().fromContainer(data.getView(ITEM_STACK).get()).build());
 				}
 			}
 
 			Map<Integer, ItemStack> grid = new HashMap<>();
 
 			if (container.contains(GRID)) {
-				for (Entry<String, String> entry : ((Map<String, String>) container.getMap(GRID).get()).entrySet()) {
-					try {
-						Optional<ItemStack> optionalItemStack = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(entry.getValue()));
-						
-						if(optionalItemStack.isPresent()) {
-							grid.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
-						}
-					} catch (IOException e) {
-						grid.put(Integer.parseInt(entry.getKey()), itemStack);
-						Main.instance().getLog().error("Could not deserialize item in grid slot " + Integer.parseInt(entry.getKey()));
-					}
+				for (DataView data : container.getViewList(GRID).get()) {
+					grid.put(data.getInt(SLOT_POSITION).get(), ItemStack.builder().fromContainer(data.getView(ITEM_STACK).get()).build());
 				}
 			}
 
 			return Optional.of(new KitData(offHand, helmet, chestPlate, leggings, boots, hotbar, grid));
 		}
 	}
-
-//	public static String serialize(KitData kitData) {
-//		try {
-//			return DataFormats.JSON.write(kitData.toContainer());
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//			return null;
-//		}
-//	}
-//
-//	public static KitData deserialize(String item) {
-//		try {
-//			return Sponge.getDataManager().deserialize(KitData.class, DataFormats.JSON.read(item)).get();
-//		} catch (InvalidDataException | IOException e) {
-//			e.printStackTrace();
-//			return null;
-//		}
-//	}
 }

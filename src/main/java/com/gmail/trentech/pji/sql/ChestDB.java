@@ -27,7 +27,7 @@ public class ChestDB {
 
 			while (result.next()) {
 				String uuid = result.getString("UUID");
-				PlayerChestData playerChestData = PlayerChestData.deserialize(result.getString("Data"));
+				PlayerChestData playerChestData = PlayerChestData.deserialize(result.getBytes("Data"));
 
 				map.put(UUID.fromString(uuid), playerChestData);
 			}
@@ -82,7 +82,7 @@ public class ChestDB {
 
 			while (result.next()) {
 				if (result.getString("UUID").equalsIgnoreCase(uuid.toString())) {
-					PlayerChestData playerChestData = PlayerChestData.deserialize(result.getString("Data"));
+					PlayerChestData playerChestData = PlayerChestData.deserialize(result.getBytes("Data"));
 					
 					connection.close();
 					statement.close();
@@ -137,7 +137,7 @@ public class ChestDB {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.CHESTS") + " (UUID, Data) VALUES (?, ?)");
 
 			statement.setString(1, uuid.toString());
-			statement.setString(2, PlayerChestData.serialize(playerChestData));
+			statement.setBytes(2, PlayerChestData.serialize(playerChestData));
 
 			statement.executeUpdate();
 
@@ -156,7 +156,7 @@ public class ChestDB {
 			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.CHESTS") + " SET Data = ? WHERE UUID = ?");
 
 			statement.setString(2, uuid.toString());
-			statement.setString(1, PlayerChestData.serialize(playerChestData));
+			statement.setBytes(1, PlayerChestData.serialize(playerChestData));
 
 			statement.executeUpdate();
 

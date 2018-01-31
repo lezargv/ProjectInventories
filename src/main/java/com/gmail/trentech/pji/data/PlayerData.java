@@ -2,10 +2,14 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
@@ -15,6 +19,7 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+import org.spongepowered.api.data.persistence.InvalidDataFormatException;
 
 public class PlayerData implements DataSerializable {
 
@@ -98,20 +103,27 @@ public class PlayerData implements DataSerializable {
 		}
 	}
 	
-	public static String serialize(PlayerData playerData) {
+	public static byte[] serialize(PlayerData playerData) {
 		try {
-			return DataFormats.JSON.write(playerData.toContainer());
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+			GZIPOutputStream gZipOutStream = new GZIPOutputStream(byteOutStream);
+			DataFormats.NBT.writeTo(gZipOutStream, playerData.toContainer());
+			gZipOutStream.close();
+			return byteOutStream.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public static PlayerData deserialize(String item) {
+	public static PlayerData deserialize(byte[] bytes) {
 		try {
-			return Sponge.getDataManager().deserialize(PlayerData.class, DataFormats.JSON.read(item)).get();
-		} catch (InvalidDataException | IOException e) {
-			e.printStackTrace();
+			ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
+			GZIPInputStream gZipInputSteam = new GZIPInputStream(byteInputStream);
+			DataContainer container = DataFormats.NBT.readFrom(gZipInputSteam);
+			return Sponge.getDataManager().deserialize(PlayerData.class, container).get();
+		} catch (InvalidDataFormatException | IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}

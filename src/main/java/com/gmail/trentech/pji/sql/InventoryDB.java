@@ -25,7 +25,7 @@ public class InventoryDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				map.put(result.getString("Name"), InventoryData.deserialize(result.getString("Data")));
+				map.put(result.getString("Name"), InventoryData.deserialize(result.getBytes("Data")));
 			}
 
 			connection.close();
@@ -49,7 +49,7 @@ public class InventoryDB {
 
 			while (result.next()) {
 				if (result.getString("Name").equalsIgnoreCase(inventory)) {
-					String data = result.getString("Data");
+					byte[] data = result.getBytes("Data");
 
 					connection.close();
 					statement.close();
@@ -106,7 +106,7 @@ public class InventoryDB {
 
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name, Data) VALUES (?, ?)");
 
-			statement.setString(2, InventoryData.serialize(inventoryData));
+			statement.setBytes(2, InventoryData.serialize(inventoryData));
 			statement.setString(1, inventoryData.getName());
 
 			statement.executeUpdate();
@@ -129,7 +129,7 @@ public class InventoryDB {
 
 			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.INVENTORIES") + " SET Data = ? WHERE Name = ?");
 
-			statement.setString(1, InventoryData.serialize(inventoryData));
+			statement.setBytes(1, InventoryData.serialize(inventoryData));
 			statement.setString(2, inventoryData.getName());
 
 			statement.executeUpdate();

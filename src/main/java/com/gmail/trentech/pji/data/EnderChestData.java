@@ -2,35 +2,29 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
-import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
 import org.spongepowered.api.data.DataSerializable;
 import org.spongepowered.api.data.DataView;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
-import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
-import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-
-//import com.gmail.trentech.pjc.core.ItemSerializer;
-import com.gmail.trentech.pji.Main;
 
 public class EnderChestData implements DataSerializable {
 
 	private final static DataQuery PLAYER_UUID = of("player");
 	private final static DataQuery WORLD_UUID = of("world");
 	private final static DataQuery INVENTORY = of("inventory");
+	private final static DataQuery SLOT_POSITION = of("slot_position");
+	private final static DataQuery ITEM_STACK = of("item_stack");
 	
 	private UUID player;	
 	private UUID world;	
@@ -76,19 +70,13 @@ public class EnderChestData implements DataSerializable {
 		DataContainer container = DataContainer.createNew().set(PLAYER_UUID, getPlayerUuid().toString()).set(WORLD_UUID, getWorldUuid().toString());
 
 		if(!this.inventory.isEmpty()) {
-			Map<String, String> inventory = new HashMap<>();
+			List<DataView> gridData = new LinkedList<>();
 
-			for (Entry<Integer, ItemStack> entry : this.inventory.entrySet()) {
-				try {
-					inventory.put(entry.getKey().toString(), DataFormats.JSON.write(entry.getValue().toContainer()));
-				} catch (IOException e) {
-					Main.instance().getLog().error("Could not serialize " + entry.getValue().getType().getId());
-					e.printStackTrace();
-					continue;
-				}
+			for (Entry<Integer, ItemStack> entry : inventory.entrySet()) {
+				gridData.add(DataContainer.createNew().set(SLOT_POSITION, entry.getKey()).set(ITEM_STACK, entry.getValue().toContainer()));
 			}
-			
-			container.set(INVENTORY, inventory);
+
+			container.set(INVENTORY, gridData);
 		}
 
 		return container;
@@ -100,29 +88,17 @@ public class EnderChestData implements DataSerializable {
 			super(EnderChestData.class, 1);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		protected Optional<EnderChestData> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(PLAYER_UUID, WORLD_UUID)) {
-				ItemStack itemStack = ItemStack.builder().itemType(ItemTypes.BARRIER).add(Keys.DISPLAY_NAME, Text.of(TextColors.RED, "Could not deserialize item")).build();
-				
 				UUID playerUuid = UUID.fromString(container.getString(PLAYER_UUID).get());
 				UUID worldUuid = UUID.fromString(container.getString(WORLD_UUID).get());
 
 				Map<Integer, ItemStack> inventory = new HashMap<>();
 
 				if (container.contains(INVENTORY)) {
-					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(INVENTORY).get()).entrySet()) {
-						try {
-							Optional<ItemStack> optionalItemStack = Sponge.getDataManager().deserialize(ItemStack.class, DataFormats.JSON.read(entry.getValue()));
-							
-							if(optionalItemStack.isPresent()) {
-								inventory.put(Integer.parseInt(entry.getKey()), optionalItemStack.get());
-							}
-						} catch (IOException e) {
-							inventory.put(Integer.parseInt(entry.getKey()), itemStack);
-							Main.instance().getLog().error("Could not deserialize item in inventory slot " + Integer.parseInt(entry.getKey()));
-						}
+					for (DataView data : container.getViewList(INVENTORY).get()) {
+						inventory.put(data.getInt(SLOT_POSITION).get(), ItemStack.builder().fromContainer(data.getView(ITEM_STACK).get()).build());
 					}
 				}
 

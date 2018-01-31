@@ -2,10 +2,14 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,6 +21,7 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
+import org.spongepowered.api.data.persistence.InvalidDataFormatException;
 
 public class WorldData implements DataSerializable {
 
@@ -109,20 +114,27 @@ public class WorldData implements DataSerializable {
 		}
 	}
 
-	public static String serialize(WorldData worldData) {
+	public static byte[] serialize(WorldData worldData) {
 		try {
-			return DataFormats.JSON.write(worldData.toContainer());
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+			GZIPOutputStream gZipOutStream = new GZIPOutputStream(byteOutStream);
+			DataFormats.NBT.writeTo(gZipOutStream, worldData.toContainer());
+			gZipOutStream.close();
+			return byteOutStream.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public static WorldData deserialize(String item) {
+	public static WorldData deserialize(byte[] bytes) {
 		try {
-			return Sponge.getDataManager().deserialize(WorldData.class, DataFormats.JSON.read(item)).get();
-		} catch (InvalidDataException | IOException e) {
-			e.printStackTrace();
+			ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
+			GZIPInputStream gZipInputSteam = new GZIPInputStream(byteInputStream);
+			DataContainer container = DataFormats.NBT.readFrom(gZipInputSteam);
+			return Sponge.getDataManager().deserialize(WorldData.class, container).get();
+		} catch (InvalidDataFormatException | IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}

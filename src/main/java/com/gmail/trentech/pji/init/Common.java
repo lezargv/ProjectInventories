@@ -26,19 +26,19 @@ public class Common {
 			SQLManager sqlManager = SQLManager.get(Main.getPlugin());
 			Connection connection = sqlManager.getDataSource().getConnection();
 
-			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID TEXT, Data LONGTEXT)");
+			PreparedStatement statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID TEXT, Data MEDIUMBLOB)");
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID TEXT, Data LONGTEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID TEXT, Data MEDIUMBLOB)");
 
 			statement.executeUpdate();
 
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.CHESTS") + " (UUID TEXT, Data LONGTEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.CHESTS") + " (UUID TEXT, Data MEDIUMBLOB)");
 
 			statement.executeUpdate();
 			
-			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name TEXT, Data LONGTEXT)");
+			statement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS " + sqlManager.getPrefix("PJI.INVENTORIES") + " (Name TEXT, Data MEDIUMBLOB)");
 
 			statement.executeUpdate();
 			

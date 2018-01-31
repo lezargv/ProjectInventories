@@ -26,7 +26,7 @@ public class WorldDB {
 			ResultSet result = statement.executeQuery();
 
 			while (result.next()) {
-				map.put(UUID.fromString(result.getString("UUID")), WorldData.deserialize(result.getString("Data")));
+				map.put(UUID.fromString(result.getString("UUID")), WorldData.deserialize(result.getBytes("Data")));
 			}
 
 			connection.close();
@@ -50,7 +50,7 @@ public class WorldDB {
 
 			while (result.next()) {
 				if(uuid.equals(UUID.fromString(result.getString("UUID")))) {
-					WorldData worldData = WorldData.deserialize(result.getString("Data"));
+					WorldData worldData = WorldData.deserialize(result.getBytes("Data"));
 
 					if (worldData.getInventories().isEmpty()) {
 						worldData.add("DEFAULT", true);
@@ -108,7 +108,7 @@ public class WorldDB {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.WORLDS") + " (UUID, Data) VALUES (?, ?)");
 
 			statement.setString(1, worldData.getUniqueId().toString());
-			statement.setString(2, WorldData.serialize(worldData));
+			statement.setBytes(2, WorldData.serialize(worldData));
 
 			statement.executeUpdate();
 
@@ -127,7 +127,7 @@ public class WorldDB {
 			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.WORLDS") + " SET Data = ? WHERE UUID = ?");
 
 			statement.setString(2, worldData.getUniqueId().toString());
-			statement.setString(1, WorldData.serialize(worldData));
+			statement.setBytes(1, WorldData.serialize(worldData));
 
 			statement.executeUpdate();
 

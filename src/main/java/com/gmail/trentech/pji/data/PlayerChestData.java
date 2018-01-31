@@ -2,12 +2,18 @@ package com.gmail.trentech.pji.data;
 
 import static org.spongepowered.api.data.DataQuery.of;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
@@ -17,13 +23,14 @@ import org.spongepowered.api.data.DataView;
 import org.spongepowered.api.data.persistence.AbstractDataBuilder;
 import org.spongepowered.api.data.persistence.DataFormats;
 import org.spongepowered.api.data.persistence.InvalidDataException;
-
-import com.gmail.trentech.pji.Main;
+import org.spongepowered.api.data.persistence.InvalidDataFormatException;
 
 public class PlayerChestData implements DataSerializable {
 
 	private final static DataQuery PLAYER_UUID = of("player");
 	private final static DataQuery CHESTS = of("chests");
+	private final static DataQuery CHEST_DATA = of("chest_data");
+	private final static DataQuery UUID_ = of("uuid");
 	
 	private UUID player;
 	private Map<UUID, EnderChestData> chests = new HashMap<>();
@@ -63,19 +70,13 @@ public class PlayerChestData implements DataSerializable {
 		DataContainer container = DataContainer.createNew().set(PLAYER_UUID, getPlayerUuid().toString());
 
 		if(!this.chests.isEmpty()) {
-			Map<String, String> chests = new HashMap<>();
+			List<DataView> chestData = new LinkedList<>();
 
-			for (Entry<UUID, EnderChestData> entry : this.chests.entrySet()) {
-				try {
-					chests.put(entry.getKey().toString(), DataFormats.JSON.write(entry.getValue().toContainer()));
-				} catch (IOException e) {
-					Main.instance().getLog().error("Could not serialize EnderChestData");
-					e.printStackTrace();
-					continue;
-				}
+			for (Entry<UUID, EnderChestData> entry : chests.entrySet()) {
+				chestData.add(DataContainer.createNew().set(UUID_, entry.getKey()).set(CHEST_DATA, entry.getValue().toContainer()));
 			}
-			
-			container.set(CHESTS, chests);
+
+			container.set(CHESTS, chestData);
 		}
 
 		return container;
@@ -87,7 +88,6 @@ public class PlayerChestData implements DataSerializable {
 			super(PlayerChestData.class, 1);
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		protected Optional<PlayerChestData> buildContent(DataView container) throws InvalidDataException {
 			if (container.contains(PLAYER_UUID)) {
@@ -96,16 +96,8 @@ public class PlayerChestData implements DataSerializable {
 				Map<UUID, EnderChestData> chests = new HashMap<>();
 
 				if (container.contains(CHESTS)) {
-					for (Entry<String, String> entry : ((Map<String, String>) container.getMap(CHESTS).get()).entrySet()) {
-						try {
-							Optional<EnderChestData> optionalEnderChestData = Sponge.getDataManager().deserialize(EnderChestData.class, DataFormats.JSON.read(entry.getValue()));
-							
-							if(optionalEnderChestData.isPresent()) {
-								chests.put(UUID.fromString(entry.getKey()), optionalEnderChestData.get());
-							}
-						} catch (IOException e) {
-							Main.instance().getLog().error("Could not deserialize PlayerChestData");
-						}
+					for (DataView data : container.getViewList(CHESTS).get()) {
+						chests.put(UUID.fromString(data.getString(UUID_).get()), Sponge.getDataManager().deserialize(EnderChestData.class, data.getView(CHEST_DATA).get()).get());
 					}
 				}
 
@@ -116,20 +108,27 @@ public class PlayerChestData implements DataSerializable {
 		}
 	}
 
-	public static String serialize(PlayerChestData playerChestData) {
+	public static byte[] serialize(PlayerChestData playerChestData) {
 		try {
-			return DataFormats.JSON.write(playerChestData.toContainer());
-		} catch (IOException e1) {
-			e1.printStackTrace();
+			ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
+			GZIPOutputStream gZipOutStream = new GZIPOutputStream(byteOutStream);
+			DataFormats.NBT.writeTo(gZipOutStream, playerChestData.toContainer());
+			gZipOutStream.close();
+			return byteOutStream.toByteArray();
+		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
-	public static PlayerChestData deserialize(String item) {
+	public static PlayerChestData deserialize(byte[] bytes) {
 		try {
-			return Sponge.getDataManager().deserialize(PlayerChestData.class, DataFormats.JSON.read(item)).get();
-		} catch (InvalidDataException | IOException e) {
-			e.printStackTrace();
+			ByteArrayInputStream byteInputStream = new ByteArrayInputStream(bytes);
+			GZIPInputStream gZipInputSteam = new GZIPInputStream(byteInputStream);
+			DataContainer container = DataFormats.NBT.readFrom(gZipInputSteam);
+			return Sponge.getDataManager().deserialize(PlayerChestData.class, container).get();
+		} catch (InvalidDataFormatException | IOException e1) {
+			e1.printStackTrace();
 			return null;
 		}
 	}

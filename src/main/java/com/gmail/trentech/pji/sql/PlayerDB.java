@@ -31,7 +31,7 @@ public class PlayerDB {
 
 			while (result.next()) {
 				String uuid = result.getString("UUID");
-				PlayerData playerData = PlayerData.deserialize(result.getString("Data"));
+				PlayerData playerData = PlayerData.deserialize(result.getBytes("Data"));
 
 				map.put(UUID.fromString(uuid), playerData);
 			}
@@ -86,7 +86,7 @@ public class PlayerDB {
 
 			while (result.next()) {
 				if (result.getString("UUID").equalsIgnoreCase(uuid.toString())) {
-					PlayerData playerData = PlayerData.deserialize(result.getString("Data"));
+					PlayerData playerData = PlayerData.deserialize(result.getBytes("Data"));
 					
 					connection.close();
 					statement.close();
@@ -141,7 +141,7 @@ public class PlayerDB {
 			PreparedStatement statement = connection.prepareStatement("INSERT INTO " + sqlManager.getPrefix("PJI.PLAYERS") + " (UUID, Data) VALUES (?, ?)");
 
 			statement.setString(1, uuid.toString());
-			statement.setString(2, PlayerData.serialize(playerData));
+			statement.setBytes(2, PlayerData.serialize(playerData));
 
 			statement.executeUpdate();
 
@@ -160,7 +160,7 @@ public class PlayerDB {
 			PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.PLAYERS") + " SET Data = ? WHERE UUID = ?");
 
 			statement.setString(2, uuid.toString());
-			statement.setString(1, PlayerData.serialize(playerData));
+			statement.setBytes(1, PlayerData.serialize(playerData));
 
 			statement.executeUpdate();
 
@@ -184,7 +184,7 @@ public class PlayerDB {
 
 				while (result.next()) {
 					if (result.getString("UUID").equals(player.getUniqueId().toString())) {
-						PlayerInventoryData playerInventoryData = PlayerInventoryData.deserialize(result.getString("Data"));
+						PlayerInventoryData playerInventoryData = PlayerInventoryData.deserialize(result.getBytes("Data"));
 
 						connection.close();
 
@@ -239,7 +239,7 @@ public class PlayerDB {
 				PreparedStatement statement = connection.prepareStatement("INSERT into " + sqlManager.getPrefix("PJI.INV." + playerInventoryData.getName()) + " (UUID, Data) VALUES (?, ?)");
 
 				statement.setString(1, uuid.toString());
-				statement.setString(2, PlayerInventoryData.serialize(playerInventoryData));
+				statement.setBytes(2, PlayerInventoryData.serialize(playerInventoryData));
 
 				statement.executeUpdate();
 
@@ -258,7 +258,7 @@ public class PlayerDB {
 				PreparedStatement statement = connection.prepareStatement("UPDATE " + sqlManager.getPrefix("PJI.INV." + playerInventoryData.getName()) + " SET Data = ? WHERE UUID = ?");
 
 				statement.setString(2, uuid.toString());
-				statement.setString(1, PlayerInventoryData.serialize(playerInventoryData));
+				statement.setBytes(1, PlayerInventoryData.serialize(playerInventoryData));
 
 				statement.executeUpdate();
 				
