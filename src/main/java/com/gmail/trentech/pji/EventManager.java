@@ -273,7 +273,7 @@ public class EventManager {
 	}
 
 	@Listener(order = Order.PRE)
-	public void onPlayerDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
+	public void onDestructEntityEventDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
 		if (!player.hasPermission("pji.keepinventory")) {
 			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 
@@ -282,6 +282,8 @@ public class EventManager {
 			PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 			
 			playerSettings.save(player, playerSettings.empty(playerSettings.getPlayerData(player).getInventoryName()));
+		} else {
+			event.setKeepInventory(true);
 		}
 	}
 	
