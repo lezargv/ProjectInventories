@@ -19,6 +19,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.block.InteractBlockEvent;
 import org.spongepowered.api.event.entity.DamageEntityEvent;
+import org.spongepowered.api.event.entity.DestructEntityEvent;
 import org.spongepowered.api.event.entity.MoveEntityEvent;
 import org.spongepowered.api.event.entity.living.humanoid.player.RespawnPlayerEvent;
 import org.spongepowered.api.event.filter.Getter;
@@ -271,6 +272,19 @@ public class EventManager {
 		}
 	}
 
+	@Listener(order = Order.PRE)
+	public void onPlayerDeath(DestructEntityEvent.Death event, @Getter("getTargetEntity") Player player) {
+		if (!player.hasPermission("pji.keepinventory")) {
+			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
+
+			player.getInventory().clear();
+			
+			PlayerSettings playerSettings = inventoryService.getPlayerSettings();
+			
+			playerSettings.save(player, playerSettings.empty(playerSettings.getPlayerData(player).getInventoryName()));
+		}
+	}
+	
 	@Listener
 	public void onRespawnPlayerEvent(RespawnPlayerEvent event, @Getter("getTargetEntity") Player player) {
 		WorldProperties from = event.getFromTransform().getExtent().getProperties();
@@ -283,7 +297,7 @@ public class EventManager {
 		InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 		
 		WorldSettings worldSettings = inventoryService.getWorldSettings();
-		PlayerSettings playerSettings = inventoryService.getPlayerSettings();		
+		PlayerSettings playerSettings = inventoryService.getPlayerSettings();
 		InventorySettings inventorySettings = inventoryService.getInventorySettings();
 
 		if (worldSettings.get(to).contains(playerSettings.getPlayerData(player).getInventoryName()) && !ConfigManager.get(Main.getPlugin()).getConfig().getNode("options", "default-on-world-change").getBoolean()) {
