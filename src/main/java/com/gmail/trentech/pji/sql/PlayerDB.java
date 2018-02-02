@@ -97,6 +97,8 @@ public class PlayerDB {
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -187,7 +189,9 @@ public class PlayerDB {
 						PlayerInventoryData playerInventoryData = PlayerInventoryData.deserialize(result.getBytes("Data"));
 
 						connection.close();
-
+						statement.close();
+						result.close();
+						
 						return Optional.of(playerInventoryData);
 					}
 				}

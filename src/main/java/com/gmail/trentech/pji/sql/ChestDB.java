@@ -93,6 +93,8 @@ public class ChestDB {
 			}
 
 			connection.close();
+			statement.close();
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
