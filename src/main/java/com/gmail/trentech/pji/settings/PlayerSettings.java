@@ -66,7 +66,7 @@ public class PlayerSettings {
 		}
 
 		i = 0;
-		for (Inventory item : inv.getMain().slots()) {
+		for (Inventory item : inv.getMainGrid().slots()) {
 			Slot slot = (Slot) item;
 
 			Optional<ItemStack> peek = slot.peek();
@@ -164,7 +164,7 @@ public class PlayerSettings {
 
 		if (!grid.isEmpty()) {
 			int i = 0;
-			for (Inventory slot : inv.getMain().slots()) {
+			for (Inventory slot : inv.getMainGrid().slots()) {
 				if (grid.containsKey(i)) {
 					slot.set(grid.get(i));
 				}
