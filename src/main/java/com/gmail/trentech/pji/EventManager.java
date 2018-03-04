@@ -154,7 +154,7 @@ public class EventManager {
 			delay = config.getNode("settings", "sql", "login-delay").getLong();
 		}
 
-		Task.builder().async().delayTicks(delay).execute(t -> {
+		Task.builder().delayTicks(delay).execute(t -> {
 			InventoryService inventoryService = Sponge.getServiceManager().provideUnchecked(InventoryService.class);
 			
 			InventorySettings inventorySettings = inventoryService.getInventorySettings();
@@ -246,7 +246,7 @@ public class EventManager {
 		
 		playerSettings.save(player, playerSettings.copy(player));
 		
-		Task.builder().async().delayTicks(40).execute(t -> {
+		Task.builder().delayTicks(40).execute(t -> {
 			player.getInventory().clear();
 		}).submit(Main.getPlugin());
 	}
