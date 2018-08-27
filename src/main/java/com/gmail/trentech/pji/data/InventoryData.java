@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.spongepowered.api.CatalogKey;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.data.DataContainer;
 import org.spongepowered.api.data.DataQuery;
@@ -93,7 +94,7 @@ public class InventoryData implements DataSerializable {
 		}
 		
 		if (this.gamemode.isPresent()) {
-			container.set(GAMEMODE, this.gamemode.get().getId());
+			container.set(GAMEMODE, this.gamemode.get().getKey().toString());
 		}
 
 		if (this.kitData.isPresent()) {
@@ -122,7 +123,8 @@ public class InventoryData implements DataSerializable {
 				}
 
 				if (container.contains(GAMEMODE)) {
-					gamemode = Optional.of(Sponge.getRegistry().getType(GameMode.class, container.getString(GAMEMODE).get()).get());
+					String[] args = container.getString(GAMEMODE).get().split(":");
+					gamemode = Optional.of(Sponge.getRegistry().getType(GameMode.class, CatalogKey.of(args[0], args[1])).get());
 				}
 
 				if (container.contains(KIT)) {

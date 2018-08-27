@@ -44,7 +44,7 @@ public class CMDList implements CommandExecutor {
 			InventoryData inventoryData = entry.getValue();
 			
 			Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());
-			Text hover = Text.EMPTY;
+			Text hover = Text.empty();
 			
 			Optional<String> optionalPermission = inventoryData.getPermission();
 
@@ -55,7 +55,7 @@ public class CMDList implements CommandExecutor {
 			Optional<GameMode> optionalGamemode = inventoryData.getGamemode();
 
 			if (optionalGamemode.isPresent()) {
-				hover = Text.join(hover, Text.NEW_LINE, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
+				hover = Text.join(hover, Text.newLine(), Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
 			}
 
 			if(!hover.isEmpty()) {

@@ -92,15 +92,15 @@ public class EventManager {
 		}
 
 		Inventory inventory = Inventory.builder().of(InventoryArchetypes.DOUBLE_CHEST)
-				.property(InventoryDimension.PROPERTY_NAME, new InventoryDimension(9, 5))
-				.property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(Text.of("Ender Chest")))
+				.property(InventoryDimension.of(9, 5))
+				.property(InventoryTitle.of(Text.of("Ender Chest")))
 				.listener(ClickInventoryEvent.class, (e) -> {
 					int i = 0;
 					for (Inventory slot : e.getTargetInventory().slots()) {
-						Optional<ItemStack> optionalItem = slot.peek();
+						ItemStack item = slot.peek();
 
-						if (optionalItem.isPresent()) {
-							enderChestData.addItem(i, optionalItem.get());
+						if (!item.isEmpty()) {
+							enderChestData.addItem(i, item);
 						} else {
 							enderChestData.removeItem(i);
 						}
@@ -113,10 +113,10 @@ public class EventManager {
 				}).listener(InteractInventoryEvent.Close.class, (e) -> {
 					int i = 0;
 					for (Inventory slot : e.getTargetInventory().slots()) {
-						Optional<ItemStack> optionalItem = slot.peek();
+						ItemStack item = slot.peek();
 
-						if (optionalItem.isPresent()) {
-							enderChestData.addItem(i, optionalItem.get());
+						if (!item.isEmpty()) {
+							enderChestData.addItem(i, item);
 						} else {
 							enderChestData.removeItem(i);
 						}

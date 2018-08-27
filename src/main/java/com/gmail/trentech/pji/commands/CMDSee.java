@@ -76,8 +76,8 @@ public class CMDSee implements CommandExecutor {
 		}
 
 		Inventory inventory = Inventory.builder().of(InventoryArchetypes.DOUBLE_CHEST)
-				.property(InventoryDimension.PROPERTY_NAME, new InventoryDimension(9, 5))
-				.property(InventoryTitle.PROPERTY_NAME, InventoryTitle.of(Text.of(target.getName())))
+				.property(InventoryDimension.of(9, 5))
+				.property(InventoryTitle.of(Text.of(target.getName())))
 				.listener(ClickInventoryEvent.class, new ClickHandler(target, playerInventoryData, playerSettings))
 				.build(Main.getPlugin());
 
@@ -96,35 +96,15 @@ public class CMDSee implements CommandExecutor {
 				}
 			} else {
 				if (i - 36 == 0) {
-					Optional<ItemStack> helmet = playerInventoryData.getHelmet();
-
-					if (helmet.isPresent()) {
-						slot.set(helmet.get());
-					}
+					slot.set(playerInventoryData.getHelmet());
 				} else if(i - 36 == 1) {
-					Optional<ItemStack> chestPlate = playerInventoryData.getChestPlate();
-
-					if (chestPlate.isPresent()) {
-						slot.set(chestPlate.get());
-					}
+					slot.set(playerInventoryData.getChestPlate());
 				} else if(i - 36 == 2) {
-					Optional<ItemStack> leggings = playerInventoryData.getLeggings();
-
-					if (leggings.isPresent()) {
-						slot.set(leggings.get());
-					}
+					slot.set(playerInventoryData.getLeggings());
 				} else if(i - 36 == 3) {
-					Optional<ItemStack> boots = playerInventoryData.getBoots();
-
-					if (boots.isPresent()) {
-						slot.set(boots.get());
-					}
+					slot.set(playerInventoryData.getBoots());
 				} else if(i - 36 == 4) {
-					Optional<ItemStack> offHand = playerInventoryData.getOffHand();
-					
-					if(offHand.isPresent()) {
-						slot.set(offHand.get());
-					}
+					slot.set(playerInventoryData.getOffHand());
 				} else {
 					slot.set(ItemStack.of(ItemTypes.BARRIER, 1));
 				}

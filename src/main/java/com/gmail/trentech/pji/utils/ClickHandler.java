@@ -1,7 +1,6 @@
 package com.gmail.trentech.pji.utils;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.spongepowered.api.data.key.Keys;
@@ -45,33 +44,31 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 		int i = 0;
 		for (Inventory slot : event.getTargetInventory().slots()) {
 			if (i < 27) {
-				Optional<ItemStack> optionalItem = slot.peek();
+				ItemStack item = slot.peek();
 
-				if (optionalItem.isPresent()) {
-					playerInventoryData.addGrid(i, optionalItem.get());
+				if (!item.isEmpty()) {
+					playerInventoryData.addGrid(i, item);
 				} else {
 					playerInventoryData.removeGrid(i);
 				}
 			} else if (i < 36) {
-				Optional<ItemStack> optionalItem = slot.peek();
+				ItemStack item = slot.peek();
 
-				if (optionalItem.isPresent()) {
-					playerInventoryData.addHotbar(i - 27, optionalItem.get());
+				if (!item.isEmpty()) {
+					playerInventoryData.addHotbar(i - 27, item);
 				} else {
 					playerInventoryData.removeHotbar(i - 27);
 				}
 			} else if (i < 40) {
-				Optional<ItemStack> optionalItem = slot.peek();
+				ItemStack item = slot.peek();
 
-				if (optionalItem.isPresent()) {
-					playerInventoryData.addEquipment(i - 36, optionalItem.get());
+				if (!item.isEmpty()) {
+					playerInventoryData.addEquipment(i - 36, item);
 				} else {
 					playerInventoryData.removeEquipment(i - 36);
 				}
 			} else if(i == 40) {
-				Optional<ItemStack> optionalItem = slot.peek();
-
-				playerInventoryData.setOffHand(optionalItem);
+				playerInventoryData.setOffHand(slot.peek());
 			}
 
 			i++;
@@ -81,7 +78,7 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 		if (playerSettings.getPlayerData(target).getInventoryName().equals(playerInventoryData.getName())) {
 			target.getInventory().clear();
 
-			PlayerInventory inv = target.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
+			PlayerInventory inv = (PlayerInventory) target.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
 			
 			Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
 
@@ -99,7 +96,7 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 
 			if (!grid.isEmpty()) {
 				i = 0;
-				for (Inventory slot : inv.getMain().slots()) {
+				for (Inventory slot : inv.getStorage().slots()) {
 					if (grid.containsKey(i)) {
 						slot.set(grid.get(i));
 					}
@@ -107,35 +104,11 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 				}
 			}
 
-			Optional<ItemStack> helmet = playerInventoryData.getHelmet();
-
-			if (helmet.isPresent()) {
-				target.setHelmet(helmet.get());
-			}
-
-			Optional<ItemStack> chestPlate = playerInventoryData.getChestPlate();
-
-			if (chestPlate.isPresent()) {
-				target.setChestplate(chestPlate.get());
-			}
-			
-			Optional<ItemStack> leggings = playerInventoryData.getLeggings();
-
-			if (leggings.isPresent()) {
-				target.setLeggings(leggings.get());
-			}
-			
-			Optional<ItemStack> boots = playerInventoryData.getBoots();
-
-			if (boots.isPresent()) {
-				target.setBoots(boots.get());
-			}
-
-			Optional<ItemStack> offHand = playerInventoryData.getOffHand();
-
-			if (offHand.isPresent()) {
-				target.setItemInHand(HandTypes.OFF_HAND, offHand.get());
-			}
+			target.setHelmet(playerInventoryData.getHelmet());
+			target.setChestplate(playerInventoryData.getChestPlate());
+			target.setLeggings(playerInventoryData.getLeggings());
+			target.setBoots(playerInventoryData.getBoots());
+			target.setItemInHand(HandTypes.OFF_HAND, playerInventoryData.getOffHand());
 
 			ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 

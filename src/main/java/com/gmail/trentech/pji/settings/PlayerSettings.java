@@ -51,29 +51,21 @@ public class PlayerSettings {
 	public PlayerInventoryData copy(Player player) {
 		PlayerInventoryData playerInventoryData = new PlayerInventoryData(getPlayerData(player).getInventoryName());
 
-		PlayerInventory inv = player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
+		PlayerInventory inv = (PlayerInventory) player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
 
 		int i = 0;
 		for (Inventory item : inv.getHotbar().slots()) {
 			Slot slot = (Slot) item;
 
-			Optional<ItemStack> peek = slot.peek();
-
-			if (peek.isPresent()) {
-				playerInventoryData.addHotbar(i, peek.get());
-			}
+			playerInventoryData.addHotbar(i, slot.peek());
 			i++;
 		}
 
 		i = 0;
-		for (Inventory item : inv.getMainGrid().slots()) {
+		for (Inventory item : inv.getStorage().slots()) {
 			Slot slot = (Slot) item;
 
-			Optional<ItemStack> peek = slot.peek();
-
-			if (peek.isPresent()) {
-				playerInventoryData.addGrid(i, peek.get());
-			}
+			playerInventoryData.addGrid(i, slot.peek());
 			i++;
 		}
 
@@ -146,7 +138,7 @@ public class PlayerSettings {
 	private void set(Player player, PlayerInventoryData playerInventoryData) {
 		player.getInventory().clear();
 
-		PlayerInventory inv = player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
+		PlayerInventory inv = (PlayerInventory) player.getInventory().query(QueryOperationTypes.INVENTORY_TYPE.of(PlayerInventory.class));
 
 		Map<Integer, ItemStack> hotbar = playerInventoryData.getHotbar();
 
@@ -164,7 +156,7 @@ public class PlayerSettings {
 
 		if (!grid.isEmpty()) {
 			int i = 0;
-			for (Inventory slot : inv.getMainGrid().slots()) {
+			for (Inventory slot : inv.getStorage().slots()) {
 				if (grid.containsKey(i)) {
 					slot.set(grid.get(i));
 				}
@@ -172,35 +164,11 @@ public class PlayerSettings {
 			}
 		}
 
-		Optional<ItemStack> helmet = playerInventoryData.getHelmet();
-
-		if (helmet.isPresent()) {
-			player.setHelmet(helmet.get());
-		}
-
-		Optional<ItemStack> chestPlate = playerInventoryData.getChestPlate();
-
-		if (chestPlate.isPresent()) {
-			player.setChestplate(chestPlate.get());
-		}
-		
-		Optional<ItemStack> leggings = playerInventoryData.getLeggings();
-
-		if (leggings.isPresent()) {
-			player.setLeggings(leggings.get());
-		}
-		
-		Optional<ItemStack> boots = playerInventoryData.getBoots();
-
-		if (boots.isPresent()) {
-			player.setBoots(boots.get());
-		}
-		
-		Optional<ItemStack> offHand = playerInventoryData.getOffHand();
-
-		if (offHand.isPresent()) {
-			player.setItemInHand(HandTypes.OFF_HAND, offHand.get());
-		}
+		player.setHelmet(playerInventoryData.getHelmet());
+		player.setChestplate(playerInventoryData.getChestPlate());
+		player.setLeggings(playerInventoryData.getLeggings());
+		player.setBoots(playerInventoryData.getBoots());
+		player.setItemInHand(HandTypes.OFF_HAND, playerInventoryData.getOffHand());
 
 		ConfigurationNode config = ConfigManager.get(Main.getPlugin()).getConfig();
 
