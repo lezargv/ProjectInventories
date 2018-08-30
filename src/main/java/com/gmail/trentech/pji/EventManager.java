@@ -97,10 +97,10 @@ public class EventManager {
 				.listener(ClickInventoryEvent.class, (e) -> {
 					int i = 0;
 					for (Inventory slot : e.getTargetInventory().slots()) {
-						ItemStack item = slot.peek();
+						Optional<ItemStack> optionalItem = slot.peek();
 
-						if (!item.isEmpty()) {
-							enderChestData.addItem(i, item);
+						if (optionalItem.isPresent()) {
+							enderChestData.addItem(i, optionalItem.get());
 						} else {
 							enderChestData.removeItem(i);
 						}
@@ -113,10 +113,10 @@ public class EventManager {
 				}).listener(InteractInventoryEvent.Close.class, (e) -> {
 					int i = 0;
 					for (Inventory slot : e.getTargetInventory().slots()) {
-						ItemStack item = slot.peek();
+						Optional<ItemStack> optionalItem = slot.peek();
 
-						if (!item.isEmpty()) {
-							enderChestData.addItem(i, item);
+						if (optionalItem.isPresent()) {
+							enderChestData.addItem(i, optionalItem.get());
 						} else {
 							enderChestData.removeItem(i);
 						}

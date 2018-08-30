@@ -78,7 +78,7 @@ public class CMDInfo implements CommandExecutor {
 			InventoryData inventoryData = inventoryService.getInventorySettings().get(entry.getKey()).get();
 
 			Text text = Text.of(TextColors.YELLOW, " - ", inventoryData.getName());
-			Text hover = Text.empty();
+			Text hover = Text.EMPTY;
 			
 			if (entry.getValue()) {
 				text = Text.join(text, Text.of(TextColors.GOLD, " [Default]"));
@@ -94,7 +94,7 @@ public class CMDInfo implements CommandExecutor {
 
 			if (optionalGamemode.isPresent()) {
 				if(!hover.isEmpty()) {
-					hover = Text.join(hover, Text.newLine());
+					hover = Text.join(hover, Text.NEW_LINE);
 				}
 				hover = Text.join(hover, Text.of(TextColors.BLUE, "Gamemode: ", TextColors.WHITE, optionalGamemode.get().getTranslation()));
 			}

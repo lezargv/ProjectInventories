@@ -1,6 +1,7 @@
 package com.gmail.trentech.pji.utils;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.spongepowered.api.data.key.Keys;
@@ -44,31 +45,33 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 		int i = 0;
 		for (Inventory slot : event.getTargetInventory().slots()) {
 			if (i < 27) {
-				ItemStack item = slot.peek();
+				Optional<ItemStack> optionalItem = slot.peek();
 
-				if (!item.isEmpty()) {
-					playerInventoryData.addGrid(i, item);
+				if (optionalItem.isPresent()) {
+					playerInventoryData.addGrid(i, optionalItem.get());
 				} else {
 					playerInventoryData.removeGrid(i);
 				}
 			} else if (i < 36) {
-				ItemStack item = slot.peek();
+				Optional<ItemStack> optionalItem = slot.peek();
 
-				if (!item.isEmpty()) {
-					playerInventoryData.addHotbar(i - 27, item);
+				if (optionalItem.isPresent()) {
+					playerInventoryData.addHotbar(i - 27, optionalItem.get());
 				} else {
 					playerInventoryData.removeHotbar(i - 27);
 				}
 			} else if (i < 40) {
-				ItemStack item = slot.peek();
+				Optional<ItemStack> optionalItem = slot.peek();
 
-				if (!item.isEmpty()) {
-					playerInventoryData.addEquipment(i - 36, item);
+				if (optionalItem.isPresent()) {
+					playerInventoryData.addEquipment(i - 36, optionalItem.get());
 				} else {
 					playerInventoryData.removeEquipment(i - 36);
 				}
 			} else if(i == 40) {
-				playerInventoryData.setOffHand(slot.peek());
+				Optional<ItemStack> optionalItem = slot.peek();
+
+				playerInventoryData.setOffHand(optionalItem.get());
 			}
 
 			i++;
@@ -96,7 +99,7 @@ public class ClickHandler implements Consumer<ClickInventoryEvent> {
 
 			if (!grid.isEmpty()) {
 				i = 0;
-				for (Inventory slot : inv.getStorage().slots()) {
+				for (Inventory slot : inv.getMainGrid().slots()) {
 					if (grid.containsKey(i)) {
 						slot.set(grid.get(i));
 					}

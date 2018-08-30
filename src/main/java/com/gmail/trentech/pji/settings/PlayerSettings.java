@@ -57,23 +57,31 @@ public class PlayerSettings {
 		for (Inventory item : inv.getHotbar().slots()) {
 			Slot slot = (Slot) item;
 
-			playerInventoryData.addHotbar(i, slot.peek());
+			Optional<ItemStack> peek = slot.peek();
+
+			if (peek.isPresent()) {
+				playerInventoryData.addHotbar(i, peek.get());
+			}
 			i++;
 		}
 
 		i = 0;
-		for (Inventory item : inv.getStorage().slots()) {
+		for (Inventory item : inv.getMainGrid().slots()) {
 			Slot slot = (Slot) item;
 
-			playerInventoryData.addGrid(i, slot.peek());
+			Optional<ItemStack> peek = slot.peek();
+
+			if (peek.isPresent()) {
+				playerInventoryData.addGrid(i, peek.get());
+			}
 			i++;
 		}
 
-		playerInventoryData.setOffHand(player.getItemInHand(HandTypes.OFF_HAND));
-		playerInventoryData.setHelmet(player.getHelmet());
-		playerInventoryData.setChestPlate(player.getChestplate());
-		playerInventoryData.setLeggings(player.getLeggings());
-		playerInventoryData.setBoots(player.getBoots());	
+		playerInventoryData.setOffHand(player.getItemInHand(HandTypes.OFF_HAND).orElse(ItemStack.empty()));
+		playerInventoryData.setHelmet(player.getHelmet().orElse(ItemStack.empty()));
+		playerInventoryData.setChestPlate(player.getChestplate().orElse(ItemStack.empty()));
+		playerInventoryData.setLeggings(player.getLeggings().orElse(ItemStack.empty()));
+		playerInventoryData.setBoots(player.getBoots().orElse(ItemStack.empty()));	
 		playerInventoryData.setHealth(player.get(Keys.HEALTH).get());
 		playerInventoryData.setFood(player.get(Keys.FOOD_LEVEL).get());
 		playerInventoryData.setSaturation(player.get(Keys.SATURATION).get());
@@ -156,7 +164,7 @@ public class PlayerSettings {
 
 		if (!grid.isEmpty()) {
 			int i = 0;
-			for (Inventory slot : inv.getStorage().slots()) {
+			for (Inventory slot : inv.getMainGrid().slots()) {
 				if (grid.containsKey(i)) {
 					slot.set(grid.get(i));
 				}

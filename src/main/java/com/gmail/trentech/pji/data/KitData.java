@@ -59,24 +59,32 @@ public class KitData implements DataSerializable {
 		int i = 0;
 		for (Inventory item : inv.getHotbar().slots()) {
 			Slot slot = (Slot) item;
+			
+			Optional<ItemStack> peek = slot.peek();
 
-			addHotbar(i, slot.peek());
+			if (peek.isPresent()) {
+				addHotbar(i, peek.get());
+			}
 			i++;
 		}
 
 		i = 0;
-		for (Inventory item : inv.getStorage().slots()) {
+		for (Inventory item : inv.getMainGrid().slots()) {
 			Slot slot = (Slot) item;
 
-			addGrid(i, slot.peek());
+			Optional<ItemStack> peek = slot.peek();
+
+			if (peek.isPresent()) {
+				addGrid(i, peek.get());
+			}
 			i++;
 		}
 
-		setOffHand(player.getItemInHand(HandTypes.OFF_HAND));
-		setHelmet(player.getHelmet());
-		setChestPlate(player.getChestplate());
-		setLeggings(player.getLeggings());
-		setBoots(player.getBoots());	
+		setOffHand(player.getItemInHand(HandTypes.OFF_HAND).orElse(ItemStack.empty()));
+		setHelmet(player.getHelmet().orElse(ItemStack.empty()));
+		setChestPlate(player.getChestplate().orElse(ItemStack.empty()));
+		setLeggings(player.getLeggings().orElse(ItemStack.empty()));
+		setBoots(player.getBoots().orElse(ItemStack.empty()));	
 	}
 	
 	public ItemStack getOffHand() {
